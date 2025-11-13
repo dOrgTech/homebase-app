@@ -13,7 +13,7 @@ import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
 import { EvmActivityHistory } from "modules/etherlink/components/EvmActivityHistory"
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
-import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui/etherlink/Stats"
+import { Item, ItemContent, ItemTitle, ItemValue, TransparentItem } from "components/ui/etherlink/Stats"
 import { DelegationBox, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { toShortAddress } from "services/contracts/utils"
@@ -129,8 +129,7 @@ export const EvmUserPage = () => {
     refreshTokenStats
   } = useEvmDaoOps()
   const selfMember = daoMembers?.find((member: any) => member.address === signer?.address)
-  console.log("selfMember", selfMember)
-  console.log("daoSelected[EvmUserPage]", daoSelected)
+
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
@@ -179,25 +178,25 @@ export const EvmUserPage = () => {
         </UserInfoSection>
 
         <StatsGrid>
-          <Item>
+          <TransparentItem>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">Voting Weight</ItemTitle>
             </ItemContent>
             <Grid item>
               <ItemValue color="textPrimary">{formattedVotingWeight}</ItemValue>
             </Grid>
-          </Item>
+          </TransparentItem>
 
-          <Item>
+          <TransparentItem>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">{daoSelected?.symbol} Balance</ItemTitle>
             </ItemContent>
             <Grid item>
               <ItemValue color="textPrimary">{formattedPersonalBalance}</ItemValue>
             </Grid>
-          </Item>
+          </TransparentItem>
 
-          <Item
+          <TransparentItem
             style={{ cursor: "pointer" }}
             onClick={() =>
               history.push("/explorer/etherlink/dao/" + daoSelected?.id + "/proposals?author=" + userAddress)
@@ -209,16 +208,16 @@ export const EvmUserPage = () => {
             <Grid item>
               <ItemValue color="textPrimary">{proposalCreatedCount}</ItemValue>
             </Grid>
-          </Item>
+          </TransparentItem>
 
-          <Item>
+          <TransparentItem>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">Votes Cast</ItemTitle>
             </ItemContent>
             <Grid item>
               <ItemValue color="textPrimary">{proposalVotedCount}</ItemValue>
             </Grid>
-          </Item>
+          </TransparentItem>
         </StatsGrid>
       </UserProfileCard>
 

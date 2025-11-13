@@ -1,6 +1,18 @@
 import { Grid, Typography, Paper, styled } from "@material-ui/core"
 
 export const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: "#24282d",
+  borderRadius: 8,
+  color: theme.palette.text.primary,
+  height: 84,
+  display: "flex",
+  padding: "33px 40px 30px 40px",
+  flexDirection: "column",
+  boxShadow: "none",
+  gap: 8
+}))
+
+export const TransparentItem = styled(Paper)(({ theme }) => ({
   borderRadius: 8,
   background: "transparent",
   color: theme.palette.text.primary,
