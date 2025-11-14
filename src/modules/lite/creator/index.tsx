@@ -298,13 +298,13 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
           <Grid item>
             {!isMarkup ? (
               <div style={{ justifyContent: "flex-end", display: "flex" }}>
-                <Tooltip title="Allow markup">
+                <Tooltip title="Allow HTML">
                   <CodeButton onClick={() => setIsMarkup(true)} />
                 </Tooltip>
               </div>
             ) : (
               <div style={{ justifyContent: "flex-end", display: "flex" }}>
-                <Tooltip title="Disable markup">
+                <Tooltip title="Disable HTML">
                   <CodeOffButton onClick={() => setIsMarkup(false)} />
                 </Tooltip>
               </div>
