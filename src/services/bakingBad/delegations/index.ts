@@ -1,76 +1,79 @@
-import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
-import { EnvKey, getEnv } from "services/config"
 import { networkNameMap } from ".."
 import { DelegationDTO, TokenDelegationDTO } from "./types"
-
-const BN = (v: BigNumber.Value) => new BigNumber(v ?? 0)
-
-async function fetchJson<T = unknown>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, init)
-  if (!res.ok) {
-    let body: any
-    try {
-      body = await res.json()
-    } catch {
-      body = await res.text()
-    }
-    const msg = (body && (body.message || body.error)) || res.statusText
-    throw new Error(`HTTP ${res.status}: ${msg}`)
-  }
-  return (await res.json()) as T
-}
-
-function tzktBase(network: Network) {
-  return `https://api.${networkNameMap[network]}.tzkt.io/v1`
-}
+import BigNumber from "bignumber.js"
+import { EnvKey, getEnv } from "services/config"
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
-  // smallest payload: only one most recent, sorted by id desc
-  const url = `${tzktBase(network)}/operations/delegations?sender=${daoAddress}&status=applied&limit=1&sort.desc=id`
-  const delegations = await fetchJson<DelegationDTO[]>(url)
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/delegations?sender=${daoAddress}&status=applied`
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error("Failed to fetch delegations from TZKT API")
+  }
 
-  if (!delegations.length) return null
-  return delegations[0]
+  const resultingDelegations: DelegationDTO[] = await response.json()
+
+  if (!resultingDelegations.length) {
+    return null
+  }
+
+  return resultingDelegations[0]
 }
 
 export const getTokenDelegation = async (tokenAddress: string, account: string, network: Network) => {
-  // ask bigmap for a single active key for this account; return just the 'value'
-  const url =
-    `${tzktBase(network)}/contracts/${tokenAddress}/bigmaps/delegates/keys` +
-    `?key.eq=${account}&active=true&limit=1&select=value`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?key.eq=${account}&active=true`
+  const response = await fetch(url)
 
-  // TzKT returns an array; with select=value it’s an array of the value type
-  const arr = await fetchJson<Array<TokenDelegationDTO["value"]>>(url)
-  if (arr.length === 0) return null
-  return arr[0]
+  if (!response.ok) {
+    throw new Error("Failed to fetch token delegations from TZKT API")
+  }
+
+  const resultingDelegations: TokenDelegationDTO[] = await response.json()
+
+  if (resultingDelegations.length === 0) {
+    return null
+  }
+
+  const delegatedTo = resultingDelegations[0].value
+
+  return delegatedTo
 }
 
-type VotingPowerResponse = { votingWeight: string; votingXTZWeight: string }
-type VoteWeight = { votingWeight: BigNumber; votingXTZWeight: BigNumber }
+export const getTokenVoteWeight = async (tokenAddress: string, account: string, network: Network, level: string) => {
+  const url = `${getEnv(
+    EnvKey.REACT_APP_LITE_API_URL
+  )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`
+  const response = await fetch(url)
 
-export const getTokenVoteWeight = async (
-  tokenAddress: string,
-  account: string,
-  network: Network,
-  level: string
-): Promise<VoteWeight> => {
-  const votingPowerUrl =
-    `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/network/${network}/token/${tokenAddress}` +
-    `/token-id/0/voting-power?userAddress=${account}&level=${level}`
+  let fullTezBalance = new BigNumber(0)
+  const fullTezBalanceResp = await fetch(
+    `https://tcinfra.net/rpc/tezos/${networkNameMap[network]}/chains/main/blocks/${level}/context/contracts/${account}/full_balance`
+  )
 
-  const voting = await fetchJson<VotingPowerResponse>(votingPowerUrl)
+  if (fullTezBalanceResp.ok) {
+    const balanceStr = await fullTezBalanceResp.json() // e.g., "123456789"
+    fullTezBalance = fullTezBalance.plus(new BigNumber(balanceStr ?? 0))
+  } else {
+    const fullTezBalanceRespData = await fullTezBalanceResp.json()
+    throw new Error(fullTezBalanceRespData.message)
+  }
 
-  // 2) Tez full_balance including staked/etc at the given level
-  const fullBalanceUrl =
-    `https://tcinfra.net/rpc/tezos/${networkNameMap[network]}` +
-    `/chains/main/blocks/${level}/context/contracts/${account}/full_balance`
+  if (!response.ok) {
+    const data = await response.json()
+    throw new Error(data.message)
+  }
 
-  const balanceStr = await fetchJson<string>(fullBalanceUrl)
-  const fullTezBalance = BN(balanceStr)
+  const result: { votingWeight: string; votingXTZWeight: string } = await response.json()
+
+  if (result) {
+    return {
+      votingWeight: new BigNumber(result.votingWeight),
+      votingXTZWeight: fullTezBalance
+    }
+  }
 
   return {
-    votingWeight: BN(voting.votingWeight),
-    votingXTZWeight: fullTezBalance
+    votingWeight: new BigNumber(0),
+    votingXTZWeight: new BigNumber(0)
   }
 }
