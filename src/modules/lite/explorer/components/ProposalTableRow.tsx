@@ -4,7 +4,7 @@ import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
 import { Poll } from "models/Polls"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 import dayjs from "dayjs"
 export interface ProposalTableRowData {
   daoId?: string
@@ -69,7 +69,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = 
           <DescriptionText>
             {poll.description.length > 200
               ? stripHtmlTags(poll.description).slice(0, 200) + "..."
-              : ReactHtmlParser(poll.description)}
+              : parse(poll.description)}
           </DescriptionText>
         </Grid>
 

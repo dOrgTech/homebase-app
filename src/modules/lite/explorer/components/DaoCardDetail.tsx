@@ -6,7 +6,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
 import { updateCount } from "services/services/lite/lite-services"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -113,7 +113,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
 
       <Grid container direction="row" justifyContent="center">
         <CommunityDescription variant="body2" color="textPrimary">
-          {ReactHtmlParser(community?.description ? community?.description : "")}
+          {parse(community?.description ? community?.description : "")}
         </CommunityDescription>
       </Grid>
 

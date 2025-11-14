@@ -7,7 +7,7 @@ import Share from "assets/img/share.svg"
 import LinkIcon from "assets/img/link.svg"
 
 import { useNotification } from "modules/common/hooks/useNotification"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 import { CopyIcon } from "components/ui/icons/CopyIcon"
@@ -163,7 +163,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined; d
 
           <Grid container>
             <Typography variant="body2" color="textPrimary" className="proposal-details">
-              {ReactHtmlParser(daoProposalSelected?.description ? daoProposalSelected?.description : "")}
+              {parse(daoProposalSelected?.description ? daoProposalSelected?.description : "")}
             </Typography>
           </Grid>
 

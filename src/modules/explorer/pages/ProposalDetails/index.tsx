@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme, Tooltip } from "@material-ui/core"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 import { BigNumber } from "bignumber.js"
 import ProgressBar from "react-customizable-progressbar"
 import { StatusBadge, statusColors } from "modules/explorer/components/StatusBadge"
@@ -655,7 +655,7 @@ export const ProposalDetails: React.FC = () => {
             {agoraPost && (
               <Grid item>
                 <Typography color="textPrimary" variant="body1" align={isMobileSmall ? "center" : "left"}>
-                  {ReactHtmlParser(agoraPost.post_stream.posts[0].cooked)}
+                  {parse(agoraPost.post_stream.posts[0].cooked)}
                 </Typography>
               </Grid>
             )}

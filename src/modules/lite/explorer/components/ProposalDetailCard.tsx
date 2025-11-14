@@ -9,7 +9,7 @@ import dayjs from "dayjs"
 import LinkIcon from "assets/img/link.svg"
 
 import { useNotification } from "modules/common/hooks/useNotification"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 
 const Title = styled(Typography)({
   fontSize: 32,
@@ -220,9 +220,8 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
               variant="body2"
               color="textPrimary"
               className="proposal-details"
-              style={{ whiteSpace: "pre-line" }}
             >
-              {ReactHtmlParser(poll?.description ? poll?.description : "")}
+              {parse(poll?.description ? poll?.description : "")}
             </Typography>
           </Grid>
 
