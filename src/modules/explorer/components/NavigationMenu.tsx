@@ -47,102 +47,112 @@ const InnerContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-const PageItemMobile = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "display": "flex",
-  "alignItems": "center",
-  "borderTop": "2px solid transparent",
-  "backgroundColor": isSelected ? "#24282D" : "inherit",
-  "height": "auto",
-  "padding": "20px 20px",
-  "borderRadius": 8,
-  "transition": isSelected ? "0s ease-in" : ".1s ease-out",
-  "width": 180,
-  "justifyContent": "center",
+const PageItemMobile = styled(({ isSelected, ...other }: any) => <Grid {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "display": "flex",
+    "alignItems": "center",
+    "borderTop": "2px solid transparent",
+    "backgroundColor": isSelected ? "#24282D" : "inherit",
+    "height": "auto",
+    "padding": "20px 20px",
+    "borderRadius": 8,
+    "transition": isSelected ? "0s ease-in" : ".1s ease-out",
+    "width": 180,
+    "justifyContent": "center",
 
-  "& > a > *": {
-    height: "100%"
-  },
+    "& > a > *": {
+      height: "100%"
+    },
 
-  "&:hover": {
+    "&:hover": {
+      "& > a > * > * > * > * > *": {
+        fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+        stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+        transition: isSelected ? "none" : ".15s ease-in"
+      }
+    },
+
     "& > a > * > * > * > * > *": {
-      fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
-      stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
-      transition: isSelected ? "none" : ".15s ease-in"
+      transition: ".15s ease-out"
+    },
+
+    "& > a > * > * > *": {
+      transition: ".15s ease-out"
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "45px"
     }
-  },
+  })
+)
 
-  "& > a > * > * > * > * > *": {
-    transition: ".15s ease-out"
-  },
+const PageItem = styled(({ isSelected, ...other }: any) => <Grid {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "display": "flex",
+    "alignItems": "center",
+    "borderTop": "2px solid transparent",
+    "backgroundColor": isSelected ? "#24282D" : "inherit",
+    "height": 50,
+    "padding": "20px 16px",
+    "borderRadius": 8,
+    "transition": isSelected ? "0s ease-in" : ".1s ease-out",
+    "justifyContent": "center",
 
-  "& > a > * > * > *": {
-    transition: ".15s ease-out"
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "45px"
-  }
-}))
+    "& > a > *": {
+      height: "100%"
+    },
 
-const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "display": "flex",
-  "alignItems": "center",
-  "borderTop": "2px solid transparent",
-  "backgroundColor": isSelected ? "#24282D" : "inherit",
-  "height": 50,
-  "padding": "20px 16px",
-  "borderRadius": 8,
-  "transition": isSelected ? "0s ease-in" : ".1s ease-out",
-  "justifyContent": "center",
+    "&:hover": {
+      "& > a > * > * > * > * > *": {
+        fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+        stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+        transition: isSelected ? "none" : ".15s ease-in"
+      }
+    },
 
-  "& > a > *": {
-    height: "100%"
-  },
-
-  "&:hover": {
     "& > a > * > * > * > * > *": {
-      fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
-      stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
-      transition: isSelected ? "none" : ".15s ease-in"
+      transition: ".15s ease-out"
+    },
+
+    "& > a > * > * > *": {
+      transition: ".15s ease-out"
+    },
+    [theme.breakpoints.down("sm")]: {
+      width: "45px"
     }
-  },
+  })
+)
 
-  "& > a > * > * > * > * > *": {
-    transition: ".15s ease-out"
-  },
+const PageItemBg = styled(({ isSelected, ...other }: any) => <Grid {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 15
+  })
+)
 
-  "& > a > * > * > *": {
-    transition: ".15s ease-out"
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "45px"
-  }
-}))
+const IconContainer = styled(({ isSelected, ...other }: any) => <span {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "height": "25px",
+    "display": "flex",
+    "justifyContent": "center",
 
-const PageItemBg = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 15
-}))
+    "& > svg > *": {
+      fill: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+      stroke: isSelected ? theme.palette.secondary.main : theme.palette.text.primary
+    }
+  })
+)
 
-const IconContainer = styled("span")(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "height": "25px",
-  "display": "flex",
-  "justifyContent": "center",
-
-  "& > svg > *": {
-    fill: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
-    stroke: isSelected ? theme.palette.secondary.main : theme.palette.text.primary
-  }
-}))
-
-const NavText = styled(Typography)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "display": "flex",
-  "justifyContent": "center",
-  "color": isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
-  "&:hover": {
-    color: `${theme.palette.secondary.main} !important`
-  }
-}))
+const NavText = styled(({ isSelected, ...other }: any) => <Typography {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "display": "flex",
+    "justifyContent": "center",
+    "color": isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+    "&:hover": {
+      color: `${theme.palette.secondary.main} !important`
+    }
+  })
+)
 
 interface Page {
   pathId: string

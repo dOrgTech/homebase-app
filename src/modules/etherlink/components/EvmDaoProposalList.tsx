@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { CircularProgress, Collapse, Grid, Typography, styled } from "@material-ui/core"
-import { ProposalItem } from "modules/explorer/pages/User"
+import React, { useEffect, useState } from "react"
+import { CircularProgress, Grid, Typography, styled } from "components/ui"
 import { Link } from "react-router-dom"
-import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
+import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import { EvmProposalItem } from "./EvmProposalItem"
@@ -31,7 +29,7 @@ export const EvmDaoProposalList: React.FC<{
 }> = ({ proposals, showFullList = true }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const offsetLimit = 50
+  const offsetLimit = 4
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -82,7 +80,7 @@ export const EvmDaoProposalList: React.FC<{
                 })}
               </Grid>
             ) : (
-              <Typography color="textPrimary">No proposals found</Typography>
+              <Typography color="textPrimary">No items</Typography>
             )}
           </Grid>
           {showFullList ? (

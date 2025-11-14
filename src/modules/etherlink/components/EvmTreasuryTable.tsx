@@ -1,9 +1,7 @@
-import { Typography } from "@material-ui/core"
+import { Typography } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
-import { Grid } from "@material-ui/core"
-import { TableContainer } from "@material-ui/core"
-import { TableBody, TableCell, TableHead, TableRow } from "@material-ui/core"
-import { Table } from "@material-ui/core"
+import { Grid } from "components/ui"
+import { TableContainer, TableBody, TableCell, TableHead, TableRow, Table } from "components/ui"
 import { CopyButton } from "components/ui/CopyButton"
 import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -12,7 +10,8 @@ import { useHistory } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab"
 import { makeStyles } from "@material-ui/core/styles"
-import { Card, CardContent, CardMedia } from "@material-ui/core"
+import { Card, CardContent, CardMedia } from "components/ui"
+import { dbg } from "utils/debug"
 
 const useStyles = makeStyles({
   toggleGroup: {
@@ -82,50 +81,69 @@ export const EvmTreasuryTable = () => {
 
   const renderNFTView = () => (
     <div className={classes.nftGrid}>
-      {[...daoNfts].map(nft => (
-        <Card key={nft?.id} className={classes.nftCard}>
-          <CardMedia
-            className={classes.nftImage}
-            image={nft.image_url || `https://picsum.photos/400/400?random=${nft.id}`}
-            title={nft.metadata?.name || `NFT #${nft.id}`}
-            component="div"
-            style={{ backgroundSize: "cover" }}
-          />
-          <CardContent className={classes.nftContent}>
-            <Typography className={classes.nftTitle}>{nft.metadata?.name || `NFT #${nft.id}`}</Typography>
-            <Typography className={classes.nftCollection}>{nft.metadata?.description || "Etherlink DAO"}</Typography>
-            <div className={classes.nftDetails}>
-              <Typography className={classes.nftPrice}>{nft.token?.symbol}</Typography>
-              <Typography color="textSecondary">#{nft.id}</Typography>
-            </div>
-            <SmallButton
-              onClick={() => {
-                setMetadataFieldValue("type", "transfer_assets")
-                setTransferAssets(
-                  [
-                    {
-                      assetType: "transferERC721",
-                      assetAddress: "0x123...",
-                      tokenId: nft.toString(),
-                      recipient: ""
-                    }
-                  ],
-                  daoSelected.registryAddress
-                )
-                setCurrentStep(1)
-                history.push(`${window.location.pathname.slice(0, -8)}proposals`)
-              }}
-            >
-              <Typography color="primary">Transfer NFT</Typography>
-            </SmallButton>
-          </CardContent>
-        </Card>
-      ))}
+      {[...daoNfts]
+        .filter((n: any) => {
+          const t = String(n?.token?.type || n?.token_type || n?.token?.standard || "").toUpperCase()
+          return t.includes("ERC721") || t.includes("ERC-721")
+        })
+        .map(nft => (
+          <Card key={nft?.id} className={classes.nftCard}>
+            <CardMedia
+              className={classes.nftImage}
+              image={nft.image_url || `https://picsum.photos/400/400?random=${nft.id}`}
+              title={nft.metadata?.name || `NFT #${nft.id}`}
+              component="div"
+              style={{ backgroundSize: "cover" }}
+            />
+            <CardContent className={classes.nftContent}>
+              <Typography className={classes.nftTitle}>
+                {nft.metadata?.name || `NFT #${nft.token_id ?? nft.id}`}
+              </Typography>
+              <Typography className={classes.nftCollection}>{nft.metadata?.description || "Etherlink DAO"}</Typography>
+              <div className={classes.nftDetails}>
+                <Typography className={classes.nftPrice}>{nft.token?.symbol}</Typography>
+                <Typography color="textSecondary">#{nft.token_id ?? nft.id}</Typography>
+              </div>
+              <SmallButton
+                onClick={() => {
+                  const addr =
+                    nft?.token?.address ||
+                    nft?.token?.contract_address ||
+                    nft?.contract?.address ||
+                    nft?.contract_address ||
+                    nft?.token_address ||
+                    (nft as any)?.collection?.address
+                  dbg("EL-XFER:quickNFT", {
+                    token: nft?.token?.symbol,
+                    address: addr,
+                    tokenId: String(nft?.token_id ?? nft?.id)
+                  })
+                  setMetadataFieldValue("type", "transfer_assets")
+                  setTransferAssets(
+                    [
+                      {
+                        assetType: "transferERC721",
+                        assetAddress: addr,
+                        tokenId: String(nft?.token_id ?? nft?.id),
+                        recipient: ""
+                      }
+                    ],
+                    daoSelected.registryAddress
+                  )
+                  setCurrentStep(1)
+                  history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+                }}
+              >
+                <Typography color="primary">Transfer NFT</Typography>
+              </SmallButton>
+            </CardContent>
+          </Card>
+        ))}
     </div>
   )
 
   const renderTokenView = () => (
-    <TableContainer>
+    <TableContainer style={{ overflowX: "auto", maxWidth: "100%" }}>
       <Table>
         <TableHead>
           <TableRow>
@@ -144,7 +162,7 @@ export const EvmTreasuryTable = () => {
             <TableCell>
               <Grid container direction="row" alignItems="center">
                 native token
-                <CopyButton text="0x1234567890abcdef" />
+                {/* <CopyButton text="0x1234567890abcdef" /> */}
               </Grid>
             </TableCell>
             <TableCell>
@@ -184,6 +202,7 @@ export const EvmTreasuryTable = () => {
                           assetType: "transferERC20",
                           assetSymbol: token.symbol,
                           assetAddress: token.address,
+                          assetDecimals: token.decimals,
                           recipient: "",
                           amount: token.balance
                         }

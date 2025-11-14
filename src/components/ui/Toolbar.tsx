@@ -33,6 +33,11 @@ const Header = styled(Grid)(({ theme }) => ({
 
   ["@media (max-width:645px)"]: {
     flexDirection: "column"
+  },
+
+  ["@media (max-width:425px)"]: {
+    flexDirection: "column",
+    alignItems: "center"
   }
 }))
 
@@ -71,6 +76,10 @@ const LogoItem = styled("img")({
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   ["@media (max-width: 645px)"]: {
     marginBottom: "20px"
+  },
+  ["@media (max-width: 425px)"]: {
+    marginBottom: "12px",
+    justifyContent: "center"
   }
 }))
 

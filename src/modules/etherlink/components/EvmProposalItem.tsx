@@ -1,15 +1,15 @@
-import { Badge, Grid, Theme, Typography, styled } from "@material-ui/core"
-import dayjs from "dayjs"
-import React from "react"
+import { Grid, Typography, styled } from "components/ui"
+import React, { useContext } from "react"
 import { toShortAddress } from "services/contracts/utils"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
+import { ContentContainer } from "components/ui/ContentContainer"
+import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
+import { EtherlinkContext } from "services/wagmi/context"
 
-const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  padding: "37px 42px",
-  background: theme.palette.primary.main,
-  borderRadius: 8
-}))
+const ContentBlockItem = styled(ContentContainer)({
+  padding: "37px 42px"
+})
 
 const ProposalTitle = styled(Typography)({
   fontWeight: "bold"
@@ -24,6 +24,8 @@ export const EvmProposalItem: React.FC<{
   proposal: Proposal | any
 }> = ({ proposal, children }) => {
   const formattedDate = proposal?.createdAt?.format("LLL") ?? "N/A"
+  const { daoSelected } = useContext(EtherlinkContext)
+  const { effectiveDisplayStatus } = useProposalTimeline(proposal, daoSelected)
 
   return (
     <ContentBlockItem container justifyContent="space-between" alignItems="center">
@@ -37,14 +39,11 @@ export const EvmProposalItem: React.FC<{
           <Grid item>
             <Grid container style={{ gap: 16 }} alignItems="center">
               <Grid item>
-                <StatusBadge status={proposal.status} />
+                <StatusBadge status={effectiveDisplayStatus || proposal.displayStatus || proposal.status} />
               </Grid>
               <Grid item>
                 <CreatedText variant="body1" color="textPrimary">
-                  Created at {formattedDate} by{" "}
-                  <span style={{ fontWeight: 600 }}>
-                    {proposal.author ? toShortAddress(proposal.author) : "unknown"}
-                  </span>
+                  Created {formattedDate}
                 </CreatedText>
               </Grid>
             </Grid>

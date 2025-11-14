@@ -36,7 +36,7 @@ export const FAQItem = ({ question, answer, id }: { question: string; answer: st
   const location = useLocation()
 
   const formatQuestion = (question: string) => {
-    return question.replaceAll(" ", "-").toLowerCase()
+    return question.replace(/ /g, "-").toLowerCase()
   }
   const questionId = formatQuestion(question)
 

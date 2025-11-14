@@ -19,20 +19,22 @@ const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
   return statusToColor[status]
 }
 
-const Badge = styled(Grid)(({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
-  "borderRadius": 4,
-  "height": 27,
-  "boxSizing": "border-box",
-  "width": 105,
-  "textAlign": "center",
-  "padding": "0 7px",
+const Badge = styled(({ status, ...other }: any) => <Grid {...other} />)(
+  ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
+    "borderRadius": 4,
+    "height": 27,
+    "boxSizing": "border-box",
+    "width": 105,
+    "textAlign": "center",
+    "padding": "0 7px",
 
-  "background": hexToRgba(getStatusColor(status, theme), 0.4),
-  "color": getStatusColor(status, theme),
-  "& > div": {
-    height: "100%"
-  }
-}))
+    "background": hexToRgba(getStatusColor(status, theme), 0.4),
+    "color": getStatusColor(status, theme),
+    "& > div": {
+      height: "100%"
+    }
+  })
+)
 
 export const TableStatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>

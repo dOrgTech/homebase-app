@@ -1,11 +1,16 @@
-import { TextField } from "@mui/material"
-
+import { TextField } from "@material-ui/core"
 import { styled } from "@material-ui/core/styles"
 
 export const StyledTextField = styled(TextField)({
   "& .MuiInput-root": {
     color: "#fff",
     paddingBottom: "4px"
+  },
+  "& .MuiInputBase-input": {
+    textAlign: "left"
+  },
+  "& .MuiInputBase-inputMultiline": {
+    textAlign: "left"
   },
   "& label": {
     color: "#fff"

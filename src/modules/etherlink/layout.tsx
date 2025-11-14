@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@material-ui/core"
+import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link, withStyles } from "components/ui"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
@@ -22,6 +22,16 @@ import { NavigationBar } from "modules/creator/components/NavigationBar"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
+  const SidebarStepLabel = withStyles({
+    label: {
+      height: "auto",
+      whiteSpace: "normal",
+      display: "block",
+      overflowWrap: "anywhere",
+      wordBreak: "break-word"
+    }
+  })(StepLabel)
+
   const { currentStep: step, next, prev: back } = useEvmDaoCreateStore()
   const history = useHistory()
   const theme = useTheme()
@@ -34,7 +44,21 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
       <Navbar mode="creator" />
       <PageContent container direction="row">
         {!isMobile && (
-          <ProgressContainer item xs={3} container direction="column">
+          <ProgressContainer
+            item
+            xs={3}
+            container
+            direction="column"
+            style={{
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingBottom: 12,
+              boxSizing: "border-box",
+              height: "calc(100vh - 150px)",
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
                 progress={progressPercentage}
@@ -57,9 +81,9 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
                   <Step key={title}>
-                    <StepLabel onClick={() => (index < step ? history.push(path) : null)} icon={index + 1}>
+                    <SidebarStepLabel onClick={() => (index < step ? history.push(path) : null)} icon={index + 1}>
                       {title}
-                    </StepLabel>
+                    </SidebarStepLabel>
                   </Step>
                 ))}
               </StyledStepper>

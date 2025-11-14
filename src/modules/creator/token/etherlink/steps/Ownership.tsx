@@ -56,7 +56,7 @@ export const Ownership: React.FC = () => {
               justifyContent={isMobileSmall ? "center" : "flex-start"}
             >
               <Grid item xs={isMobileSmall ? 12 : 3} container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                <OptionButton underline="none" href={`/creator/build`}>
+                <OptionButton underline="none" href={`/creator-evm/template`}>
                   <MainButton variant="contained" color="secondary">
                     Yes, I have one
                   </MainButton>

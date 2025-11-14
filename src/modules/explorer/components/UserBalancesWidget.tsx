@@ -6,34 +6,36 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 
-const BalanceBox = styled(Grid)(({ radiusSide, color }: { radiusSide: "left" | "right" | "none"; color: string }) => {
-  let borderRadius = "0"
+const BalanceBox = styled(({ radiusSide, color, ...other }: any) => <Grid {...other} />)(
+  ({ radiusSide, color }: { radiusSide: "left" | "right" | "none"; color: string }) => {
+    let borderRadius = "0"
 
-  switch (radiusSide) {
-    case "none": {
-      break
+    switch (radiusSide) {
+      case "none": {
+        break
+      }
+      case "left": {
+        borderRadius = "4px 0 0 4px"
+        break
+      }
+      case "right": {
+        borderRadius = "0 4px 4px 0"
+        break
+      }
     }
-    case "left": {
-      borderRadius = "4px 0 0 4px"
-      break
-    }
-    case "right": {
-      borderRadius = "0 4px 4px 0"
-      break
+
+    return {
+      "width": 166,
+      "height": 41.85,
+      borderRadius,
+      color,
+      "backgroundColor": hexToRgba(color, 0.15),
+      "& > div": {
+        height: "100%"
+      }
     }
   }
-
-  return {
-    "width": 166,
-    "height": 41.85,
-    borderRadius,
-    color,
-    "backgroundColor": hexToRgba(color, 0.15),
-    "& > div": {
-      height: "100%"
-    }
-  }
-})
+)
 
 const TitleText = styled(Typography)({
   fontSize: 11,

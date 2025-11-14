@@ -1,11 +1,10 @@
 import React, { useContext, useState } from "react"
-import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
 
 import { SmallButton } from "../../common/SmallButton"
 
-import SettingsIcon from "@mui/icons-material/Settings"
-import { IconButton } from "@mui/material"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { Settings as SettingsIcon, IconButton } from "components/ui"
+import { FileCopyOutlined } from "components/ui"
 import { HeroContainer } from "components/ui/HeroContainer"
 import { ViewSettings } from "components/ui/ViewSettings"
 import { SubtitleText } from "components/ui/SubtitleText"
@@ -40,34 +39,38 @@ export const EtherlinkDAOOverview: React.FC = () => {
         <Grid container direction="column" style={{ gap: isExtraSmall ? 40 : 20 }}>
           <Grid item>
             <Grid container justifyContent="space-between" alignItems="center" style={isExtraSmall ? { gap: 20 } : {}}>
-              <Grid item xs={8}>
+              <Grid item xs={12} sm={8}>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
-              <Grid item>
-                <ViewSettings container direction="row" alignItems="center" onClick={() => setOpenDialog(true)}>
-                  <SettingsIcon style={{ fontSize: 18, color: theme.palette.secondary.main }} color="secondary" />
-                  <Typography variant="body2" color="secondary">
-                    View Settings
-                  </Typography>
-                </ViewSettings>
-                <EvmDaoSettingModal open={openDialog} handleClose={handleCloseModal} />
-              </Grid>
-              <Grid item>
-                <SmallButton
-                  onClick={() => {
-                    setMetadataFieldValue("type", "change_config")
-                    setCurrentStep(1)
-                    history.push(`${window.location.pathname.slice(0, -8)}proposals`)
-                  }}
-                >
-                  <Typography color="primary">Change Settings</Typography>
-                </SmallButton>
+              <Grid item xs={12} sm="auto">
+                <Grid container spacing={2} justifyContent={isExtraSmall ? "center" : "flex-end"} alignItems="center">
+                  <Grid item>
+                    <ViewSettings container direction="row" alignItems="center" onClick={() => setOpenDialog(true)}>
+                      <SettingsIcon style={{ fontSize: 18, color: theme.palette.secondary.main }} color="secondary" />
+                      <Typography variant="body2" color="secondary">
+                        View Settings
+                      </Typography>
+                    </ViewSettings>
+                    <EvmDaoSettingModal open={openDialog} handleClose={handleCloseModal} />
+                  </Grid>
+                  <Grid item>
+                    <SmallButton
+                      onClick={() => {
+                        setMetadataFieldValue("type", "change_config")
+                        setCurrentStep(1)
+                        history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+                      }}
+                    >
+                      <Typography color="primary">Change Settings</Typography>
+                    </SmallButton>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} md={6}>
                 <Typography variant="h6" style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}>
                   DAO Contract
                 </Typography>
@@ -77,7 +80,8 @@ export const EtherlinkDAOOverview: React.FC = () => {
                     display: "flex",
                     fontSize: 16,
                     alignItems: "center",
-                    color: theme.palette.primary.light
+                    color: theme.palette.primary.light,
+                    wordBreak: "break-all"
                   }}
                 >
                   {daoSelected?.address || "-"}
@@ -88,13 +92,13 @@ export const EtherlinkDAOOverview: React.FC = () => {
                       }
                     }}
                     size="small"
-                    style={{ marginLeft: "8px", color: theme.palette.primary.light }}
+                    style={{ marginLeft: "8px", color: theme.palette.primary.light, flexShrink: 0 }}
                   >
                     <FileCopyOutlined fontSize="inherit" />
                   </IconButton>
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} md={6}>
                 <Typography variant="h6" style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}>
                   Governance Token
                 </Typography>
@@ -104,7 +108,8 @@ export const EtherlinkDAOOverview: React.FC = () => {
                     display: "flex",
                     fontSize: 16,
                     alignItems: "center",
-                    color: theme.palette.primary.light
+                    color: theme.palette.primary.light,
+                    wordBreak: "break-all"
                   }}
                 >
                   {daoSelected?.token || "-"}
@@ -115,17 +120,16 @@ export const EtherlinkDAOOverview: React.FC = () => {
                       }
                     }}
                     size="small"
-                    style={{ marginLeft: "8px" }}
+                    style={{ marginLeft: "8px", flexShrink: 0 }}
                   >
                     <FileCopyOutlined fontSize="inherit" />
                   </IconButton>
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <SubtitleText>{description}</SubtitleText>
               </Grid>
             </Grid>
-            <br />
           </Grid>
         </Grid>
       </HeroContainer>

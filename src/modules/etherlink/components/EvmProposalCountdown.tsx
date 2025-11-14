@@ -1,11 +1,35 @@
-import { Grid } from "@material-ui/core"
-import { Timer } from "@mui/icons-material"
-import { Box } from "@mui/material"
-import { Typography } from "@mui/material"
+import { Grid, Timer, Box, Typography } from "components/ui"
 import dayjs from "dayjs"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
+import { styled } from "@material-ui/core"
+
+const TimeUnitBox = styled(Box)({
+  fontSize: "24px",
+  fontFamily: "monospace",
+  fontWeight: "bold",
+  borderRadius: 4,
+  boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
+  padding: "8px 16px",
+  minWidth: "80px",
+  textAlign: "center",
+  ["@media (max-width: 425px)"]: {
+    fontSize: "18px",
+    padding: "6px 12px",
+    minWidth: "60px"
+  }
+})
+
+const TimeUnitLabel = styled(Typography)({
+  color: "white",
+  fontSize: "14px",
+  marginTop: "4px",
+  textAlign: "center",
+  ["@media (max-width: 425px)"]: {
+    fontSize: "12px"
+  }
+})
 
 interface TimeLeft {
   days: number
@@ -14,11 +38,17 @@ interface TimeLeft {
   seconds: number
 }
 
-export const EvmProposalCountdown = () => {
+export const EvmProposalCountdown = ({
+  overrideLabel,
+  overrideTarget
+}: {
+  overrideLabel?: string
+  overrideTarget?: any
+} = {}) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { daoProposalSelected } = useContext(EtherlinkContext)
-  const timerLabel = daoProposalSelected?.timerLabel
-  const timerTargetDate = daoProposalSelected?.timerTargetDate
+  const timerLabel = overrideLabel ?? daoProposalSelected?.timerLabel
+  const timerTargetDate = overrideTarget ?? daoProposalSelected?.timerTargetDate
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -54,38 +84,39 @@ export const EvmProposalCountdown = () => {
     <Grid
       direction="column"
       alignItems="center"
-      style={{ marginRight: 20, backgroundColor: "#222", borderRadius: 8, paddingBottom: 8, paddingTop: 8 }}
+      style={{
+        marginRight: 20,
+        backgroundColor: "#222",
+        borderRadius: 8,
+        paddingBottom: 8,
+        paddingTop: 8,
+        minWidth: 0,
+        flex: "0 1 auto"
+      }}
     >
-      <Box
-        sx={{
-          fontSize: "24px",
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          borderRadius: 1,
-          boxShadow: 1,
-          px: 2,
-          py: 1,
-          minWidth: "80px",
-          textAlign: "center"
-        }}
-      >
-        {value.toString().padStart(2, "0")}
-      </Box>
-      <Typography sx={{ color: "white", mt: 1 }} style={{ fontSize: "14px", marginTop: "4px", textAlign: "center" }}>
-        {unit}
-      </Typography>
+      <TimeUnitBox>{value.toString().padStart(2, "0")}</TimeUnitBox>
+      <TimeUnitLabel>{unit}</TimeUnitLabel>
     </Grid>
   ))
 
   return (
     <GridContainer container direction="column" style={{ maxWidth: "100%" }}>
-      <Box sx={{ display: "flex", alignItems: "center", margin: "auto", marginBottom: 2 }}>
-        <Timer sx={{ width: 24, height: 24, mr: 2, color: "white" }} />
-        <Typography variant="h3" color="white" sx={{ fontWeight: 600, fontSize: 18 }}>
+      <Box style={{ display: "flex", alignItems: "center", margin: "auto", marginBottom: 16 }}>
+        <Timer style={{ width: 24, height: 24, marginRight: 8, color: "white" }} />
+        <Typography variant="h3" style={{ fontWeight: 600, fontSize: 18, color: "white" }}>
           {timerLabel}
         </Typography>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          flexWrap: "wrap",
+          gap: "8px"
+        }}
+      >
         {timeLeft.days > 0 && <TimeUnit value={timeLeft.days} unit="Days" />}
         <TimeUnit value={timeLeft.hours} unit="Hours" />
         <TimeUnit value={timeLeft.minutes} unit="Minutes" />

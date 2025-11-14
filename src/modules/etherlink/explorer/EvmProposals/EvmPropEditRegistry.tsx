@@ -1,42 +1,35 @@
 import React from "react"
-import { Grid, styled } from "@material-ui/core"
+import { Grid, FormField, FormTextField } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { StyledTextField } from "components/ui/StyledTextField"
-
-const InputContainer = styled(Grid)({
-  background: "#1c2024",
-  padding: "16px",
-  borderRadius: "4px",
-  marginBottom: "8px"
-})
+// Use FormField wrappers to match Tezos input styling
 
 export const EvmPropEditRegistry: React.FC = () => {
-  const { daoRegistry, daoRegistryError, setDaoRegistry } = useEvmProposalOps()
+  const { daoRegistry, setDaoRegistry } = useEvmProposalOps()
 
   return (
-    <InputContainer container spacing={2}>
+    <Grid container direction="column" style={{ gap: 18 }}>
       <Grid item xs={12}>
-        <StyledTextField
-          fullWidth
-          defaultValue={daoRegistry.key}
-          label="Registry Key"
-          variant="outlined"
-          onChange={e => {
-            setDaoRegistry("key", e.target.value)
-          }}
-        />
+        <FormField label="Registry Key" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            defaultValue={daoRegistry.key}
+            onChange={e => {
+              setDaoRegistry("key", e.target.value)
+            }}
+            inputProps={{ style: { fontSize: 14 } }}
+          />
+        </FormField>
       </Grid>
       <Grid item xs={12}>
-        <StyledTextField
-          fullWidth
-          defaultValue={daoRegistry.value}
-          label="Registry Value"
-          variant="outlined"
-          onChange={e => {
-            setDaoRegistry("value", e.target.value)
-          }}
-        />
+        <FormField label="Registry Value" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            defaultValue={daoRegistry.value}
+            onChange={e => {
+              setDaoRegistry("value", e.target.value)
+            }}
+            inputProps={{ style: { fontSize: 14 } }}
+          />
+        </FormField>
       </Grid>
-    </InputContainer>
+    </Grid>
   )
 }

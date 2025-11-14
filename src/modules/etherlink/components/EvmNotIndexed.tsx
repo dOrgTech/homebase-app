@@ -1,7 +1,7 @@
-import { Box, styled, Theme, Typography } from "@material-ui/core"
+import { Box, styled, Typography } from "components/ui"
 import React from "react"
 
-const SecondaryText = styled("span")(({ theme }: { theme: Theme }) => ({
+const SecondaryText = styled("span")(({ theme }: any) => ({
   color: theme.palette.secondary.main
 }))
 

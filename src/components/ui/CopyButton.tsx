@@ -6,10 +6,17 @@ const TooltipButton = styled(Tooltip)({
   cursor: "pointer"
 })
 
-export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+type CopyButtonProps = {
+  text: string
+  ariaLabel?: string
+}
+
+export const CopyButton: React.FC<CopyButtonProps> = ({ text, ariaLabel }) => {
   const [copied, setCopied] = useState(false)
   return (
     <Box
+      role="button"
+      aria-label={ariaLabel || "Copy"}
       marginTop="auto"
       onClick={() => {
         navigator.clipboard.writeText(text)

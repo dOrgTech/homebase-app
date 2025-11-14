@@ -1,10 +1,9 @@
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { DescriptionText } from "components/ui/DaoCreator"
-import InputText from "components/ui/InputText"
+import { Grid, Typography, useMediaQuery, useTheme, StyledTextField } from "components/ui"
+import { DescriptionText, CustomInputContainer } from "components/ui/DaoCreator"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 
 import { TitleBlock } from "modules/common/TitleBlock"
-import React, { useRef } from "react"
+import React from "react"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 export const EvmDaoQuorum: React.FC = () => {
@@ -23,34 +22,27 @@ export const EvmDaoQuorum: React.FC = () => {
       />
       <StyledSliderWithValue
         defaultValue={getIn("quorum.returnedTokenPercentage")}
+        min={1}
+        max={99}
+        step={1}
         onChange={(newValue: number) => {
-          setFieldValue("quorum.returnedTokenPercentage", newValue || 0)
+          setFieldValue("quorum.returnedTokenPercentage", newValue || 4)
         }}
       />
-      <Grid
-        container
-        item
-        xs={isMobile ? 12 : 12}
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        style={{ marginTop: 16 }}
-      >
-        <Grid direction="row" item style={{ maxWidth: "60%" }}>
-          <Typography variant="subtitle1" color="textSecondary">
-            Proposal Threshold ({data?.governanceToken?.symbol} Amount)
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Minimum voting power to submit a proposal
-          </Typography>
-        </Grid>
-        <Grid item>
-          <InputText
+      <Grid container item xs={isMobile ? 12 : 12} direction="column" style={{ marginTop: 25 }}>
+        <Typography variant="subtitle1" color="textSecondary">
+          Proposal Threshold ({data?.governanceToken?.symbol} Amount)
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          Minimum voting power to submit a proposal
+        </Typography>
+        <CustomInputContainer>
+          <StyledTextField
             type="number"
             placeholder="0"
             inputProps={{
-              min: "0",
-              step: "1"
+              min: 0,
+              step: 1
             }}
             name="quorum.proposalThreshold"
             defaultValue={getIn("quorum.proposalThreshold")}
@@ -58,7 +50,7 @@ export const EvmDaoQuorum: React.FC = () => {
               setFieldValue("quorum.proposalThreshold", Number(e.target.value))
             }}
           />
-        </Grid>
+        </CustomInputContainer>
       </Grid>
     </div>
   )
