@@ -216,11 +216,7 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
-            <Typography
-              variant="body2"
-              color="textPrimary"
-              className="proposal-details"
-            >
+            <Typography variant="body2" color="textPrimary" className="proposal-details">
               {parse(poll?.description ? poll?.description : "")}
             </Typography>
           </Grid>
