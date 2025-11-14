@@ -242,6 +242,16 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
+            {/* DEBUG INFO - Remove after fixing */}
+            <div style={{ background: '#ff000033', padding: '10px', marginBottom: '20px', fontSize: '12px', fontFamily: 'monospace', width: '100%', border: '2px solid red' }}>
+              <div><strong>🔍 DEBUG INFO (commit: ab568a4)</strong></div>
+              <div>parse is function: {typeof parse === 'function' ? '✅ YES' : '❌ NO'}</div>
+              <div>parse type: {typeof parse}</div>
+              <div>description length: {poll?.description?.length || 0}</div>
+              <div>description starts with: {poll?.description?.substring(0, 50)}</div>
+              <div>parsed result type: {typeof parse(poll?.description || '')}</div>
+              <div>parsed is array: {Array.isArray(parse(poll?.description || '')) ? 'YES' : 'NO'}</div>
+            </div>
             <HtmlContent className="proposal-details">{parse(poll?.description ? poll?.description : "")}</HtmlContent>
           </Grid>
 
