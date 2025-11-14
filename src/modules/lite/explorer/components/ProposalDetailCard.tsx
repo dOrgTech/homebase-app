@@ -23,6 +23,31 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light
 }))
 
+const DescriptionContainer = styled("div")(({ theme }) => ({
+  fontSize: 14,
+  fontWeight: 400,
+  color: theme.palette.text.secondary,
+  "& h1, & h2, & h3, & h4, & h5, & h6": {
+    marginTop: 16,
+    marginBottom: 8
+  },
+  "& p": {
+    marginTop: 8,
+    marginBottom: 8
+  },
+  "& ul, & ol": {
+    marginTop: 8,
+    marginBottom: 8,
+    paddingLeft: 24
+  },
+  "& hr": {
+    marginTop: 16,
+    marginBottom: 16,
+    border: "none",
+    borderTop: `1px solid ${theme.palette.primary.light}`
+  }
+}))
+
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
   [theme.breakpoints.down("sm")]: {
@@ -216,9 +241,9 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
-            <Typography variant="body2" color="textPrimary" className="proposal-details">
+            <DescriptionContainer className="proposal-details">
               {parse(poll?.description ? poll?.description : "")}
-            </Typography>
+            </DescriptionContainer>
           </Grid>
 
           {poll?.externalLink ? (
