@@ -46,11 +46,15 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
   const response = await fetch(url)
 
   let stakedBalance = new BigNumber(0)
-  const stakedBalanceQuery = await fetch(`https://api.${networkNameMap[network]}.tzkt.io/v1/accounts/${account}`)
+  const accountInfoResp = await fetch(`https://api.${networkNameMap[network]}.tzkt.io/v1/accounts/${account}`)
 
-  if (stakedBalanceQuery.ok) {
-    const stakedBalanceQueryResponse = await stakedBalanceQuery.json()
-    stakedBalance = stakedBalance.plus(stakedBalanceQueryResponse.stakedBalance ?? 0)
+  if (accountInfoResp.ok) {
+    const accountInfo = await accountInfoResp.json()
+
+    // Only add staked balance if not a baker (delegate)
+    if (accountInfo.type !== "delegate") {
+      stakedBalance = stakedBalance.plus(accountInfo.stakedBalance ?? 0)
+    }
   }
 
   if (!response.ok) {
@@ -59,10 +63,11 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
   }
 
   const result: { votingWeight: string; votingXTZWeight: string } = await response.json()
+
   if (result) {
     return {
       votingWeight: new BigNumber(result.votingWeight),
-      votingXTZWeight: new BigNumber(result.votingXTZWeight + stakedBalance)
+      votingXTZWeight: new BigNumber(result.votingXTZWeight).plus(stakedBalance)
     }
   }
 
