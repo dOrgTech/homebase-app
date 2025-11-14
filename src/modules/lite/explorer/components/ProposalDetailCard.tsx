@@ -23,7 +23,7 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light
 }))
 
-const DescriptionContainer = styled("div")(({ theme }) => ({
+const HtmlContent = styled("div")(({ theme }) => ({
   fontSize: 14,
   fontWeight: 400,
   color: theme.palette.text.secondary,
@@ -241,9 +241,9 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
-            <DescriptionContainer className="proposal-details">
+            <HtmlContent className="proposal-details">
               {parse(poll?.description ? poll?.description : "")}
-            </DescriptionContainer>
+            </HtmlContent>
           </Grid>
 
           {poll?.externalLink ? (
