@@ -6,8 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 
-import WrapperContractAbi from "assets/abis/hb_wrapper_v2.json"
-import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
+import WrapperStandardAbi from "assets/abis/hb_wrapper_standard.json"
 
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -165,12 +164,6 @@ const useEvmDaoCreateStore = () => {
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
-  const wrapperAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_T_ADDRESS)
-  const wrapperWrappedOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_W_ADDRESS)
-  const wrapperAddress = wrapperAddressOverride || contractData?.wrapper
-  const wrapperAddressForWrapped = wrapperWrappedOverride || contractData?.wrapper
-  console.log("Wrapper wrapped address:", wrapperAddressForWrapped)
-  console.log("Wrapper address:", wrapperAddress)
 
   const { etherlink, network } = useTezos()
   const notify = useNotification()
@@ -180,9 +173,18 @@ const useEvmDaoCreateStore = () => {
     console.log("=== Starting DAO Deployment ===")
     console.log("Full DAO Data:", daoData)
 
-    // Determine wrapper address before attempting deployment (for error reporting)
-    const selectedWrapperAddress =
-      daoData.tokenDeploymentMechanism === "wrapped" ? wrapperAddressForWrapped : wrapperAddress
+    const wrapperAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_ADDRESS)
+    const wrapperTAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_T_ADDRESS)
+    const wrapperWrappedOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_W_ADDRESS)
+
+    let selectedWrapperAddress: string | undefined
+    if (daoData.tokenDeploymentMechanism === "wrapped") {
+      selectedWrapperAddress = wrapperWrappedOverride || contractData?.wrapper_w
+    } else if (daoData.nonTransferable) {
+      selectedWrapperAddress = wrapperAddressOverride || contractData?.wrapper
+    } else {
+      selectedWrapperAddress = wrapperTAddressOverride || contractData?.wrapper_t
+    }
 
     try {
       const proposalThreshold = daoData.quorum.proposalThreshold || daoData.quorum.proposalThresholdPercentage || 0
@@ -213,12 +215,20 @@ const useEvmDaoCreateStore = () => {
       console.log("Signer:", etherlink.signer)
 
       if (!selectedWrapperAddress) {
+        const factoryType =
+          daoData.tokenDeploymentMechanism === "wrapped"
+            ? "wrapped ERC20"
+            : daoData.nonTransferable
+            ? "non-transferable"
+            : "transferable"
         console.error("No wrapper address found!", {
-          wrapperAddress,
-          wrapperAddressForWrapped,
-          tokenDeploymentMechanism: daoData.tokenDeploymentMechanism
+          factoryType,
+          tokenDeploymentMechanism: daoData.tokenDeploymentMechanism,
+          nonTransferable: daoData.nonTransferable
         })
-        throw new Error("Wrapper contract address not found. Please check your network configuration.")
+        throw new Error(
+          `Wrapper contract address not found for ${factoryType} token DAO. Please check your network configuration.`
+        )
       }
 
       // Validate signer
@@ -227,20 +237,7 @@ const useEvmDaoCreateStore = () => {
         throw new Error("Wallet not connected. Please connect your wallet.")
       }
 
-      // Use legacy ABI if using the fallback address
-      // TODO: Move to use wrapper only
-      // const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
-      // const wrapperAbi = Array.isArray(WrapperContractAbi)
-      //   ? (WrapperContractAbi as any)
-      //   : (WrapperContractAbi as any)?.abi
-      // const selectedAbi =
-      //   daoData.tokenDeploymentMechanism === "wrapped"
-      //     ? isUsingFallbackAddress
-      //       ? HbWrapperWLegacyAbi.abi
-      //       : wrapperAbi
-      //     : wrapperAbi
-
-      const selectedAbi = HbWrapperWLegacyAbi.abi
+      const selectedAbi = WrapperStandardAbi.abi
 
       // Preflight: verify contract code exists at address
       const onChainCode = await etherlink.provider.getCode(selectedWrapperAddress)
@@ -299,8 +296,8 @@ const useEvmDaoCreateStore = () => {
         })
 
         const wrappedDaoPayload = {
-          // Legacy structure without wrappedTokenName
           daoName: daoData.name || "",
+          wrappedTokenName: daoData.wrappedTokenName || `Wrapped ${daoData.wrappedTokenSymbol || "Token"}`,
           wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
           description: daoData.description || "",
           executionDelay: Math.floor(executationDelayinSeconds),
@@ -403,8 +400,7 @@ const useEvmDaoCreateStore = () => {
           initialMembers: daoData.members.map((member: any) => member.address),
           initialAmounts: initialAmountsWithSettings,
           keys: Object.keys(registryForDeploy),
-          values: Object.values(registryForDeploy).map(v => String(v)),
-          transferrable: !daoData.nonTransferable // Note: fixed spelling to match ABI
+          values: Object.values(registryForDeploy).map(v => String(v))
         }
 
         try {
@@ -450,7 +446,7 @@ const useEvmDaoCreateStore = () => {
     }
     setIsDeploying(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.data, etherlink.signer, wrapperAddress, wrapperAddressForWrapped])
+  }, [data.data, etherlink.signer, contractData])
   const isFinalStep = data.currentStep === STEPS.length - 1
 
   return {

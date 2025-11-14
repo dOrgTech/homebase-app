@@ -21,6 +21,13 @@ export const networkConfig = {
   }
 }
 
+export function getFirestoreNetworkName(internalNetwork: string): string {
+  if (internalNetwork === "etherlink_testnet") return "Etherlink-Testnet"
+  if (internalNetwork === "etherlink_mainnet") return "Etherlink"
+  if (internalNetwork === "localhost") return "Localhost"
+  return internalNetwork
+}
+
 export const isInvalidEvmAddress = (address: string) => {
   return !ethers.isAddress(address)
 }

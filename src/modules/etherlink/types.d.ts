@@ -7,7 +7,7 @@ export interface IEvmFirebaseContract {
   daoFactory: IEthereumAddress
   timelockFactory: IEthereumAddress
   registryFactory: IEthereumAddress
-  // wrapper: IEthereumAddress // Not in use and deprecated
+  wrapper?: IEthereumAddress
   wrapper_t: IEthereumAddress
   wrapper_w: IEthereumAddress
   nativeCurrency: string
