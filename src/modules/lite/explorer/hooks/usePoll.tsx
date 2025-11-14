@@ -58,6 +58,6 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
       fetchPoll()
     }
     return
-  }, [id, community, pollId, openNotification])
+  }, [id, community, pollId])
   return poll
 }
