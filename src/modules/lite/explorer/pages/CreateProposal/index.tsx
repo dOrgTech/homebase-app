@@ -529,13 +529,13 @@ export const ProposalForm = ({
               <Grid item>
                 {!isMarkup ? (
                   <div style={{ justifyContent: "flex-end", display: "flex" }}>
-                    <Tooltip title="Allow markup">
+                    <Tooltip title="Allow HTML">
                       <CodeButton onClick={() => setIsMarkup(true)} />
                     </Tooltip>
                   </div>
                 ) : (
                   <div style={{ justifyContent: "flex-end", display: "flex" }}>
-                    <Tooltip title="Disable markup">
+                    <Tooltip title="Disable HTML">
                       <CodeOffButton onClick={() => setIsMarkup(false)} />
                     </Tooltip>
                   </div>
@@ -544,7 +544,7 @@ export const ProposalForm = ({
                   <Field name="description">
                     {() => (
                       <CustomTextarea
-                        maxLength={1500}
+                        maxLength={10000}
                         aria-label="empty textarea"
                         placeholder="Type description"
                         value={getIn(values, "description")}

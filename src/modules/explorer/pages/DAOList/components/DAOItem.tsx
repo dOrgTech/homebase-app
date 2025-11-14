@@ -1,7 +1,7 @@
 import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "@material-ui/core"
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import BigNumber from "bignumber.js"
 import { getDaoHref } from "utils"
@@ -143,7 +143,7 @@ export const DAOItem: React.FC<{
           </Grid>
         </Grid>
         <Grid container direction="row">
-          <DescriptionText>{ReactHtmlParser(dao.description)}</DescriptionText>
+          <DescriptionText>{parse(dao.description)}</DescriptionText>
         </Grid>
         <Grid container direction="row" justifyContent="space-between">
           <Grid xs={6} container item direction="column">

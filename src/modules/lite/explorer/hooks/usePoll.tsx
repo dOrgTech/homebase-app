@@ -29,6 +29,13 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
             return
           }
 
+          // DEBUG: Log raw API response
+          console.log("🔍 RAW API RESPONSE for pollId:", pollId)
+          console.log("Description length from API:", record.description?.length || 0)
+          console.log("Description first 100 chars:", record.description?.substring(0, 100))
+          console.log("Has HTML tags:", record.description?.includes("<"))
+          console.log("Full record:", JSON.stringify(record, null, 2))
+
           record.timeFormatted = isProposalActive(Number(record.endTime))
           record.isActive =
             record.timeFormatted && !record.timeFormatted.includes("ago")
@@ -47,8 +54,10 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
         return
       }
     }
-    fetchPoll()
+    if (pollId) {
+      fetchPoll()
+    }
     return
-  }, [id, community])
+  }, [id, community, pollId])
   return poll
 }

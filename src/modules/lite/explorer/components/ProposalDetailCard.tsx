@@ -9,7 +9,7 @@ import dayjs from "dayjs"
 import LinkIcon from "assets/img/link.svg"
 
 import { useNotification } from "modules/common/hooks/useNotification"
-import ReactHtmlParser from "react-html-parser"
+import parse from "html-react-parser"
 
 const Title = styled(Typography)({
   fontSize: 32,
@@ -21,6 +21,32 @@ const Subtitle = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   lineHeight: "160%" /* 28.8px */,
   color: theme.palette.primary.light
+}))
+
+const HtmlContent = styled("div")(({ theme }) => ({
+  "fontSize": 14,
+  "fontWeight": 400,
+  "fontFamily": "Roboto Flex",
+  "color": theme.palette.text.secondary,
+  "& h1, & h2, & h3, & h4, & h5, & h6": {
+    marginTop: 16,
+    marginBottom: 8
+  },
+  "& p": {
+    marginTop: 8,
+    marginBottom: 8
+  },
+  "& ul, & ol": {
+    marginTop: 8,
+    marginBottom: 8,
+    paddingLeft: 24
+  },
+  "& hr": {
+    marginTop: 16,
+    marginBottom: 16,
+    border: "none",
+    borderTop: `1px solid ${theme.palette.primary.light}`
+  }
 }))
 
 const LogoItem = styled("img")(({ theme }) => ({
@@ -216,14 +242,29 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
-            <Typography
-              variant="body2"
-              color="textPrimary"
-              className="proposal-details"
-              style={{ whiteSpace: "pre-line" }}
+            {/* DEBUG INFO - Remove after fixing */}
+            <div
+              style={{
+                background: "#ff000033",
+                padding: "10px",
+                marginBottom: "20px",
+                fontSize: "12px",
+                fontFamily: "monospace",
+                width: "100%",
+                border: "2px solid red"
+              }}
             >
-              {ReactHtmlParser(poll?.description ? poll?.description : "")}
-            </Typography>
+              <div>
+                <strong>🔍 DEBUG INFO (commit: ab568a4)</strong>
+              </div>
+              <div>parse is function: {typeof parse === "function" ? "✅ YES" : "❌ NO"}</div>
+              <div>parse type: {typeof parse}</div>
+              <div>description length: {poll?.description?.length || 0}</div>
+              <div>description starts with: {poll?.description?.substring(0, 50)}</div>
+              <div>parsed result type: {typeof parse(poll?.description || "")}</div>
+              <div>parsed is array: {Array.isArray(parse(poll?.description || "")) ? "YES" : "NO"}</div>
+            </div>
+            <HtmlContent className="proposal-details">{parse(poll?.description ? poll?.description : "")}</HtmlContent>
           </Grid>
 
           {poll?.externalLink ? (
