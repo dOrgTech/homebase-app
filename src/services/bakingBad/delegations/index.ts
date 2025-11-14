@@ -53,6 +53,7 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
   if (fullTezBalanceResp.ok) {
     const balanceStr = await fullTezBalanceResp.json() // e.g., "123456789"
     fullTezBalance = fullTezBalance.plus(new BigNumber(balanceStr ?? 0))
+    console.log(fullTezBalance)
   } else {
     const fullTezBalanceRespData = await fullTezBalanceResp.json()
     throw new Error(fullTezBalanceRespData.message)
