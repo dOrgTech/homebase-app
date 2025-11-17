@@ -7,6 +7,9 @@ export interface IEvmFirebaseContract {
   daoFactory: IEthereumAddress
   timelockFactory: IEthereumAddress
   registryFactory: IEthereumAddress
+  standardFactory?: IEthereumAddress
+  standardFactory_t?: IEthereumAddress
+  standardFactory_w?: IEthereumAddress
   wrapper?: IEthereumAddress
   wrapper_t: IEthereumAddress
   wrapper_w: IEthereumAddress

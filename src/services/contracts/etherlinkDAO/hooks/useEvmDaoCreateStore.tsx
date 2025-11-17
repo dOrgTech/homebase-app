@@ -6,12 +6,13 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 
-import WrapperStandardAbi from "assets/abis/hb_wrapper_standard.json"
+import StandardFactoryAbi from "assets/abis/StandardFactoryNonTransferable.json"
+import StandardFactoryTAbi from "assets/abis/StandardFactoryTransferable.json"
+import StandardFactoryWAbi from "assets/abis/StandardFactoryWrapped.json"
 
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
-import { EnvKey, getEnv } from "services/config"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 interface EvmDaoCreateStore {
@@ -163,7 +164,11 @@ const useEvmDaoCreateStore = () => {
   const [isDeploying, setIsDeploying] = useState(false)
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
-  const { contractData } = useContext(EtherlinkContext)
+  const { contractData } = useContext<{
+    wrapper: string
+    wrapper_t: string
+    wrapper_w: string
+  }>(EtherlinkContext)
 
   const { etherlink, network } = useTezos()
   const notify = useNotification()
@@ -173,17 +178,13 @@ const useEvmDaoCreateStore = () => {
     console.log("=== Starting DAO Deployment ===")
     console.log("Full DAO Data:", daoData)
 
-    const wrapperAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_ADDRESS)
-    const wrapperTAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_T_ADDRESS)
-    const wrapperWrappedOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_W_ADDRESS)
-
     let selectedWrapperAddress: string | undefined
     if (daoData.tokenDeploymentMechanism === "wrapped") {
-      selectedWrapperAddress = wrapperWrappedOverride || contractData?.wrapper_w
+      selectedWrapperAddress = (contractData as any)?.wrapper_w
     } else if (daoData.nonTransferable) {
-      selectedWrapperAddress = wrapperAddressOverride || contractData?.wrapper
+      selectedWrapperAddress = (contractData as any)?.wrapper
     } else {
-      selectedWrapperAddress = wrapperTAddressOverride || contractData?.wrapper_t
+      selectedWrapperAddress = (contractData as any)?.wrapper_t
     }
 
     try {
@@ -221,6 +222,7 @@ const useEvmDaoCreateStore = () => {
             : daoData.nonTransferable
             ? "non-transferable"
             : "transferable"
+
         console.error("No wrapper address found!", {
           factoryType,
           tokenDeploymentMechanism: daoData.tokenDeploymentMechanism,
@@ -237,7 +239,15 @@ const useEvmDaoCreateStore = () => {
         throw new Error("Wallet not connected. Please connect your wallet.")
       }
 
-      const selectedAbi = WrapperStandardAbi.abi
+      // Select ABI based on flow; fall back to StandardFactoryAbi when a specific variant isn't available
+      let selectedAbi: any
+      if (daoData.tokenDeploymentMechanism === "wrapped") {
+        selectedAbi = (StandardFactoryWAbi as any)?.abi
+      } else if (daoData.nonTransferable) {
+        selectedAbi = (StandardFactoryAbi as any)?.abi
+      } else {
+        selectedAbi = (StandardFactoryTAbi as any)?.abi
+      }
 
       // Preflight: verify contract code exists at address
       const onChainCode = await etherlink.provider.getCode(selectedWrapperAddress)
@@ -276,70 +286,28 @@ const useEvmDaoCreateStore = () => {
       let wrapper: any // This will be a TransactionResponse
 
       if (daoData.tokenDeploymentMechanism === "wrapped") {
-        // Deploy with wrapped token
-        // Ensure registry is initialized
+        // Deploy with wrapped token using the StandardFactoryWrapped tuple structure
         const registryKeys = Object.keys(daoData.registry || {})
         const registryValues = Object.values(daoData.registry || {}).map(v => String(v))
 
-        console.log("Registry data for wrapped token:", {
-          registry: daoData.registry,
-          keys: registryKeys,
-          values: registryValues,
-          keyTypes: registryKeys.map(k => typeof k),
-          valueTypes: registryValues.map(v => typeof v)
-        })
-
-        console.log("Preparing proposal threshold:", {
-          proposalThreshold,
-          proposalThresholdType: typeof proposalThreshold,
-          proposalThresholdAsBigInt: BigInt(proposalThreshold || 0).toString()
-        })
+        const governanceSettings = [
+          BigInt(proposalThreshold || 0),
+          BigInt(Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1)), // voting delay (minutes)
+          BigInt(Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1)), // voting period (minutes)
+          BigInt(Math.min(Math.max(Number(quorumThreshold), 0), 100)) // quorum fraction percentage
+        ]
 
         const wrappedDaoPayload = {
-          daoName: daoData.name || "",
-          wrappedTokenName: daoData.wrappedTokenName || `Wrapped ${daoData.wrappedTokenSymbol || "Token"}`,
-          wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
+          name: daoData.name || "",
+          symbol: daoData.wrappedTokenSymbol || "",
           description: daoData.description || "",
-          executionDelay: Math.floor(executationDelayinSeconds),
+          executionDelay: BigInt(Math.max(Math.floor(executationDelayinSeconds), 0)),
           underlyingTokenAddress: daoData.underlyingTokenAddress,
-          minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
-          minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-          proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
-          quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
-          keys: Object.keys(daoData.registry || {}),
-          values: Object.values(daoData.registry || {}).map(v => String(v))
+          governanceSettings,
+          keys: registryKeys,
+          values: registryValues,
+          transferrableStr: String(!daoData.nonTransferable).toLowerCase()
         }
-
-        // const wrappedDaoPayload = isUsingFallbackAddress
-        //   ? {
-        //       // Legacy structure without wrappedTokenName
-        //       daoName: daoData.name || "",
-        //       wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
-        //       description: daoData.description || "",
-        //       executionDelay: Math.floor(executationDelayinSeconds),
-        //       underlyingTokenAddress: daoData.underlyingTokenAddress,
-        //       minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
-        //       minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-        //       proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
-        //       quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
-        //       keys: Object.keys(daoData.registry || {}),
-        //       values: Object.values(daoData.registry || {}).map(v => String(v))
-        //     }
-        //   : {
-        //       // New structure with wrappedTokenName
-        //       daoName: daoData.name || "",
-        //       wrappedTokenName: `Wrapped ${daoData.wrappedTokenSymbol || "Token"}`,
-        //       wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
-        //       description: daoData.description || "",
-        //       executionDelay: Math.floor(executationDelayinSeconds),
-        //       underlyingTokenAddress: daoData.underlyingTokenAddress,
-        //       minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
-        //       minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-        //       proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
-        //       quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
-        //       keys: Object.keys(daoData.registry || {}),
-        //       values: Object.values(daoData.registry || {}).map(v => String(v))
-        //     }
 
         console.log(
           "Deploying wrapped token DAO with payload:",
