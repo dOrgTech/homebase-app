@@ -127,7 +127,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
     tokenDeploymentMechanism: daoData?.tokenDeploymentMechanism || "new",
     underlyingTokenAddress: daoData?.underlyingTokenAddress || "",
     wrappedTokenSymbol: daoData?.wrappedTokenSymbol || "",
-    governanceToken: daoData?.governanceToken || { address: "", symbol: "", tokenDecimals: 0, tokenSymbol: "" }
+    governanceToken: daoData?.governanceToken || { address: "", symbol: "", tokenDecimals: 18, tokenSymbol: "" }
   }
 
   return (
@@ -190,6 +190,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           if (e.target.value === "new") {
                             setFieldValue("underlyingTokenAddress", "")
                             setFieldValue("wrappedTokenSymbol", "")
+                            setFieldValue("governanceToken.tokenDecimals", 18)
                           } else {
                             setFieldValue("governanceToken.symbol", "")
                             setFieldValue("governanceToken.tokenDecimals", 0)
@@ -275,23 +276,18 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           <StyledTextField
                             name="governanceToken.tokenDecimals"
                             type="number"
-                            placeholder="18"
-                            value={values.governanceToken?.tokenDecimals || ""}
+                            value={values.governanceToken?.tokenDecimals || 18}
+                            disabled
                             InputProps={{
                               endAdornment: (
                                 <InputAdornment position="start">
-                                  <Tooltip
-                                    placement="bottom"
-                                    title="Token Decimals for the ERC20 token deployed with this DAO"
-                                  >
+                                  <Tooltip placement="bottom" title="non-editable">
                                     <InfoIconInput />
                                   </Tooltip>
                                 </InputAdornment>
                               )
                             }}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              setFieldValue("governanceToken.tokenDecimals", parseInt(e.target.value) || 0)
-                            }}
+                            inputProps={{ readOnly: true }}
                           />
                         </CustomInputContainer>
                         {errors.governanceToken?.tokenDecimals && touched.governanceToken?.tokenDecimals ? (
