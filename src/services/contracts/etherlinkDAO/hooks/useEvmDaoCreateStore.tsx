@@ -165,9 +165,11 @@ const useEvmDaoCreateStore = () => {
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
   const { contractData } = useContext<{
-    wrapper: string
-    wrapper_t: string
-    wrapper_w: string
+    contractData: {
+      wrapper: string | undefined
+      wrapper_t: string | undefined
+      wrapper_w: string | undefined
+    }
   }>(EtherlinkContext)
 
   const { etherlink, network } = useTezos()
@@ -180,11 +182,11 @@ const useEvmDaoCreateStore = () => {
 
     let selectedWrapperAddress: string | undefined
     if (daoData.tokenDeploymentMechanism === "wrapped") {
-      selectedWrapperAddress = (contractData as any)?.wrapper_w
+      selectedWrapperAddress = contractData?.wrapper_w
     } else if (daoData.nonTransferable) {
-      selectedWrapperAddress = (contractData as any)?.wrapper
+      selectedWrapperAddress = contractData?.wrapper
     } else {
-      selectedWrapperAddress = (contractData as any)?.wrapper_t
+      selectedWrapperAddress = contractData?.wrapper_t
     }
 
     try {
