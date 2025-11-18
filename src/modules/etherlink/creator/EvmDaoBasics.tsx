@@ -23,7 +23,7 @@ import {
   CustomTextarea
 } from "components/ui/DaoCreator"
 import { StyledTextField } from "components/ui"
-import React from "react"
+import React, { useEffect } from "react"
 import { StyledRadio } from "components/ui"
 
 import { ErrorText } from "modules/creator/token/ui"
@@ -127,8 +127,20 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
     tokenDeploymentMechanism: daoData?.tokenDeploymentMechanism || "new",
     underlyingTokenAddress: daoData?.underlyingTokenAddress || "",
     wrappedTokenSymbol: daoData?.wrappedTokenSymbol || "",
-    governanceToken: daoData?.governanceToken || { address: "", symbol: "", tokenDecimals: 18, tokenSymbol: "" }
+    governanceToken: daoData?.governanceToken
+      ? {
+          ...daoData.governanceToken,
+          tokenDecimals: 18
+        }
+      : { address: "", symbol: "", tokenDecimals: 18, tokenSymbol: "" }
   }
+
+  // Fixes existing Zustand Cache Store
+  useEffect(() => {
+    if (daoData?.governanceToken?.tokenDecimals !== 18) {
+      setFieldValue("governanceToken.tokenDecimals", 18)
+    }
+  }, [daoData?.tokenDeploymentMechanism, daoData?.governanceToken?.tokenDecimals, setFieldValue])
 
   return (
     <Box>
@@ -276,7 +288,11 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           <StyledTextField
                             name="governanceToken.tokenDecimals"
                             type="number"
-                            value={values.governanceToken?.tokenDecimals || 18}
+                            value={
+                              values.tokenDeploymentMechanism === "new"
+                                ? 18
+                                : values.governanceToken?.tokenDecimals || 18
+                            }
                             disabled
                             InputProps={{
                               endAdornment: (

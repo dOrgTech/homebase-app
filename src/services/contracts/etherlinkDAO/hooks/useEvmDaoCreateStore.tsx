@@ -50,7 +50,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
         governanceToken: {
           address: "",
           symbol: "",
-          tokenDecimals: 0
+          tokenDecimals: 18
         },
         quorum: {
           returnedTokenPercentage: 4,
@@ -386,11 +386,9 @@ const useEvmDaoCreateStore = () => {
         }
       }
 
-      // 0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba
       console.log("Transaction sent:", wrapper.hash)
 
       const receipt = await wrapper.wait()
-      // .hash "0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba"
       console.log("Transaction confirmed:", receipt)
       try {
         const params = new URLSearchParams()
