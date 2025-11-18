@@ -611,10 +611,26 @@ export const EvmPropBatchActions: React.FC = () => {
               </Box>
 
               <Box display="flex" style={{ gap: 8 }}>
-                <Button variant="contained" color="primary" onClick={onChooseFile}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={onChooseFile}
+                  style={{
+                    backgroundColor: "#575757",
+                    color: "#fff"
+                  }}
+                >
                   Upload CSV
                 </Button>
-                <Button variant="outlined" onClick={downloadSample}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={downloadSample}
+                  style={{
+                    backgroundColor: "#575757",
+                    color: "#fff"
+                  }}
+                >
                   Download Sample CSV
                 </Button>
               </Box>
