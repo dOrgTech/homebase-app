@@ -101,7 +101,13 @@ export const useDaoState = ({ network }: { network: string }) => {
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
       const allDaoList = firestoreData[firebaseRootCollection]
-      setDaoData(allDaoList)
+      const normalizedDaoList = allDaoList.map((dao: any) => ({
+        ...dao,
+        // decimals: dao.decimals || 18
+        // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
+        decimals: 18
+      }))
+      setDaoData(normalizedDaoList)
       setIsLoadingDaos(false)
     }
     const firestoreNetworkName = getFirestoreNetworkName(network)
@@ -721,7 +727,10 @@ export const useDaoState = ({ network }: { network: string }) => {
     (daoId: string) => {
       const dao = daoData.find(dao => (dao?.id || "").toLowerCase() === (daoId || "").toLowerCase())
       if (dao) {
-        setDaoSelected(dao)
+        setDaoSelected({
+          ...dao,
+          decimals: dao.decimals || 18
+        })
         selectedDaoIdRef.current = daoId
       }
     },

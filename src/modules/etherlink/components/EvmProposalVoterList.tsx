@@ -23,6 +23,7 @@ import { etherlinkStyled as _est } from "components/ui"
 const { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } = _est
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import { getBlockExplorerUrl } from "modules/etherlink/utils"
+import { ethers } from "ethers"
 interface IVoter {
   voter: string
   option: number
@@ -37,7 +38,7 @@ export const EvmProposalVoterList = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { copyAddress, showProposalVoterList, setShowProposalVoterList } = useEvmDaoUiOps()
-  const { daoProposalSelected, daoProposalVoters, network } = useContext(EtherlinkContext)
+  const { daoProposalSelected, daoProposalVoters, network, daoSelected } = useContext(EtherlinkContext)
 
   // Sort votes by cast time (desc)
   const sortedVotes: IVoter[] = useMemo(() => {
@@ -68,6 +69,17 @@ export const EvmProposalVoterList = () => {
       return daoProposalVoters as IVoter[]
     }
   }, [daoProposalVoters])
+
+  const formatWeight = (weight: number | string): string => {
+    try {
+      const decimals = daoSelected?.decimals || 18
+      const weightStr = String(weight)
+      if (!weightStr || weightStr === "0") return "0"
+      return ethers.formatUnits(weightStr, decimals)
+    } catch {
+      return String(weight)
+    }
+  }
 
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected)
@@ -153,7 +165,7 @@ export const EvmProposalVoterList = () => {
                           </Grid>
                           <Grid item container direction="row" alignItems="center" justifyContent="center">
                             <Typography color="textPrimary" variant="body1">
-                              {row.weight}
+                              {formatWeight(row.weight)}
                             </Typography>
                           </Grid>
                         </Grid>{" "}
@@ -176,7 +188,7 @@ export const EvmProposalVoterList = () => {
                         <StyledTableCell align="right">
                           {" "}
                           <Typography color="textPrimary" variant="body1">
-                            {row.weight}
+                            {formatWeight(row.weight)}
                           </Typography>
                         </StyledTableCell>
                         <StyledTableCell align="right">

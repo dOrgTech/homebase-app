@@ -475,7 +475,9 @@ export const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()
           typeof targetAmountStr === "string" && targetAmountStr.trim() !== "" && !isNaN(Number(targetAmountStr))
 
         if (hasValidAddress && hasValidAmount) {
-          const amountWithDecimals = ethers.parseUnits(targetAmountStr, tokenDecimals || 0)
+          // const tokenActualDecimals = tokenDecimals || 18
+          // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
+          const amountWithDecimals = ethers.parseUnits(targetAmountStr, 18)
           const encodedData = iface.encodeFunctionData(selectedInterface.name, [targetAddress, amountWithDecimals])
           payload.createProposalPayload = {
             ...get().createProposalPayload,

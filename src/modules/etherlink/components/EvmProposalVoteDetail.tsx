@@ -35,7 +35,9 @@ export const EvmProposalVoteDetail: React.FC<{
       tokenAddress: daoSelected?.token,
       tokenID: daoSelected?.id,
       symbol: daoSelected?.symbol,
-      decimals: daoSelected?.decimals
+      // decimals: daoSelected?.decimals || 18
+      // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
+      decimals: 18
     }),
     [daoSelected]
   )
