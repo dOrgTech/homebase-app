@@ -200,6 +200,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             {isDeploying ? (
               <>
                 <Typography>Deploying Proposal...</Typography>
+                <br />
                 <LinearProgressLoader />
               </>
             ) : (

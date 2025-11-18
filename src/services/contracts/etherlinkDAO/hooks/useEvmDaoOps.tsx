@@ -83,8 +83,8 @@ export const useEvmDaoOps = () => {
         tokenContract.delegates(etherlink?.signer?.address)
       ])
       const decimals = daoSelected?.decimals || 0
-      const balanceActual = Number(balance) / Math.pow(10, decimals)
-      const weightActual = Number(weight) / Math.pow(10, decimals)
+      const balanceActual = parseFloat(ethers.formatUnits(balance, decimals))
+      const weightActual = parseFloat(ethers.formatUnits(weight, decimals))
       setUserTokenBalance(balanceActual)
       setUserVotingWeight(weightActual)
       setUserDelegateAddress(String(delegateAddr))
