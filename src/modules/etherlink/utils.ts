@@ -279,3 +279,46 @@ export async function getTokenHolders(network: string, tokenAddress: string) {
   const data = await response.json()
   return data
 }
+
+export const registryContractABI = [
+  {
+    inputs: [],
+    name: "getAllKeys",
+    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "getAllValues",
+    outputs: [{ internalType: "string[]", name: "", type: "string[]" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [{ internalType: "string", name: "key", type: "string" }],
+    name: "getRegistryValue",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "string", name: "key", type: "string" },
+      { internalType: "string", name: "value", type: "string" }
+    ],
+    name: "editRegistry",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: "string", name: "key", type: "string" },
+      { indexed: false, internalType: "string", name: "value", type: "string" }
+    ],
+    name: "RegistryUpdated",
+    type: "event"
+  }
+]

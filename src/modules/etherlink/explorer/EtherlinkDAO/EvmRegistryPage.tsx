@@ -5,7 +5,7 @@ import React, { useContext, useMemo, useState, useEffect } from "react"
 
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
-import { MainButton } from "modules/common/MainButton"
+import { SmallButton } from "modules/common/SmallButton"
 import { useEtherlinkDAOID } from "../router"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
@@ -13,6 +13,7 @@ import { useHistory } from "react-router-dom"
 import { EvmRegistryTable } from "modules/etherlink/components/EvmRegistryTable"
 import { SearchInput } from "modules/explorer/pages/DAOList/components/Searchbar"
 import { styled } from "@material-ui/core"
+import { useRegistry } from "services/wagmi/etherlink/hooks/useRegistry"
 
 const ShellHeroContainer = styled(ContentContainer)({
   background: "inherit !important",
@@ -26,12 +27,18 @@ export const EvmRegistryPage: React.FC = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const daoId = useEtherlinkDAOID()
-  const { daoSelected } = useContext(EtherlinkContext)
+  const { daoSelected, provider, network } = useContext(EtherlinkContext)
   const shouldDisable = useIsProposalButtonDisabled(daoId)
   const { setMetadataFieldValue, setCurrentStep, setDaoRegistry } = useEvmProposalOps()
   const history = useHistory()
   const [searchText, setSearchText] = useState("")
   const [debouncedSearchText, setDebouncedSearchText] = useState("")
+
+  const {
+    data: rpcRegistryEntries,
+    isLoading: isRpcLoading,
+    error: rpcError
+  } = useRegistry(provider, daoSelected?.registryAddress, network || "")
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,16 +48,59 @@ export const EvmRegistryPage: React.FC = () => {
     return () => clearTimeout(timer)
   }, [searchText])
 
-  const registryList = useMemo(() => {
+  const firestoreRegistryList = useMemo(() => {
     if (!daoSelected?.registry) {
       return []
     }
     return Object.entries(daoSelected?.registry).map(([key, value]) => ({
       key,
       value: value as string,
-      onClick: () => {}
+      onClick: () => {
+        setMetadataFieldValue("type", "edit_registry")
+        setDaoRegistry("key", key)
+        setDaoRegistry("value", value as string)
+        setCurrentStep(1)
+        history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+      }
     }))
-  }, [daoSelected?.registry])
+  }, [daoSelected?.registry, setMetadataFieldValue, setDaoRegistry, setCurrentStep, history])
+
+  const registryList = useMemo(() => {
+    const rpcEntries = rpcRegistryEntries || []
+    const firestoreEntries = firestoreRegistryList || []
+
+    console.log("[Registry Source] RPC entries:", rpcEntries)
+    console.log("[Registry Source] Firestore entries:", firestoreEntries)
+    console.log("[Registry Source] RPC loading:", isRpcLoading)
+    console.log("[Registry Source] RPC error:", rpcError)
+
+    if (rpcEntries.length > 0 && !isRpcLoading && !rpcError) {
+      console.log("[Registry Source] Using: RPC")
+      return rpcEntries.map(entry => ({
+        key: entry.key,
+        value: entry.value,
+        onClick: () => {
+          setMetadataFieldValue("type", "edit_registry")
+          setDaoRegistry("key", entry.key)
+          setDaoRegistry("value", entry.value)
+          setCurrentStep(1)
+          history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+        }
+      }))
+    } else {
+      console.log("[Registry Source] Using: Firestore")
+      return firestoreEntries
+    }
+  }, [
+    rpcRegistryEntries,
+    firestoreRegistryList,
+    isRpcLoading,
+    rpcError,
+    setMetadataFieldValue,
+    setDaoRegistry,
+    setCurrentStep,
+    history
+  ])
 
   const filteredRegistryList = useMemo(() => {
     if (!debouncedSearchText) {
@@ -82,7 +132,7 @@ export const EvmRegistryPage: React.FC = () => {
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
-                  <MainButton
+                  <SmallButton
                     variant="contained"
                     color="secondary"
                     onClick={() => {
@@ -93,7 +143,7 @@ export const EvmRegistryPage: React.FC = () => {
                     disabled={shouldDisable}
                   >
                     New Item
-                  </MainButton>
+                  </SmallButton>
                   {shouldDisable && (
                     <Tooltip placement="bottom" title="Not on proposal creation period">
                       <InfoIcon color="secondary" />
@@ -105,19 +155,7 @@ export const EvmRegistryPage: React.FC = () => {
           </Grid>
         </ShellHeroContainer>
         <Grid item>
-          <EvmRegistryTable
-            data={filteredRegistryList.map(rItem => ({
-              key: rItem.key,
-              value: rItem.value,
-              onClick: () => {
-                setMetadataFieldValue("type", "edit_registry")
-                setDaoRegistry("key", rItem.key)
-                setDaoRegistry("value", rItem.value)
-                setCurrentStep(1)
-                history.push(`${window.location.pathname.slice(0, -8)}proposals`)
-              }
-            }))}
-          />
+          <EvmRegistryTable data={filteredRegistryList} />
         </Grid>
       </Grid>
     </>
