@@ -404,7 +404,10 @@ export const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()
           ifaceDef = proposalInterfaces.find(p => p.name === "setProposalThreshold")
           if (!ifaceDef) return
           iface = new ethers.Interface(ifaceDef.interface)
-          encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
+          // Convert to wei - hardcoded 18 decimals for now (same as token ops)
+          // TODO: Handle wrapped tokens with different decimals
+          const thresholdInWei = ethers.parseUnits(value || "0", 18)
+          encodedData = iface.encodeFunctionData(ifaceDef.name, [thresholdInWei])
         }
         console.log("dao config calldata", encodedData)
         payload.createProposalPayload = {

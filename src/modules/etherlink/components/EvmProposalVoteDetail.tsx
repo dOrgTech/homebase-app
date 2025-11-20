@@ -51,21 +51,27 @@ export const EvmProposalVoteDetail: React.FC<{
 
   useEffect(() => {
     const fetchTurnout = async () => {
-      if (token && tokenData) {
-        const value = await getTurnoutValue(
-          network,
-          tokenData?.tokenAddress,
-          tokenData.tokenID,
-          Number(poll?.referenceBlock),
-          totalVoteCount
-        )
-        if (value) {
-          setTurnout(value)
+      if (token && tokenData?.tokenAddress) {
+        try {
+          const value = await getTurnoutValue(
+            network,
+            tokenData.tokenAddress,
+            tokenData.tokenID,
+            Number(poll?.referenceBlock),
+            totalVoteCount
+          )
+          if (value) {
+            setTurnout(value)
+          }
+        } catch (error) {
+          // Silently handle turnout fetch errors - not critical for UI
+          console.debug("Failed to fetch turnout value:", error)
         }
       }
     }
     fetchTurnout()
-  }, [poll, network, token, tokenData, totalVoteCount])
+    // Use primitive values as dependencies to avoid repeated calls when object references change
+  }, [poll?.referenceBlock, network, token, tokenData?.tokenAddress, tokenData?.tokenID, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
 

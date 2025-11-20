@@ -45,7 +45,6 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
 
 export const getTokenHoldersCount = async (network: Network, address: string, tokenID: number) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?tokenId=${tokenID}&contract=${address}`
-  console.log("getTokenHoldersCount", { network, address, tokenID })
   if (network.startsWith("etherlink")) {
     const url = `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token?network=${network}&contract=${address}`
     const response = await fetch(url)

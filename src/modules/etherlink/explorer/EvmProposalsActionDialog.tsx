@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useContext } from "react"
+import { ethers } from "ethers"
 import { Box, Grid, useMediaQuery, useTheme, Typography } from "components/ui"
 import { NextButton } from "components/ui/NextButton"
 import { FormField, FormTextArea, FormTextField } from "components/ui"
@@ -9,6 +10,7 @@ import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { EtherlinkContext } from "services/wagmi/context"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
 import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
 import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
@@ -48,13 +50,28 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
   const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
+  const { daoSelected } = useContext(EtherlinkContext)
   const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
+
+  // Check if this is a wrapped token DAO
+  const isWrappedTokenDao =
+    !!daoSelected?.underlyingToken &&
+    typeof daoSelected.underlyingToken === "string" &&
+    ethers.isAddress(daoSelected.underlyingToken)
+
   const availableOptions = React.useMemo(() => {
-    if (offchainEnabled) return EvmProposalOptions
-    return EvmProposalOptions.filter(option => option.modal !== "off_chain_debate")
-  }, [offchainEnabled])
+    let options = EvmProposalOptions
+    if (!offchainEnabled) {
+      options = options.filter(option => option.modal !== "off_chain_debate")
+    }
+    // Hide token operations for wrapped token DAOs (they can't mint/burn)
+    if (isWrappedTokenDao) {
+      options = options.filter(option => option.modal !== "token_operation")
+    }
+    return options
+  }, [offchainEnabled, isWrappedTokenDao])
   React.useEffect(() => {
     if (!offchainEnabled && metadata.type === "off_chain_debate") {
       setMetadataFieldValue("type", "")
