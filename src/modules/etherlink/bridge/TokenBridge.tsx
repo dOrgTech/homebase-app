@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react"
-import { ethers } from "ethers"
+import { ethers, parseUnits } from "ethers"
 import { EtherlinkContext } from "services/wagmi/context"
 import { Box, styled, Typography, Tabs, Tab } from "components/ui"
 import { Button } from "components/ui/Button"
@@ -17,10 +17,19 @@ const WrapContainer = styled(Box)(({ theme }) => ({
   background: theme.palette.primary.main,
   borderRadius: "8px",
   padding: "24px",
-  marginBottom: "40px",
-  maxWidth: "400px",
-  margin: "0 auto"
+  marginBottom: "40px"
 }))
+
+const StyledAmountInput = styled(StyledTextField)({
+  "maxWidth": "200px",
+  "& .MuiOutlinedInput-root": {
+    "border": "1px solid rgba(255, 255, 255, 0.3)",
+    "backgroundColor": "rgba(255, 255, 255, 0.05)",
+    "&:hover": {
+      borderColor: "rgba(255, 255, 255, 0.5)"
+    }
+  }
+})
 
 // Status UI moved into components/TxStatus.tsx
 
@@ -60,9 +69,13 @@ export const TokenBridge = () => {
       setTransactionState("waitingApproval")
       setErrorMessage(null)
 
+      // Get decimals from DAO data
+      const decimals = daoSelected?.decimals ?? 18
+      const parsedAmount = parseUnits(wrapAmount, decimals)
+
       // Approval logic
       const erc20Contract = new ethers.Contract(underlyingToken, ERC20_ABI, etherlink.signer)
-      const tx1 = await erc20Contract.approve(wrapperToken, wrapAmount)
+      const tx1 = await erc20Contract.approve(wrapperToken, parsedAmount)
       setApprovalTxHash(tx1.hash)
       setTransactionState("approving")
       await tx1.wait()
@@ -71,7 +84,7 @@ export const TokenBridge = () => {
 
       setTransactionState("waitingExecution")
       const wrapperContract = new ethers.Contract(wrapperToken, wrapperContractAbiJson, etherlink.signer)
-      const tx2 = await wrapperContract.depositFor(etherlink.signer.address, wrapAmount)
+      const tx2 = await wrapperContract.depositFor(etherlink.signer.address, parsedAmount)
       setExecutionTxHash(tx2.hash)
       setTransactionState("executing")
       await tx2.wait()
@@ -98,8 +111,12 @@ export const TokenBridge = () => {
       setTransactionState("waitingExecution")
       setErrorMessage(null)
 
+      // Get decimals from DAO data
+      const decimals = daoSelected?.decimals ?? 18
+      const parsedAmount = parseUnits(wrapAmount, decimals)
+
       const wrapperContract = new ethers.Contract(wrapperToken, wrapperContractAbiJson, etherlink.signer)
-      const tx = await wrapperContract.withdrawTo(etherlink.signer.address, wrapAmount)
+      const tx = await wrapperContract.withdrawTo(etherlink.signer.address, parsedAmount)
       setExecutionTxHash(tx.hash)
       setTransactionState("executing")
       await tx.wait()
@@ -145,45 +162,43 @@ export const TokenBridge = () => {
         </StyledTabs>
 
         <Box>
-          <StyledTextField
-            type="number"
-            label="Amount"
-            placeholder={
-              wrapTabValue === 0 ? "Amount to Wrap (including decimals)" : "Amount to Unwrap (including decimals)"
-            }
-            value={wrapAmount}
-            onChange={e => setWrapAmount(e.target.value)}
-            style={{ width: "100%", marginBottom: "16px" }}
-          />
+          <Box display="flex" alignItems="flex-end" style={{ gap: "16px", marginBottom: "16px" }}>
+            <StyledAmountInput
+              type="number"
+              label="Amount"
+              placeholder={wrapTabValue === 0 ? "Amount to Wrap" : "Amount to Unwrap"}
+              value={wrapAmount}
+              onChange={e => setWrapAmount(e.target.value)}
+            />
 
-          <Button
-            variant="contained"
-            fullWidth
-            style={{ marginBottom: "8px" }}
-            disabled={
-              !wrapAmount ||
-              parseFloat(wrapAmount) <= 0 ||
-              transactionState === "waitingApproval" ||
-              transactionState === "approving" ||
-              transactionState === "waitingExecution" ||
-              transactionState === "executing"
-            }
-            onClick={() => {
-              if (wrapTabValue === 0) {
-                wrapTokens()
-              } else {
-                unwrapTokens()
+            <Button
+              variant="contained"
+              style={{ maxWidth: "200px", height: "56px" }}
+              disabled={
+                !wrapAmount ||
+                parseFloat(wrapAmount) <= 0 ||
+                transactionState === "waitingApproval" ||
+                transactionState === "approving" ||
+                transactionState === "waitingExecution" ||
+                transactionState === "executing"
               }
-            }}
-          >
-            {transactionState === "waitingApproval" && "Waiting for Approval..."}
-            {transactionState === "approving" && "Approving..."}
-            {transactionState === "waitingExecution" && "Waiting for Execution..."}
-            {transactionState === "executing" && "Executing..."}
-            {transactionState === "success" && "Success!"}
-            {transactionState === "error" && "Try Again"}
-            {!transactionState && (wrapTabValue === 0 ? "Wrap Tokens" : "Unwrap Tokens")}
-          </Button>
+              onClick={() => {
+                if (wrapTabValue === 0) {
+                  wrapTokens()
+                } else {
+                  unwrapTokens()
+                }
+              }}
+            >
+              {transactionState === "waitingApproval" && "Waiting for Approval..."}
+              {transactionState === "approving" && "Approving..."}
+              {transactionState === "waitingExecution" && "Waiting for Execution..."}
+              {transactionState === "executing" && "Executing..."}
+              {transactionState === "success" && "Success!"}
+              {transactionState === "error" && "Try Again"}
+              {!transactionState && (wrapTabValue === 0 ? "Wrap Tokens" : "Unwrap Tokens")}
+            </Button>
+          </Box>
 
           <TxStatus
             state={transactionState}

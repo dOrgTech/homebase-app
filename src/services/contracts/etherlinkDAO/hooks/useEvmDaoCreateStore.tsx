@@ -293,9 +293,9 @@ const useEvmDaoCreateStore = () => {
         const registryValues = Object.values(daoData.registry || {}).map(v => String(v))
 
         const governanceSettings = [
-          BigInt(proposalThreshold || 0),
           BigInt(Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1)), // voting delay (minutes)
           BigInt(Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1)), // voting period (minutes)
+          BigInt(proposalThreshold || 0), // proposal threshold
           BigInt(Math.min(Math.max(Number(quorumThreshold), 0), 100)) // quorum fraction percentage
         ]
 
