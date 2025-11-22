@@ -41,7 +41,9 @@ export const EvmDaoStatsRow = () => {
     (proposal: IEvmProposal) => proposal.status === "executable"
   )?.length
 
-  const activeProposalsCount = daoProposals.filter((proposal: IEvmProposal) => proposal.status === "active")?.length
+  const activeProposalsCount = daoProposals.filter(
+    (proposal: IEvmProposal) => proposal.status?.toLowerCase() === "active"
+  )?.length
 
   const decimals = daoSelected?.decimals || 0
   const totalSupplyDisplay = (() => {
@@ -103,7 +105,7 @@ export const EvmDaoStatsRow = () => {
           },
           {
             title: "Active Proposals",
-            value: daoSelected?.proposals?.length || activeProposalsCount || "0"
+            value: activeProposalsCount || "0"
           },
           {
             title: "Awaiting Executions",
