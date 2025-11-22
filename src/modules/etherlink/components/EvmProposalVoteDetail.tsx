@@ -11,7 +11,7 @@ import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoO
 import { EVM_PROPOSAL_CHOICES } from "../config"
 import { IEvmProposal } from "../types"
 import { etherlinkStyled as _est } from "components/ui"
-const { ContainerVoteDetail: Container, TitleContainer, LegendContainer, GraphicsContainer } = _est
+const { ContainerVoteDetail: Container, LegendContainer, GraphicsContainer } = _est
 import { RenderChoices } from "./RenderChoices"
 import { ProposalHistory } from "./ProposalHistory"
 
@@ -77,12 +77,7 @@ export const EvmProposalVoteDetail: React.FC<{
 
   return (
     <>
-      <Container container direction="column" style={{ marginTop: 12, marginBottom: 12 }}>
-        <TitleContainer item>
-          <Typography variant={"h4"} color="textPrimary">
-            Voting Results
-          </Typography>
-        </TitleContainer>
+      <Container container direction="column" style={{ marginTop: 32, marginBottom: 12 }}>
         <GraphicsContainer container>
           {choices && choices?.length > 0 ? (
             <RenderChoices

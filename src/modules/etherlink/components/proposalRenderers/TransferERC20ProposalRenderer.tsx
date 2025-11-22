@@ -1,18 +1,15 @@
 import React from "react"
 import { Grid, Typography } from "@material-ui/core"
-import { ethers } from "ethers"
 import { ShortenedValueField } from "./ShortenedValueField"
 import { ContainerVoteDetail, Header } from "components/ui/etherlink/styled"
 
 interface TransferERC20ProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
-  decimals?: number
   compact?: boolean
 }
 
 export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRendererProps> = ({
   proposalData,
-  decimals = 18,
   compact = false
 }) => {
   // For Transfer ERC20, the proposalData structure is an array of parameter objects:
@@ -48,18 +45,6 @@ export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRender
   )
   const amountRaw = amountParam?.value || "0"
 
-  const formatAmount = (value: string) => {
-    try {
-      if (value && !isNaN(Number(value)) && value.length > 10) {
-        const formatted = ethers.formatUnits(value, decimals)
-        return formatted
-      }
-      return value
-    } catch {
-      return value
-    }
-  }
-
   const content = (
     <>
       <Grid item style={{ marginBottom: 16 }}>
@@ -71,8 +56,8 @@ export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRender
         <ShortenedValueField value={toAddress} label="To Address" />
       </Grid>
       <Grid item>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount:</Header>
-        <ShortenedValueField value={formatAmount(amountRaw)} label="Amount" />
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount (raw):</Header>
+        <ShortenedValueField value={amountRaw} label="Amount" />
       </Grid>
     </>
   )

@@ -246,7 +246,13 @@ export const EvmPropBatchActions: React.FC = () => {
           <IconButton
             size="small"
             color="primary"
-            onClick={() => duplicateAction(index)}
+            onClick={() => {
+              const action = batchActions[index]
+              const text = `Type: ${action.type}\nAsset: ${action.asset || "native"}\nTo: ${action.to || ""}\nAmount: ${
+                action.amount || ""
+              }`
+              navigator.clipboard.writeText(text)
+            }}
             style={{ padding: 8, transition: "background 0.2s, transform 0.1s" }}
             onMouseEnter={e => {
               e.currentTarget.style.background = "rgba(129, 254, 183, 0.1)"

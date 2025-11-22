@@ -155,7 +155,7 @@ export const BatchProposalRenderer: React.FC<BatchProposalRendererProps> = ({
     }
 
     if (functionName.includes("transfererc20")) {
-      return <TransferERC20ProposalRenderer proposalData={action} decimals={decimals} compact={true} />
+      return <TransferERC20ProposalRenderer proposalData={action} compact={true} />
     }
 
     if (functionName.includes("mint") || functionName.includes("burn")) {

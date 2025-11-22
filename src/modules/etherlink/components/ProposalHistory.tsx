@@ -4,9 +4,10 @@ import ProgressBar from "react-customizable-progressbar"
 import dayjs from "dayjs"
 import { etherlinkStyled as _est } from "components/ui"
 import { formatVotingWeight } from "services/contracts/utils"
-const { ContainerVoteDetail: Container, HistoryItem, HistoryKey, HistoryValue, ProgressText } = _est
+const { ContainerVoteDetail: Container, HistoryItem, HistoryValue, ProgressText } = _est
 import { ContainerTitle } from "components/ui/Containers"
 import { EtherlinkContext } from "services/wagmi/context"
+import { StatusBadge } from "modules/explorer/components/StatusBadge"
 
 export const ProposalHistory = ({
   votesQuorumPercentage,
@@ -80,31 +81,30 @@ export const ProposalHistory = ({
       <Grid item xs={isMobileSmall ? 12 : 8} container>
         <Grid container>
           <Container item md={12} xs={12} style={{ padding: 20 }}>
-            <ContainerTitle color="textPrimary" style={{ marginBottom: 24 }}>
-              History
-            </ContainerTitle>
-            {statusHistory?.map((item, index) => (
-              <HistoryItem
-                item
-                container
-                direction="row"
-                key={index}
-                justifyContent="space-between"
-                alignItems="center"
-                wrap="nowrap"
-                xs={12}
-                style={{ gap: 8 }}
-              >
-                <Grid item xs={5}>
-                  <HistoryKey color="textPrimary">{item.status}</HistoryKey>
-                </Grid>
-                <Grid item xs={5}>
-                  <HistoryValue align="right" color="textPrimary" variant="subtitle2">
-                    {item.timestamp_human}
-                  </HistoryValue>
-                </Grid>
-              </HistoryItem>
-            ))}
+            {statusHistory
+              ?.filter(item => item.status !== "queue_to_execute")
+              .map((item, index) => (
+                <HistoryItem
+                  item
+                  container
+                  direction="row"
+                  key={index}
+                  justifyContent="space-between"
+                  alignItems="center"
+                  wrap="nowrap"
+                  xs={12}
+                  style={{ gap: 8, paddingLeft: 16, paddingRight: 16 }}
+                >
+                  <Grid item>
+                    <StatusBadge status={item.status as any} />
+                  </Grid>
+                  <Grid item>
+                    <HistoryValue align="right" color="textPrimary" variant="subtitle2">
+                      {item.timestamp_human}
+                    </HistoryValue>
+                  </Grid>
+                </HistoryItem>
+              ))}
           </Container>
         </Grid>
       </Grid>

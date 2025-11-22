@@ -3,18 +3,15 @@ import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { styled } from "@material-ui/core"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
-import Share from "assets/img/share.svg"
 import LinkIcon from "assets/img/link.svg"
 
-import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
 import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
-import { CopyIcon } from "components/ui/icons/CopyIcon"
 import { IEvmProposal } from "../types"
 import { etherlinkStyled as _est } from "components/ui"
 import { CopyButton } from "components/ui"
-const { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } = _est
+const { LogoItem, TextContainer, EndTextContainer, EndText, Divider, StyledLink } = _est
 
 const DetailsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "32px 46px",
@@ -28,81 +25,15 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined; d
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const daoProposalSelected = poll
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const openNotification = useNotification()
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const open = Boolean(anchorEl)
-  const id = open ? "simple-popper" : undefined
-
-  const handleCopy = () => {
-    const url = location.href
-    navigator.clipboard.writeText(url)
-    openNotification({
-      message: "Proposal link copied to clipboard!",
-      autoHideDuration: 3000,
-      variant: "success"
-    })
-    handleClose()
-  }
 
   return (
     <>
       <DetailsContainer container style={{ gap: 50 }}>
         <Grid container style={{ gap: 25 }}>
-          <Grid
-            item
-            container
-            alignItems="flex-end"
-            direction="row"
-            style={{ gap: isMobileSmall ? 25 : 0 }}
-            justifyContent={isMobileSmall ? "center" : "space-between"}
-          >
-            <Grid item>
-              <Typography variant="h1" color="textPrimary">
-                {daoProposalSelected?.title}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Grid container style={{ gap: 18 }} direction="row">
-                <Grid item>
-                  <Grid
-                    container
-                    style={{ gap: 12, cursor: "pointer" }}
-                    alignItems="center"
-                    aria-describedby={id}
-                    onClick={handleClick}
-                  >
-                    <LogoItem src={Share} />
-                    <Typography color="secondary" variant="body2">
-                      Share
-                    </Typography>
-                  </Grid>
-                  <CustomPopover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left"
-                    }}
-                  >
-                    <Grid container direction="row" onClick={handleCopy}>
-                      <CopyIcon />
-                      <Typography variant="subtitle2">Copy link</Typography>
-                    </Grid>
-                  </CustomPopover>
-                </Grid>
-              </Grid>
-            </Grid>
+          <Grid item>
+            <Typography variant="h1" color="textPrimary">
+              {daoProposalSelected?.title}
+            </Typography>
           </Grid>
 
           {daoProposalSelected?.status ? (

@@ -21,7 +21,7 @@ export const ProposalActionSection = ({ daoProposalSelected, daoSelected }: Prop
   const shouldShowCountdown = isTimerActive || hasOverrideQueued
 
   return (
-    <ContentContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
+    <ContentContainer style={{ gap: 10, color: "white", marginTop: 32 }}>
       <Grid item xs={12} md={12} style={{ padding: "40px" }}>
         {shouldShowCountdown ? (
           <EvmProposalCountdown overrideLabel={countdownLabel} overrideTarget={countdownTarget} />

@@ -103,7 +103,7 @@ export const ProposalDataSection = ({
         return <TransferERC721ProposalRenderer proposalData={proposalData} />
       } else if (transferType.includes("transfererc20")) {
         console.log("ProposalDataSection - Routing to TransferERC20ProposalRenderer")
-        return <TransferERC20ProposalRenderer proposalData={proposalData} decimals={decimals} />
+        return <TransferERC20ProposalRenderer proposalData={proposalData} />
       } else {
         // transferETH or fallback
         console.log("ProposalDataSection - Routing to TransferETHProposalRenderer (default)")
@@ -128,7 +128,7 @@ export const ProposalDataSection = ({
     <StyledContentContainer container>
       <Grid container>
         <Typography variant="h3" color="textPrimary">
-          Proposal Data
+          Execution Details
         </Typography>
       </Grid>
       <Grid container>{renderProposalData()}</Grid>
