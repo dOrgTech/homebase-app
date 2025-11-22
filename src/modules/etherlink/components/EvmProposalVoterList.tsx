@@ -8,8 +8,10 @@ import {
   Table,
   TableCell,
   TableRow,
-  IconButton
+  IconButton,
+  styled
 } from "components/ui"
+import { SearchInput } from "modules/explorer/pages/DAOList/components/Searchbar"
 import { Blockie } from "modules/common/Blockie"
 import { AddressText } from "modules/creator/token/ui"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
@@ -22,8 +24,22 @@ import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoO
 import { etherlinkStyled as _est } from "components/ui"
 const { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } = _est
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import ThumbUpIcon from "@mui/icons-material/ThumbUp"
+import ThumbDownIcon from "@mui/icons-material/ThumbDown"
 import { getBlockExplorerUrl } from "modules/etherlink/utils"
 import { ethers } from "ethers"
+
+const SearchRow = styled(Grid)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginBottom: 16,
+  gap: 16
+})
+
+const ContentWrapper = styled("div")({
+  paddingTop: 5
+})
 interface IVoter {
   voter: string
   option: number
@@ -34,6 +50,7 @@ interface IVoter {
 
 export const EvmProposalVoterList = () => {
   const [currentPage, setCurrentPage] = useState(0)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
@@ -70,6 +87,13 @@ export const EvmProposalVoterList = () => {
     }
   }, [daoProposalVoters])
 
+  // Filter votes by search term
+  const filteredVotes = useMemo(() => {
+    if (!searchTerm.trim()) return sortedVotes
+    const term = searchTerm.toLowerCase()
+    return sortedVotes.filter(vote => vote.voter.toLowerCase().includes(term))
+  }, [sortedVotes, searchTerm])
+
   const formatWeight = (weight: number | string): string => {
     try {
       const decimals = daoSelected?.decimals || 18
@@ -88,7 +112,7 @@ export const EvmProposalVoterList = () => {
     setShowProposalVoterList(false)
   }
 
-  const pageCount = Math.ceil(daoProposalSelected?.totalVoteCount / 10)
+  const pageCount = Math.ceil(filteredVotes.length / 10)
 
   return (
     <div>
@@ -97,42 +121,116 @@ export const EvmProposalVoterList = () => {
         onClose={handleClose}
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
-        title={`${daoProposalSelected?.totalVoteCount} Votes: `}
+        title=""
         template="xs"
       >
         <CustomContent>
-          <Table aria-label="customized table">
-            {!isMobileSmall ? (
-              <TableHead>
-                <TableRow key={"header"}>
-                  <TableCell>Address</TableCell>
-                  <TableCell align="center">Option</TableCell>
-                  <TableCell align="right">Votes</TableCell>
-                  <TableCell align="right">Tx</TableCell>
-                </TableRow>
-              </TableHead>
-            ) : null}
+          <ContentWrapper>
+            <SearchRow>
+              <SearchInput
+                search={(value: string) => {
+                  setSearchTerm(value)
+                  setCurrentPage(0)
+                }}
+                placeholder="Search voter by address"
+              />
+              <Typography color="textPrimary" variant="body2">
+                {daoProposalSelected?.totalVoteCount} Votes
+              </Typography>
+            </SearchRow>
+            <Table aria-label="customized table">
+              {!isMobileSmall ? (
+                <TableHead>
+                  <TableRow key={"header"}>
+                    <TableCell>Address</TableCell>
+                    <TableCell align="center">Option</TableCell>
+                    <TableCell align="right">Votes</TableCell>
+                    <TableCell align="right">Tx</TableCell>
+                  </TableRow>
+                </TableHead>
+              ) : null}
 
-            <TableBody>
-              {sortedVotes
-                ? sortedVotes.map((row: IVoter) => {
-                    return isMobileSmall ? (
-                      <Container key={row.voter} container direction="column" justifyContent="center">
-                        <Grid item>
-                          <Grid item direction="row" container justifyContent="center">
-                            <Header color="textPrimary"> Address</Header>
-                          </Grid>
-                          <Grid
-                            item
-                            container
-                            direction="row"
-                            alignItems="center"
-                            justifyContent="center"
-                            style={{ marginTop: 6 }}
-                          >
-                            <Blockie address={row.voter} size={24} />
-                            <AddressText color="textPrimary"> {toShortAddress(row.voter)}</AddressText>
-                            <CopyIcon onClick={() => copyAddress(row.voter)} color="secondary" fontSize="inherit" />
+              <TableBody>
+                {filteredVotes
+                  ? filteredVotes.map((row: IVoter) => {
+                      return isMobileSmall ? (
+                        <Container key={row.voter} container direction="column" justifyContent="center">
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Address</Header>
+                            </Grid>
+                            <Grid
+                              item
+                              container
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="center"
+                              style={{ marginTop: 6 }}
+                            >
+                              <Blockie address={row.voter} size={24} />
+                              <AddressText color="textPrimary"> {toShortAddress(row.voter)}</AddressText>
+                              <CopyIcon onClick={() => copyAddress(row.voter)} color="secondary" fontSize="inherit" />
+                              {row?.hash ? (
+                                <IconButton
+                                  size="small"
+                                  onClick={() => {
+                                    const href = getBlockExplorerUrl(network, String(row.hash))
+                                    if (href) window.open(href, "_blank", "noopener,noreferrer")
+                                  }}
+                                  aria-label="View transaction"
+                                  style={{ marginLeft: 8 }}
+                                >
+                                  <OpenInNewIcon fontSize="inherit" color="secondary" />
+                                </IconButton>
+                              ) : null}
+                            </Grid>
+                          </Grid>{" "}
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Option</Header>
+                            </Grid>
+                            <Grid item container direction="row" alignItems="center" justifyContent="center">
+                              {row.option === 1 ? (
+                                <ThumbUpIcon style={{ color: "#4caf50" }} />
+                              ) : (
+                                <ThumbDownIcon style={{ color: "#f44336" }} />
+                              )}
+                            </Grid>
+                          </Grid>{" "}
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Weight</Header>
+                            </Grid>
+                            <Grid item container direction="row" alignItems="center" justifyContent="center">
+                              <Typography color="textPrimary" variant="body1">
+                                {formatWeight(row.weight)}
+                              </Typography>
+                            </Grid>
+                          </Grid>{" "}
+                        </Container>
+                      ) : (
+                        <StyledTableRow key={row.voter}>
+                          <StyledTableCell component="th" scope="row">
+                            <Grid container direction="row" alignItems="center">
+                              <Blockie address={row.voter} size={24} />
+                              <AddressText color="textPrimary"> {toShortAddress(row.voter)}</AddressText>
+                              <CopyIcon onClick={() => copyAddress(row.voter)} color="secondary" fontSize="inherit" />
+                            </Grid>
+                          </StyledTableCell>{" "}
+                          <StyledTableCell align="center">
+                            {row.option === 1 ? (
+                              <ThumbUpIcon style={{ color: "#4caf50" }} />
+                            ) : (
+                              <ThumbDownIcon style={{ color: "#f44336" }} />
+                            )}
+                          </StyledTableCell>
+                          <StyledTableCell align="right">
+                            {" "}
+                            <Typography color="textPrimary" variant="body1">
+                              {formatWeight(row.weight)}
+                            </Typography>
+                          </StyledTableCell>
+                          <StyledTableCell align="right">
                             {row?.hash ? (
                               <IconButton
                                 size="small"
@@ -141,91 +239,33 @@ export const EvmProposalVoterList = () => {
                                   if (href) window.open(href, "_blank", "noopener,noreferrer")
                                 }}
                                 aria-label="View transaction"
-                                style={{ marginLeft: 8 }}
                               >
-                                <OpenInNewIcon fontSize="inherit" color="secondary" />
+                                <OpenInNewIcon color="secondary" fontSize="small" />
                               </IconButton>
                             ) : null}
-                          </Grid>
-                        </Grid>{" "}
-                        <Grid item>
-                          <Grid item direction="row" container justifyContent="center">
-                            <Header color="textPrimary"> Option</Header>
-                          </Grid>
-                          <Grid item container direction="row" alignItems="center" justifyContent="center">
-                            <VotesRow color="textPrimary" variant="body1" className="test">
-                              {" "}
-                              {row.option}
-                            </VotesRow>
-                          </Grid>
-                        </Grid>{" "}
-                        <Grid item>
-                          <Grid item direction="row" container justifyContent="center">
-                            <Header color="textPrimary"> Weight</Header>
-                          </Grid>
-                          <Grid item container direction="row" alignItems="center" justifyContent="center">
-                            <Typography color="textPrimary" variant="body1">
-                              {formatWeight(row.weight)}
-                            </Typography>
-                          </Grid>
-                        </Grid>{" "}
-                      </Container>
-                    ) : (
-                      <StyledTableRow key={row.voter}>
-                        <StyledTableCell component="th" scope="row">
-                          <Grid container direction="row" alignItems="center">
-                            <Blockie address={row.voter} size={24} />
-                            <AddressText color="textPrimary"> {toShortAddress(row.voter)}</AddressText>
-                            <CopyIcon onClick={() => copyAddress(row.voter)} color="secondary" fontSize="inherit" />
-                          </Grid>
-                        </StyledTableCell>{" "}
-                        <StyledTableCell align="center">
-                          <VotesRow color="textPrimary" variant="body1" className="test">
-                            {" "}
-                            {row.option === 1 ? "Yes" : "No"}
-                          </VotesRow>
-                        </StyledTableCell>
-                        <StyledTableCell align="right">
-                          {" "}
-                          <Typography color="textPrimary" variant="body1">
-                            {formatWeight(row.weight)}
-                          </Typography>
-                        </StyledTableCell>
-                        <StyledTableCell align="right">
-                          {row?.hash ? (
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                const href = getBlockExplorerUrl(network, String(row.hash))
-                                if (href) window.open(href, "_blank", "noopener,noreferrer")
-                              }}
-                              aria-label="View transaction"
-                            >
-                              <OpenInNewIcon color="secondary" fontSize="small" />
-                            </IconButton>
-                          ) : null}
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    )
-                  })
-                : null}
-              {!sortedVotes ? <Typography>No info</Typography> : null}
-            </TableBody>
-          </Table>
-          <Grid container direction="row" justifyContent="flex-end">
-            <ReactPaginate
-              previousLabel={"<"}
-              breakLabel="..."
-              nextLabel=">"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={2}
-              pageCount={pageCount}
-              renderOnZeroPageCount={null}
-              containerClassName={"pagination"}
-              activeClassName={"active"}
-              forcePage={currentPage}
-            />
-          </Grid>
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      )
+                    })
+                  : null}
+                {!filteredVotes.length ? <Typography>No votes found</Typography> : null}
+              </TableBody>
+            </Table>
+            <Grid container direction="row" justifyContent="flex-end">
+              <ReactPaginate
+                previousLabel={"<"}
+                breakLabel="..."
+                nextLabel=">"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={2}
+                pageCount={pageCount}
+                renderOnZeroPageCount={null}
+                containerClassName={"pagination"}
+                activeClassName={"active"}
+                forcePage={currentPage}
+              />
+            </Grid>
+          </ContentWrapper>
         </CustomContent>
       </ResponsiveDialog>
     </div>
