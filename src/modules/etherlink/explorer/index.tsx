@@ -70,6 +70,9 @@ export const EtherlinkDAOOverview: React.FC = () => {
           </Grid>
           <Grid item>
             <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <SubtitleText>{description}</SubtitleText>
+              </Grid>
               <Grid item xs={12} sm={6} md={6}>
                 <Typography variant="h6" style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}>
                   Treasury Address
@@ -125,9 +128,6 @@ export const EtherlinkDAOOverview: React.FC = () => {
                     <FileCopyOutlined fontSize="inherit" />
                   </IconButton>
                 </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <SubtitleText>{description}</SubtitleText>
               </Grid>
             </Grid>
           </Grid>

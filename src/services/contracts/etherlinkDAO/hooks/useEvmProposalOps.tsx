@@ -938,8 +938,11 @@ export const useEvmProposalOps = () => {
     fetchCollection
   ])
 
+  const selectedOption = EvmProposalOptions.find((p: any) => p.modal === proposalType) as any
+  const isFinalStep = currentStep === selectedOption?.last_step
+
   const nextStep = {
-    text: isLoading ? "Please wait..." : "Next",
+    text: isLoading ? "Please wait..." : isFinalStep ? "Submit" : "Next",
     handler: async () => {
       //   const selectedInterface = proposalInterfaces.find(p => p.name === "transferETH")
       //   if (!selectedInterface) return
@@ -958,7 +961,6 @@ export const useEvmProposalOps = () => {
       //   )
       //   return
 
-      const selectedOption = EvmProposalOptions.find((p: any) => p.modal === proposalType) as any
       if (currentStep == 0) {
         zustantStore.setCurrentStep(1)
       }
