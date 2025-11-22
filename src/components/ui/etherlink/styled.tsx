@@ -239,7 +239,7 @@ export const DelegationBox = styled(Box)(({ theme }) => ({
   alignItems: "center",
   textAlign: "center",
   gap: "16px",
-  boxShadow: theme.shadows[8]
+  border: "1px solid rgba(255, 255, 255, 0.2)"
 }))
 
 export const AddressDisplay = styled(Typography)({

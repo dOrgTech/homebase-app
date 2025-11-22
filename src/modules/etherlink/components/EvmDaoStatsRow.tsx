@@ -108,8 +108,8 @@ export const EvmDaoStatsRow = () => {
             value: activeProposalsCount || "0"
           },
           {
-            title: "Awaiting Executions",
-            value: daoSelected?.awaiting_executions || awaitingExecutionCount || "-"
+            title: "Executable",
+            value: daoSelected?.awaiting_executions ?? awaitingExecutionCount ?? 0
           }
         ].map((item, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
@@ -118,7 +118,7 @@ export const EvmDaoStatsRow = () => {
                 <ItemTitle color="textPrimary">{item.title} </ItemTitle>
               </ItemContent>
               <Grid item>
-                <ItemValue color="textPrimary">{item.value}</ItemValue>
+                <ItemValue color="secondary">{item.value}</ItemValue>
               </Grid>
             </Item>
           </Grid>

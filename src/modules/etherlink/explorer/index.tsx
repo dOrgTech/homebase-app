@@ -72,7 +72,7 @@ export const EtherlinkDAOOverview: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={6}>
                 <Typography variant="h6" style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}>
-                  DAO Contract
+                  Treasury Address
                 </Typography>
                 <Typography
                   variant="h6"
@@ -84,11 +84,11 @@ export const EtherlinkDAOOverview: React.FC = () => {
                     wordBreak: "break-all"
                   }}
                 >
-                  {daoSelected?.address || "-"}
+                  {daoSelected?.registryAddress || "-"}
                   <IconButton
                     onClick={() => {
-                      if (daoSelected?.address) {
-                        navigator.clipboard.writeText(daoSelected.address)
+                      if (daoSelected?.registryAddress) {
+                        navigator.clipboard.writeText(daoSelected.registryAddress)
                       }
                     }}
                     size="small"

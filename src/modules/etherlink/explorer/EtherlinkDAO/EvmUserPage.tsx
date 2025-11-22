@@ -183,7 +183,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">Voting Weight</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{formattedVotingWeight}</ItemValue>
+              <ItemValue color="secondary">{formattedVotingWeight}</ItemValue>
             </Grid>
           </TransparentItem>
 
@@ -192,7 +192,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">{daoSelected?.symbol} Balance</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{formattedPersonalBalance}</ItemValue>
+              <ItemValue color="secondary">{formattedPersonalBalance}</ItemValue>
             </Grid>
           </TransparentItem>
 
@@ -206,7 +206,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">Proposals Created</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{proposalCreatedCount}</ItemValue>
+              <ItemValue color="secondary">{proposalCreatedCount}</ItemValue>
             </Grid>
           </TransparentItem>
 
@@ -215,7 +215,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">Votes Cast</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{proposalVotedCount}</ItemValue>
+              <ItemValue color="secondary">{proposalVotedCount}</ItemValue>
             </Grid>
           </TransparentItem>
         </StatsGrid>
