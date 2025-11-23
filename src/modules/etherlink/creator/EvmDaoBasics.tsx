@@ -213,20 +213,15 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           value="new"
                           control={<StyledRadio checked={values.tokenDeploymentMechanism === "new"} disableRipple />}
                           label={
-                            <Box>
-                              <Typography
-                                style={{
-                                  color:
-                                    values.tokenDeploymentMechanism === "new" ? theme.palette.secondary.main : "#fff",
-                                  fontWeight: values.tokenDeploymentMechanism === "new" ? 700 : 400
-                                }}
-                              >
-                                Deploy new standard token
-                              </Typography>
-                              <Typography variant="caption" style={{ color: "#fff" }}>
-                                Create a new ERC20 governance token
-                              </Typography>
-                            </Box>
+                            <Typography
+                              style={{
+                                color:
+                                  values.tokenDeploymentMechanism === "new" ? theme.palette.secondary.main : "#fff",
+                                fontWeight: values.tokenDeploymentMechanism === "new" ? 700 : 400
+                              }}
+                            >
+                              Deploy new standard token
+                            </Typography>
                           }
                         />
                         <FormControlLabel
@@ -235,22 +230,15 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                             <StyledRadio checked={values.tokenDeploymentMechanism === "wrapped"} disableRipple />
                           }
                           label={
-                            <Box>
-                              <Typography
-                                style={{
-                                  color:
-                                    values.tokenDeploymentMechanism === "wrapped"
-                                      ? theme.palette.secondary.main
-                                      : "#fff",
-                                  fontWeight: values.tokenDeploymentMechanism === "wrapped" ? 700 : 400
-                                }}
-                              >
-                                Wrap existing ERC20 token
-                              </Typography>
-                              <Typography variant="caption" style={{ color: "#fff" }}>
-                                Use an existing token for governance
-                              </Typography>
-                            </Box>
+                            <Typography
+                              style={{
+                                color:
+                                  values.tokenDeploymentMechanism === "wrapped" ? theme.palette.secondary.main : "#fff",
+                                fontWeight: values.tokenDeploymentMechanism === "wrapped" ? 700 : 400
+                              }}
+                            >
+                              Wrap existing ERC20 token
+                            </Typography>
                           }
                         />
                       </RadioGroup>
