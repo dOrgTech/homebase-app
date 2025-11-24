@@ -4,8 +4,50 @@ import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { styled } from "@material-ui/core"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import LinkIcon from "assets/img/link.svg"
+import DOMPurify from "dompurify"
 
 import ReactHtmlParser from "react-html-parser"
+
+// Sanitize HTML content to prevent XSS attacks
+const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      "b",
+      "i",
+      "em",
+      "strong",
+      "a",
+      "p",
+      "br",
+      "ul",
+      "ol",
+      "li",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "blockquote",
+      "code",
+      "pre",
+      "span",
+      "div"
+    ],
+    ALLOWED_ATTR: ["href", "target", "rel", "class"],
+    ALLOW_DATA_ATTR: false
+  })
+}
+
+// Validate URL to prevent javascript: and other dangerous protocols
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url)
+    return ["http:", "https:"].includes(parsed.protocol)
+  } catch {
+    return false
+  }
+}
 import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 import { IEvmProposal } from "../types"
@@ -94,15 +136,20 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined; d
 
           <Grid container>
             <Typography variant="body2" color="textPrimary" className="proposal-details">
-              {ReactHtmlParser(daoProposalSelected?.description ? daoProposalSelected?.description : "")}
+              {ReactHtmlParser(sanitizeHtml(daoProposalSelected?.description ?? ""))}
             </Typography>
           </Grid>
 
-          {daoProposalSelected?.externalResource ? (
+          {daoProposalSelected?.externalResource && isValidUrl(daoProposalSelected.externalResource) ? (
             <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
               <LogoItem src={LinkIcon} />
-              <StyledLink color="secondary" href={daoProposalSelected?.externalResource} target="_">
-                {daoProposalSelected?.externalResource}
+              <StyledLink
+                color="secondary"
+                href={daoProposalSelected.externalResource}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {daoProposalSelected.externalResource}
               </StyledLink>
             </Grid>
           ) : null}
