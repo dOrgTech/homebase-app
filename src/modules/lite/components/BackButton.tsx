@@ -8,7 +8,7 @@ export const BackButton: React.FC<{ onClick?: () => void; disabled?: boolean }> 
   return (
     <Grid
       container
-      style={{ gap: 15, cursor: "pointer", marginBottom: 23, width: "fit-content", opacity: disabled ? 0.5 : 1 }}
+      style={{ gap: 15, cursor: "pointer", width: "fit-content", opacity: disabled ? 0.5 : 1 }}
       onClick={() => (onClick && !disabled ? onClick() : navigate.goBack())}
       alignItems="center"
       role="button"

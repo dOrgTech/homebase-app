@@ -23,7 +23,7 @@ import {
   CustomTextarea
 } from "components/ui/DaoCreator"
 import { StyledTextField } from "components/ui"
-import React from "react"
+import React, { useEffect } from "react"
 import { StyledRadio } from "components/ui"
 
 import { ErrorText } from "modules/creator/token/ui"
@@ -127,8 +127,20 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
     tokenDeploymentMechanism: daoData?.tokenDeploymentMechanism || "new",
     underlyingTokenAddress: daoData?.underlyingTokenAddress || "",
     wrappedTokenSymbol: daoData?.wrappedTokenSymbol || "",
-    governanceToken: daoData?.governanceToken || { address: "", symbol: "", tokenDecimals: 0, tokenSymbol: "" }
+    governanceToken: daoData?.governanceToken
+      ? {
+          ...daoData.governanceToken,
+          tokenDecimals: 18
+        }
+      : { address: "", symbol: "", tokenDecimals: 18, tokenSymbol: "" }
   }
+
+  // Fixes existing Zustand Cache Store
+  useEffect(() => {
+    if (daoData?.governanceToken?.tokenDecimals !== 18) {
+      setFieldValue("governanceToken.tokenDecimals", 18)
+    }
+  }, [daoData?.tokenDeploymentMechanism, daoData?.governanceToken?.tokenDecimals, setFieldValue])
 
   return (
     <Box>
@@ -190,6 +202,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           if (e.target.value === "new") {
                             setFieldValue("underlyingTokenAddress", "")
                             setFieldValue("wrappedTokenSymbol", "")
+                            setFieldValue("governanceToken.tokenDecimals", 18)
                           } else {
                             setFieldValue("governanceToken.symbol", "")
                             setFieldValue("governanceToken.tokenDecimals", 0)
@@ -200,20 +213,15 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           value="new"
                           control={<StyledRadio checked={values.tokenDeploymentMechanism === "new"} disableRipple />}
                           label={
-                            <Box>
-                              <Typography
-                                style={{
-                                  color:
-                                    values.tokenDeploymentMechanism === "new" ? theme.palette.secondary.main : "#fff",
-                                  fontWeight: values.tokenDeploymentMechanism === "new" ? 700 : 400
-                                }}
-                              >
-                                Deploy new standard token
-                              </Typography>
-                              <Typography variant="caption" style={{ color: "#fff" }}>
-                                Create a new ERC20 governance token
-                              </Typography>
-                            </Box>
+                            <Typography
+                              style={{
+                                color:
+                                  values.tokenDeploymentMechanism === "new" ? theme.palette.secondary.main : "#fff",
+                                fontWeight: values.tokenDeploymentMechanism === "new" ? 700 : 400
+                              }}
+                            >
+                              Deploy new standard token
+                            </Typography>
                           }
                         />
                         <FormControlLabel
@@ -222,22 +230,15 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                             <StyledRadio checked={values.tokenDeploymentMechanism === "wrapped"} disableRipple />
                           }
                           label={
-                            <Box>
-                              <Typography
-                                style={{
-                                  color:
-                                    values.tokenDeploymentMechanism === "wrapped"
-                                      ? theme.palette.secondary.main
-                                      : "#fff",
-                                  fontWeight: values.tokenDeploymentMechanism === "wrapped" ? 700 : 400
-                                }}
-                              >
-                                Wrap existing ERC20 token
-                              </Typography>
-                              <Typography variant="caption" style={{ color: "#fff" }}>
-                                Use an existing token for governance
-                              </Typography>
-                            </Box>
+                            <Typography
+                              style={{
+                                color:
+                                  values.tokenDeploymentMechanism === "wrapped" ? theme.palette.secondary.main : "#fff",
+                                fontWeight: values.tokenDeploymentMechanism === "wrapped" ? 700 : 400
+                              }}
+                            >
+                              Wrap existing ERC20 token
+                            </Typography>
                           }
                         />
                       </RadioGroup>
@@ -275,23 +276,22 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           <StyledTextField
                             name="governanceToken.tokenDecimals"
                             type="number"
-                            placeholder="18"
-                            value={values.governanceToken?.tokenDecimals || ""}
+                            value={
+                              values.tokenDeploymentMechanism === "new"
+                                ? 18
+                                : values.governanceToken?.tokenDecimals || 18
+                            }
+                            disabled
                             InputProps={{
                               endAdornment: (
                                 <InputAdornment position="start">
-                                  <Tooltip
-                                    placement="bottom"
-                                    title="Token Decimals for the ERC20 token deployed with this DAO"
-                                  >
+                                  <Tooltip placement="bottom" title="non-editable">
                                     <InfoIconInput />
                                   </Tooltip>
                                 </InputAdornment>
                               )
                             }}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              setFieldValue("governanceToken.tokenDecimals", parseInt(e.target.value) || 0)
-                            }}
+                            inputProps={{ readOnly: true }}
                           />
                         </CustomInputContainer>
                         {errors.governanceToken?.tokenDecimals && touched.governanceToken?.tokenDecimals ? (

@@ -33,7 +33,9 @@ export const useAllDAOs = (network: Network) => {
       },
       holders_count: dao.holders,
       ledgers: [],
-      network: "Etherlink"
+      network: "Etherlink",
+      nonTransferrable: dao.nonTransferrable,
+      underlyingToken: dao.underlyingToken
     })) || []
 
   // Tezos sources via react-query. Keep hook order stable across network switches.

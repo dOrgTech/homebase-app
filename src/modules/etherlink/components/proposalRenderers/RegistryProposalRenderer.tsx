@@ -6,10 +6,13 @@ import { ContainerVoteDetail, Header } from "components/ui/etherlink/styled"
 
 interface RegistryProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
+  compact?: boolean
 }
 
-export const RegistryProposalRenderer: React.FC<RegistryProposalRendererProps> = ({ proposalData }) => {
-  // Extract key and value from the proposal data
+export const RegistryProposalRenderer: React.FC<RegistryProposalRendererProps> = ({
+  proposalData,
+  compact = false
+}) => {
   const keyParam = proposalData.find(
     item => item.parameter.toLowerCase().includes("key") || item.parameter === "0" || item.parameter.match(/^key\s*\(/)
   )
@@ -20,6 +23,23 @@ export const RegistryProposalRenderer: React.FC<RegistryProposalRendererProps> =
         item.parameter.match(/^value\s*\(/)) &&
       !item.parameter.toLowerCase().includes("key")
   )
+
+  const content = (
+    <>
+      <Grid item style={{ marginBottom: 16 }}>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Key:</Header>
+        <ShortenedValueField value={keyParam?.value || ""} label="Key" />
+      </Grid>
+      <Grid item>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Value:</Header>
+        <FullValueFieldWithCopy value={valueParam?.value || ""} label="Value" />
+      </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
+  }
 
   return (
     <ContainerVoteDetail
@@ -32,14 +52,7 @@ export const RegistryProposalRenderer: React.FC<RegistryProposalRendererProps> =
           Update Registry
         </Typography>
       </Grid>
-      <Grid item style={{ marginBottom: 16 }}>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Key:</Header>
-        <ShortenedValueField value={keyParam?.value || ""} label="Key" />
-      </Grid>
-      <Grid item>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Value:</Header>
-        <FullValueFieldWithCopy value={valueParam?.value || ""} label="Value" />
-      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

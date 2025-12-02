@@ -7,7 +7,8 @@ import {
   TransferERC20ProposalRenderer,
   TransferERC721ProposalRenderer,
   ContractCallProposalRenderer,
-  ConfigChangeProposalRenderer
+  ConfigChangeProposalRenderer,
+  BatchProposalRenderer
 } from "modules/etherlink/components/proposalRenderers"
 
 const StyledContentContainer = styled(ContentContainer)(({ theme }) => ({
@@ -51,6 +52,20 @@ export const ProposalDataSection = ({
   const renderProposalData = () => {
     const type = proposalType?.toLowerCase() || ""
 
+    if (type === "batch") {
+      return (
+        <BatchProposalRenderer
+          proposalData={proposalData}
+          targets={targets}
+          callDataPlain={callDataPlain}
+          values={values}
+          tokenSymbol={tokenSymbol}
+          decimals={decimals}
+          nativeDecimals={nativeDecimals}
+        />
+      )
+    }
+
     // Registry proposal
     if (type === "registry") {
       return <RegistryProposalRenderer proposalData={proposalData} />
@@ -88,7 +103,7 @@ export const ProposalDataSection = ({
         return <TransferERC721ProposalRenderer proposalData={proposalData} />
       } else if (transferType.includes("transfererc20")) {
         console.log("ProposalDataSection - Routing to TransferERC20ProposalRenderer")
-        return <TransferERC20ProposalRenderer proposalData={proposalData} decimals={decimals} />
+        return <TransferERC20ProposalRenderer proposalData={proposalData} />
       } else {
         // transferETH or fallback
         console.log("ProposalDataSection - Routing to TransferETHProposalRenderer (default)")
@@ -113,7 +128,7 @@ export const ProposalDataSection = ({
     <StyledContentContainer container>
       <Grid container>
         <Typography variant="h3" color="textPrimary">
-          Proposal Data
+          Execution Details
         </Typography>
       </Grid>
       <Grid container>{renderProposalData()}</Grid>

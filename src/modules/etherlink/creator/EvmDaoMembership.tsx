@@ -2,7 +2,6 @@ import { IconButton, Typography, Button, Add, RemoveCircleOutline, Box, StyledTe
 import { DescriptionText, CustomInputContainer, ErrorText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
-// StyledTextField imported from components/ui
 import { isInvalidEvmAddress } from "../utils"
 
 interface Member {
@@ -54,6 +53,13 @@ export const EvmDaoMembership = () => {
     )
   }
 
+  const wrappedTokenPoints = [
+    "The wrapped token will start with 0 initial supply",
+    "Token holders must wrap their existing tokens after DAO deployment",
+    "Voting power will be delegated automatically when tokens are wrapped",
+    "Users can unwrap tokens at any time to retrieve their original tokens"
+  ]
+
   if (isWrappedToken) {
     return (
       <Box>
@@ -81,18 +87,18 @@ export const EvmDaoMembership = () => {
           <Typography variant="body1" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "12px" }}>
             Since you're wrapping an existing ERC20 token:
           </Typography>
-          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
-            • The wrapped token will start with 0 initial supply
-          </Typography>
-          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
-            • Token holders must wrap their existing tokens after DAO deployment
-          </Typography>
-          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
-            • Voting power will be delegated automatically when tokens are wrapped
-          </Typography>
-          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-            • Users can unwrap tokens at any time to retrieve their original tokens
-          </Typography>
+          <Box component="ul" style={{ margin: 0, paddingLeft: "20px" }}>
+            {wrappedTokenPoints.map(point => (
+              <Typography
+                key={point}
+                variant="body2"
+                component="li"
+                style={{ color: "rgba(255, 255, 255, 0.7)", margin: "0 0 4px", lineHeight: 1.4 }}
+              >
+                {point}
+              </Typography>
+            ))}
+          </Box>
         </Box>
       </Box>
     )

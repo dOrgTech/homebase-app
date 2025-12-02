@@ -15,10 +15,11 @@ import {
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "components/ui/CopyButton"
-import { ContentContainer } from "components/ui/ContentContainer"
 import { toShortAddress } from "services/contracts/utils"
 import numbro from "numbro"
 import ReactPaginate from "react-paginate"
+import { MemberProfileModal } from "./MemberProfileModal"
+import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -28,21 +29,16 @@ interface RowData {
   personalBalance: number
 }
 
-const TableHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-  marginBottom: 20
-}))
-
 const HeaderText = styled(Typography)({
   fontWeight: 500,
   textTransform: "uppercase",
   fontSize: 14
 })
 
-const TableContainer = styled(ContentContainer)({
+const TableWrapper = styled("div")({
   width: "100%",
-  padding: "20px 24px"
+  padding: 0,
+  margin: 0
 })
 
 const MemberRow = styled(TableRow)(({ theme }) => ({
@@ -78,12 +74,18 @@ const MembersTableContent: React.FC<{
   currentPage: number
   offset: number
   isMobile: boolean
-}> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset, isMobile }) => {
+  loggedInAddress?: string
+  onMemberClick: (member: RowData) => void
+}> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset, isMobile, loggedInAddress, onMemberClick }) => {
   const slicedData = useMemo(() => data.slice(offset, offset + 8), [data, offset])
+
+  const isLoggedInUser = (address: string) => {
+    return loggedInAddress?.toLowerCase() === address.toLowerCase()
+  }
 
   return (
     <>
-      <TableContainer>
+      <TableWrapper>
         <Table>
           <TableHead>
             <TableRow>
@@ -96,25 +98,33 @@ const MembersTableContent: React.FC<{
             </TableRow>
           </TableHead>
           <TableBody>
-            {slicedData.map((item, i) => (
-              <MemberRow key={`member-${i}`}>
-                <AddressCell>
-                  <Blockie address={item.address} size={24} />
-                  <Typography color="textPrimary" variant="body2">
-                    {isMobile ? toShortAddress(item.address) : item.address}
-                  </Typography>
-                  <CopyButton text={item.address} />
-                </AddressCell>
-                <BalanceCell>
-                  <Typography color="textPrimary" variant="body2">
-                    {numbro(item.personalBalance).format(formatConfig)} {symbol}
-                  </Typography>
-                </BalanceCell>
-              </MemberRow>
-            ))}
+            {slicedData.map((item, i) => {
+              const isCurrentUser = isLoggedInUser(item.address)
+              const clickable = !isCurrentUser
+              return (
+                <MemberRow
+                  key={`member-${i}`}
+                  style={{ cursor: clickable ? "pointer" : "default" }}
+                  onClick={() => clickable && onMemberClick(item)}
+                >
+                  <AddressCell>
+                    <Blockie address={item.address} size={24} />
+                    <Typography color="textPrimary" variant="body2">
+                      {isMobile ? toShortAddress(item.address) : item.address}
+                    </Typography>
+                    <CopyButton text={item.address} />
+                  </AddressCell>
+                  <BalanceCell>
+                    <Typography color="textPrimary" variant="body2">
+                      {numbro(item.personalBalance).format(formatConfig)} {symbol}
+                    </Typography>
+                  </BalanceCell>
+                </MemberRow>
+              )
+            })}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableWrapper>
 
       <Grid container direction="row" justifyContent="flex-end" style={{ marginTop: 20 }}>
         <ReactPaginate
@@ -145,7 +155,11 @@ export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string; isLoad
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(820))
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
+  const [selectedMember, setSelectedMember] = useState<RowData | null>(null)
   const pageCount = Math.ceil((data?.length ?? 0) / 8)
+
+  const { signer } = useEvmDaoOps()
+  const loggedInAddress = signer?.address
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
@@ -158,6 +172,14 @@ export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string; isLoad
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
+  }
+
+  const handleMemberClick = (member: RowData) => {
+    setSelectedMember(member)
+  }
+
+  const handleCloseModal = () => {
+    setSelectedMember(null)
   }
 
   if (isLoading) {
@@ -173,14 +195,26 @@ export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string; isLoad
   }
 
   return (
-    <MembersTableContent
-      data={data}
-      symbol={symbol}
-      handlePageClick={handlePageClick}
-      pageCount={pageCount}
-      currentPage={currentPage}
-      offset={offset}
-      isMobile={isExtraSmall}
-    />
+    <>
+      <MembersTableContent
+        data={data}
+        symbol={symbol}
+        handlePageClick={handlePageClick}
+        pageCount={pageCount}
+        currentPage={currentPage}
+        offset={offset}
+        isMobile={isExtraSmall}
+        loggedInAddress={loggedInAddress}
+        onMemberClick={handleMemberClick}
+      />
+      {selectedMember && (
+        <MemberProfileModal
+          open={!!selectedMember}
+          onClose={handleCloseModal}
+          memberAddress={selectedMember.address}
+          memberBalance={selectedMember.personalBalance}
+        />
+      )}
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import { Button, Grid, Typography, useMediaQuery, useTheme } from "components/ui"
+import { ApproveButton, RejectButton } from "modules/etherlink/components/VotingButtons"
 import { PageContainer } from "components/ui/DaoCreator"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { useContext, useEffect, useState } from "react"
@@ -163,7 +164,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
 
         {isVotingActive && (
           <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
-            <Button
+            <ApproveButton
               disabled={isCastingVote}
               onClick={() => {
                 if (!daoProposalSelected?.id) return
@@ -183,11 +184,10 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
               }}
               variant="contained"
               color="secondary"
-              style={{ background: "rgb(113 214 156)" }}
             >
               <ThumbUpAlt style={{ marginRight: 8 }} /> Support
-            </Button>
-            <Button
+            </ApproveButton>
+            <RejectButton
               onClick={() => {
                 if (!daoProposalSelected?.id) return
                 setIsCastingVote(true)
@@ -206,10 +206,9 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
               }}
               variant="contained"
               color="secondary"
-              style={{ background: "red" }}
             >
               <ThumbDownAlt style={{ marginRight: 8 }} /> Reject
-            </Button>
+            </RejectButton>
           </Grid>
         )}
       </>

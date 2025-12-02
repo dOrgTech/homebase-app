@@ -1,10 +1,14 @@
-import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "@material-ui/core"
+import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery, Tooltip } from "@material-ui/core"
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import BigNumber from "bignumber.js"
 import { getDaoHref } from "utils"
+import { ethers } from "ethers"
+import SecurityIcon from "@mui/icons-material/Security"
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz"
+import LayersIcon from "@mui/icons-material/Layers"
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "background": theme.palette.primary.main,
@@ -123,10 +127,41 @@ export const DAOItem: React.FC<{
     dao_type: { name: string }
     votingAddressesCount: number
     description: string
+    nonTransferrable?: boolean
+    underlyingToken?: string
   }
 }> = ({ dao }) => {
   const daoType = dao.dao_type.name
   const daoHref = getDaoHref(dao.id, daoType)
+
+  // Determine Etherlink DAO subtype
+  const getEtherlinkDaoIcon = () => {
+    // Check if wrapped token DAO (same validation as EvmDaoStatsRow)
+    const isWrappedTokenDao =
+      !!dao.underlyingToken && typeof dao.underlyingToken === "string" && ethers.isAddress(dao.underlyingToken)
+
+    if (isWrappedTokenDao) {
+      return (
+        <Tooltip title="Wrapped Token DAO">
+          <LayersIcon style={{ color: "#81FEB7", fontSize: 24 }} />
+        </Tooltip>
+      )
+    } else if (dao.nonTransferrable === true) {
+      // nonTransferrable: true means non-transferable
+      return (
+        <Tooltip title="Non-Transferable Token DAO">
+          <SecurityIcon style={{ color: "#81FEB7", fontSize: 24 }} />
+        </Tooltip>
+      )
+    } else {
+      // nonTransferrable: false or undefined means transferable
+      return (
+        <Tooltip title="Transferable Token DAO">
+          <SwapHorizIcon style={{ color: "#81FEB7", fontSize: 24 }} />
+        </Tooltip>
+      )
+    }
+  }
 
   return (
     <Link underline="none" href={daoHref}>
@@ -139,7 +174,7 @@ export const DAOItem: React.FC<{
             {daoType === "lambda" ? <Badge dao_type={daoType}>V3</Badge> : null}
             {daoType === "registry" || daoType === "treasury" ? <Badge dao_type={daoType}>V2</Badge> : null}
             {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
-            {daoType === "etherlink_onchain" ? <Badge dao_type={daoType}>V4</Badge> : null}
+            {daoType === "etherlink_onchain" ? getEtherlinkDaoIcon() : null}
           </Grid>
         </Grid>
         <Grid container direction="row">

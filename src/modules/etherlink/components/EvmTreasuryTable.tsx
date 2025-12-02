@@ -13,9 +13,41 @@ import { makeStyles } from "@material-ui/core/styles"
 import { Card, CardContent, CardMedia } from "components/ui"
 import { dbg } from "utils/debug"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   toggleGroup: {
     marginBottom: 16
+  },
+  tableContainer: {
+    overflowX: "auto",
+    width: "100%"
+  },
+  table: {
+    width: "100%",
+    tableLayout: "fixed"
+  },
+  hideOnMobile: {
+    [theme.breakpoints.down("sm")]: {
+      display: "none"
+    }
+  },
+  hideOnUltrawide: {
+    "@media (min-aspect-ratio: 21/9)": {
+      display: "none"
+    }
+  },
+  addressCell: {
+    [theme.breakpoints.down("md")]: {
+      maxWidth: 120
+    },
+    overflow: "hidden",
+    textOverflow: "ellipsis"
+  },
+  actionCell: {
+    "width": 100,
+    "textAlign": "right",
+    "@media (min-aspect-ratio: 21/9)": {
+      display: "none"
+    }
   },
   nftGrid: {
     display: "grid",
@@ -64,10 +96,10 @@ const useStyles = makeStyles({
     fontWeight: 500,
     color: "#fff"
   }
-})
+}))
 
 export const EvmTreasuryTable = () => {
-  const { daoSelected, daoRegistryDetails, daoTreasuryTokens, daoNfts } = useContext(EtherlinkContext)
+  const { daoSelected, daoRegistryDetails, daoTreasuryTokens, daoNfts, contractData } = useContext(EtherlinkContext)
   const { setMetadataFieldValue, setTransferAssets, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
   const [view, setView] = useState("tokens")
@@ -77,16 +109,25 @@ export const EvmTreasuryTable = () => {
     return <Typography>Loading treasury data...</Typography>
   }
 
-  console.log({ daoNfts })
-
-  const renderNFTView = () => (
-    <div className={classes.nftGrid}>
-      {[...daoNfts]
-        .filter((n: any) => {
+  const renderNFTView = () => {
+    const nftList = Array.isArray(daoNfts)
+      ? daoNfts.filter((n: any) => {
           const t = String(n?.token?.type || n?.token_type || n?.token?.standard || "").toUpperCase()
           return t.includes("ERC721") || t.includes("ERC-721")
         })
-        .map(nft => (
+      : []
+
+    if (!nftList.length) {
+      return (
+        <Grid container direction="column" alignItems="center" justifyContent="center" style={{ padding: 48 }}>
+          <Typography color="textSecondary">No NFTs exist for this DAO</Typography>
+        </Grid>
+      )
+    }
+
+    return (
+      <div className={classes.nftGrid}>
+        {nftList.map(nft => (
           <Card key={nft?.id} className={classes.nftCard}>
             <CardMedia
               className={classes.nftImage}
@@ -139,33 +180,34 @@ export const EvmTreasuryTable = () => {
             </CardContent>
           </Card>
         ))}
-    </div>
-  )
+      </div>
+    )
+  }
 
   const renderTokenView = () => (
-    <TableContainer style={{ overflowX: "auto", maxWidth: "100%" }}>
-      <Table>
+    <TableContainer className={classes.tableContainer}>
+      <Table className={classes.table}>
         <TableHead>
           <TableRow>
             <TableCell>Token Name</TableCell>
-            <TableCell>Symbol</TableCell>
+            <TableCell className={classes.hideOnMobile}>Symbol</TableCell>
             <TableCell>Amount</TableCell>
-            <TableCell>Address</TableCell>
-            <TableCell />
+            <TableCell className={classes.addressCell}>Address</TableCell>
+            <TableCell className={classes.actionCell} />
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>Etherink Testnet</TableCell>
-            <TableCell>XTZ</TableCell>
+            <TableCell>{contractData?.nativeCurrency || "Tezos"}</TableCell>
+            <TableCell className={classes.hideOnMobile}>{contractData?.symbol || "XTZ"}</TableCell>
             <TableCell>{daoRegistryDetails?.balance}</TableCell>
-            <TableCell>
+            <TableCell className={classes.addressCell}>
               <Grid container direction="row" alignItems="center">
                 native token
                 {/* <CopyButton text="0x1234567890abcdef" /> */}
               </Grid>
             </TableCell>
-            <TableCell>
+            <TableCell className={classes.actionCell}>
               <SmallButton
                 onClick={() => {
                   setMetadataFieldValue("type", "transfer_assets")
@@ -184,15 +226,15 @@ export const EvmTreasuryTable = () => {
           {daoTreasuryTokens?.map((token: any) => (
             <TableRow key={token.address}>
               <TableCell>{token.name}</TableCell>
-              <TableCell>{token.symbol}</TableCell>
+              <TableCell className={classes.hideOnMobile}>{token.symbol}</TableCell>
               <TableCell>{token.balance}</TableCell>
-              <TableCell>
+              <TableCell className={classes.addressCell}>
                 <Grid container direction="row" alignItems="center">
                   {toShortAddress(token.address)}
                   <CopyButton text={token.address} />
                 </Grid>
               </TableCell>
-              <TableCell>
+              <TableCell className={classes.actionCell}>
                 <SmallButton
                   onClick={() => {
                     setMetadataFieldValue("type", "transfer_assets")

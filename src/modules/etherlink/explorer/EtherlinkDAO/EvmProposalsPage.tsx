@@ -3,11 +3,11 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { Grid } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
-import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
+import { EvmProposalsActionDialog } from "modules/etherlink/explorer/EvmProposalsActionDialog"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
 import { toDisplayStatus } from "modules/etherlink/status"
-import { ProposalsShell } from "components/ui/ProposalsShell"
+import { EvmProposalsShell } from "modules/etherlink/components/EvmProposalsShell"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "modules/explorer/pages/User/components/UserMovements"
@@ -25,6 +25,8 @@ export const EvmProposalsPage = () => {
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
   const selectedTab = offchainEnabled && qFilters.type === "offchain" ? 1 : 0
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [debouncedSearchText, setDebouncedSearchText] = useState("")
   useEffect(() => {
     if (!offchainEnabled && qFilters.type === "offchain") {
       setQFilters({ type: "onchain" })
@@ -37,6 +39,14 @@ export const EvmProposalsPage = () => {
     },
     [offchainEnabled, setQFilters]
   )
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText)
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchText])
 
   const matchesOnchainStatusFromQuery = (p: any) => {
     // status array comes normalized (hyphenated keys); empty or ['all'] means no filter
@@ -68,6 +78,7 @@ export const EvmProposalsPage = () => {
     if (key === "burn") return t.startsWith("burn")
     if (key === "registry") return t.includes("registry")
     if (key === "transfer") return t.includes("transfer")
+    if (key === "batch") return t.includes("batch")
     if (key === "contract-call")
       return t.includes("contract call") || t.includes("contract_call") || t.includes("arbitrary")
     if (key === "voting-delay") return t.includes("voting delay")
@@ -100,8 +111,21 @@ export const EvmProposalsPage = () => {
         base = base.filter(p => offStatuses.includes(offchainStatusKeyForProposal(p)))
       }
     }
+
+    if (debouncedSearchText) {
+      base = base.filter((p: any) => (p.title || "").toLowerCase().includes(debouncedSearchText.toLowerCase()))
+    }
+
     return base
-  }, [processedProposals, qFilters.author, qFilters.status, qFilters.ptype, selectedTab, offchainEnabled])
+  }, [
+    processedProposals,
+    qFilters.author,
+    qFilters.status,
+    qFilters.ptype,
+    selectedTab,
+    offchainEnabled,
+    debouncedSearchText
+  ])
 
   // Determine whether any filters are active for current tab to highlight the Filters pill
   const isFiltered = useMemo(() => {
@@ -116,12 +140,14 @@ export const EvmProposalsPage = () => {
 
   return (
     <>
-      <ProposalsShell
+      <EvmProposalsShell
         selectedTab={selectedTab}
         onChangeTab={onChangeTab}
         onOpenFilters={() => setOpenFiltersDialog(true)}
+        onSearch={setSearchText}
         isFiltered={isFiltered}
         showOffchainTab={offchainEnabled}
+        proposalCount={filteredProposals.length}
         rightActions={
           <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
             New Proposal
@@ -138,8 +164,8 @@ export const EvmProposalsPage = () => {
             </TabPanel>
           ) : null}
         </Grid>
-      </ProposalsShell>
-      <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
+      </EvmProposalsShell>
+      <EvmProposalsActionDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
       <FilterProposalsDialog
         open={openFiltersDialog}
         handleClose={() => setOpenFiltersDialog(false)}
@@ -174,6 +200,7 @@ export const EvmProposalsPage = () => {
             if (evmType === "token") ptype = ["mint", "burn"]
             else if (evmType === "registry") ptype = ["registry"]
             else if (evmType === "transfer") ptype = ["transfer"]
+            else if (evmType === "batch") ptype = ["batch"]
             else if (evmType === "contract call") ptype = ["contract-call"]
             else if (evmType === "voting delay") ptype = ["voting-delay"]
             else if (evmType === "voting period") ptype = ["voting-period"]

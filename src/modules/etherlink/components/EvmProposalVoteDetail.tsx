@@ -11,7 +11,7 @@ import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoO
 import { EVM_PROPOSAL_CHOICES } from "../config"
 import { IEvmProposal } from "../types"
 import { etherlinkStyled as _est } from "components/ui"
-const { ContainerVoteDetail: Container, TitleContainer, LegendContainer, GraphicsContainer } = _est
+const { ContainerVoteDetail: Container, LegendContainer, GraphicsContainer } = _est
 import { RenderChoices } from "./RenderChoices"
 import { ProposalHistory } from "./ProposalHistory"
 
@@ -35,7 +35,9 @@ export const EvmProposalVoteDetail: React.FC<{
       tokenAddress: daoSelected?.token,
       tokenID: daoSelected?.id,
       symbol: daoSelected?.symbol,
-      decimals: daoSelected?.decimals
+      // decimals: daoSelected?.decimals || 18
+      // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
+      decimals: 18
     }),
     [daoSelected]
   )
@@ -49,32 +51,33 @@ export const EvmProposalVoteDetail: React.FC<{
 
   useEffect(() => {
     const fetchTurnout = async () => {
-      if (token && tokenData) {
-        const value = await getTurnoutValue(
-          network,
-          tokenData?.tokenAddress,
-          tokenData.tokenID,
-          Number(poll?.referenceBlock),
-          totalVoteCount
-        )
-        if (value) {
-          setTurnout(value)
+      if (token && tokenData?.tokenAddress) {
+        try {
+          const value = await getTurnoutValue(
+            network,
+            tokenData.tokenAddress,
+            tokenData.tokenID,
+            Number(poll?.referenceBlock),
+            totalVoteCount
+          )
+          if (value) {
+            setTurnout(value)
+          }
+        } catch (error) {
+          // Silently handle turnout fetch errors - not critical for UI
+          console.debug("Failed to fetch turnout value:", error)
         }
       }
     }
     fetchTurnout()
-  }, [poll, network, token, tokenData, totalVoteCount])
+    // Use primitive values as dependencies to avoid repeated calls when object references change
+  }, [poll?.referenceBlock, network, token, tokenData?.tokenAddress, tokenData?.tokenID, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
 
   return (
     <>
-      <Container container direction="column" style={{ marginTop: 12, marginBottom: 12 }}>
-        <TitleContainer item>
-          <Typography variant={"h4"} color="textPrimary">
-            Voting Results
-          </Typography>
-        </TitleContainer>
+      <Container container direction="column" style={{ marginTop: 32, marginBottom: 12 }}>
         <GraphicsContainer container>
           {choices && choices?.length > 0 ? (
             <RenderChoices

@@ -7,26 +7,20 @@ interface ContractCallProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
   targets?: string[]
   callDataPlain?: string[]
+  compact?: boolean
 }
 
 export const ContractCallProposalRenderer: React.FC<ContractCallProposalRendererProps> = ({
   proposalData: _proposalData,
   targets,
-  callDataPlain
+  callDataPlain,
+  compact = false
 }) => {
-  // For Contract Call, we need to show Target and CallData
-  // Target comes from the targets array (first element typically)
-  // CallData comes from the callDataPlain array (first element typically)
-
   const target = targets && targets.length > 0 ? targets[0] : ""
   const callData = callDataPlain && callDataPlain.length > 0 ? callDataPlain[0] : "0x"
 
-  return (
-    <ContainerVoteDetail
-      container
-      direction="column"
-      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
-    >
+  const content = (
+    <>
       <Grid item style={{ marginBottom: 16 }}>
         <Header style={{ fontSize: 14, marginBottom: 8 }}>Target:</Header>
         <ShortenedValueField value={target} label="Target" />
@@ -35,6 +29,20 @@ export const ContractCallProposalRenderer: React.FC<ContractCallProposalRenderer
         <Header style={{ fontSize: 14, marginBottom: 8 }}>CallData:</Header>
         <ShortenedValueField value={callData} label="CallData" />
       </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
+  }
+
+  return (
+    <ContainerVoteDetail
+      container
+      direction="column"
+      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
+    >
+      {content}
     </ContainerVoteDetail>
   )
 }

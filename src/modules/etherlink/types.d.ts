@@ -7,9 +7,14 @@ export interface IEvmFirebaseContract {
   daoFactory: IEthereumAddress
   timelockFactory: IEthereumAddress
   registryFactory: IEthereumAddress
-  // wrapper: IEthereumAddress // Not in use and deprecated
+  standardFactory?: IEthereumAddress
+  standardFactory_t?: IEthereumAddress
+  standardFactory_w?: IEthereumAddress
+  wrapper?: IEthereumAddress
   wrapper_t: IEthereumAddress
   wrapper_w: IEthereumAddress
+  nativeCurrency: string
+  symbol: string
 }
 
 export interface IEvmOffchainChoiceForVote {
@@ -196,7 +201,8 @@ export enum EProposalType {
   contract_call = "contract_call",
   change_config = "change_config",
   token_operation = "token_operation",
-  off_chain_debate = "off_chain_debate"
+  off_chain_debate = "off_chain_debate",
+  batch_actions = "batch_actions"
 }
 
 export type IContractWriteMethod = {

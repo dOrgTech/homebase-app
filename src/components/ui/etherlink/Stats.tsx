@@ -8,6 +8,19 @@ export const Item = styled(Paper)(({ theme }) => ({
   display: "flex",
   padding: "33px 40px 30px 40px",
   flexDirection: "column",
+  boxShadow: "none",
+  gap: 8
+}))
+
+export const TransparentItem = styled(Paper)(({ theme }) => ({
+  borderRadius: 8,
+  background: "transparent",
+  color: theme.palette.text.primary,
+  height: 84,
+  display: "flex",
+  padding: "33px 40px 30px 40px",
+  flexDirection: "column",
+  boxShadow: "none",
   gap: 8
 }))
 
@@ -32,3 +45,7 @@ export const ItemValue = styled(Typography)(({ theme }) => ({
     fontSize: 28
   }
 }))
+
+export const StatsContainer = styled(Grid)({
+  marginBottom: "40px"
+})

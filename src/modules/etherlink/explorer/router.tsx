@@ -92,7 +92,7 @@ const EtherlinkDAOContext = React.createContext("")
 
 const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
   // Auto-select the DAO in Etherlink context when route changes
-  const { selectDao, daos, network, switchToNetwork, daoSelected } = useContext(EtherlinkContext) as any
+  const { selectDao, daos, isLoadingDaos, network, switchToNetwork, daoSelected } = useContext(EtherlinkContext) as any
   const attemptedSwitchRef = React.useRef(false)
 
   // Reset the auto-switch guard when the DAO id changes
@@ -114,12 +114,12 @@ const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) 
     }
 
     // If not found and we have a list, try alternate network once.
-    if (daos.length > 0 && !attemptedSwitchRef.current) {
+    if (daos.length > 0 && !isLoadingDaos && !attemptedSwitchRef.current) {
       attemptedSwitchRef.current = true
       const alt = network === "etherlink_testnet" ? "etherlink_mainnet" : "etherlink_testnet"
       switchToNetwork?.(alt)
     }
-  }, [daoId, daos, network, selectDao, switchToNetwork, daoSelected?.id])
+  }, [daoId, daos, isLoadingDaos, network, selectDao, switchToNetwork, daoSelected?.id])
 
   return <EtherlinkDAOContext.Provider value={daoId}>{children}</EtherlinkDAOContext.Provider>
 }

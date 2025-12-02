@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js"
-import { Token } from "models/Token"
 import { useState, useContext, useEffect, useMemo } from "react"
 import { useQuery } from "react-query"
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions"
@@ -16,15 +15,14 @@ import { EtherlinkContext } from "services/wagmi/context"
 
 // Generally this is used for onChain DAOs so can be renamed to useOnChainDAO
 export const useDAO = (address: string) => {
-  const [isLoading, setIsLoading] = useState(true)
   const [daoData, setDaoData] = useState<any | null>(null)
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>()
   const { network } = useTezos()
   const { data: blockchainInfo } = useBlockchainInfo()
   const {
-    daos: etherlinkOnchainDAOs,
     selectDao: selectEtherlinkDao,
-    daoSelected: etherlinkDaoSelected
+    daoSelected: etherlinkDaoSelected,
+    network: etherlinkNetwork
   } = useContext(EtherlinkContext)
   const {
     state: { block }
@@ -154,7 +152,7 @@ export const useDAO = (address: string) => {
           },
           description: dao.description,
           data: {
-            network: "etherlink_testnet"
+            network: etherlinkNetwork
           },
           start_level: 0,
           period: "0",
@@ -166,7 +164,7 @@ export const useDAO = (address: string) => {
             name: "Unknown",
             symbol: "Unknown",
             decimals: 0,
-            network: network as Network,
+            network: etherlinkNetwork as Network,
             supply: "0",
             contract: "Unknown",
             token_id: "Unknown",
@@ -214,7 +212,7 @@ export const useDAO = (address: string) => {
           max_proposal_size: 0,
           max_xtz_amount: "0",
           min_xtz_amount: "0",
-          network: "etherlink_testnet",
+          network: etherlinkNetwork,
           slash_division_value: "0",
           slash_scale_value: "0"
         } as any)
@@ -222,7 +220,7 @@ export const useDAO = (address: string) => {
     } else {
       setDaoData(data)
     }
-  }, [address, etherlinkDaoSelected, network, data])
+  }, [address, etherlinkDaoSelected, etherlinkNetwork, data])
 
   const ledgerWithBalances = useMemo(() => {
     if (data && cycleInfo) {
@@ -257,6 +255,6 @@ export const useDAO = (address: string) => {
     cycleInfo,
     ledger: ledgerWithBalances,
     ...rest,
-    isLoading: rest.isLoading || isLoading
+    isLoading: rest.isLoading
   }
 }
