@@ -1,7 +1,15 @@
 import React from "react"
-import { Box, Typography, CircularProgress, Link } from "components/ui"
+import { Box, Typography, CircularProgress, Link, styled } from "components/ui"
 import CheckCircleIcon from "@material-ui/icons/CheckCircle"
 import ErrorIcon from "@material-ui/icons/Error"
+
+const WhiteText = styled(Typography)({
+  color: "#fff !important"
+})
+
+const WhiteCaption = styled(Typography)({
+  color: "#fff !important"
+})
 
 export const TxStatus = ({
   state,
@@ -37,7 +45,7 @@ export const TxStatus = ({
       {state === "waitingApproval" && (
         <Box display="flex" alignItems="center" style={{ gap: 8 }}>
           <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-          <Typography>Waiting for approval transaction...</Typography>
+          <WhiteText>Waiting for approval transaction...</WhiteText>
         </Box>
       )}
 
@@ -45,7 +53,7 @@ export const TxStatus = ({
         <>
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-            <Typography>Approving tokens...</Typography>
+            <WhiteText>Approving tokens...</WhiteText>
           </Box>
           {approvalTxHash && <ExplorerLink hash={approvalTxHash} label="Approval tx" />}
         </>
@@ -55,11 +63,11 @@ export const TxStatus = ({
         <>
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <CheckCircleIcon style={{ fontSize: 16, color: "#4CAF50" }} />
-            <Typography>Approval complete</Typography>
+            <WhiteText>Approval complete</WhiteText>
           </Box>
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-            <Typography>Waiting for {wrapMode} transaction...</Typography>
+            <WhiteText>Waiting for {wrapMode} transaction...</WhiteText>
           </Box>
         </>
       )}
@@ -69,12 +77,12 @@ export const TxStatus = ({
           {wrapMode === "wrap" && (
             <Box display="flex" alignItems="center" style={{ gap: 8 }}>
               <CheckCircleIcon style={{ fontSize: 16, color: "#4CAF50" }} />
-              <Typography>Approval complete</Typography>
+              <WhiteText>Approval complete</WhiteText>
             </Box>
           )}
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-            <Typography>{wrapMode === "wrap" ? "Wrapping" : "Unwrapping"} tokens...</Typography>
+            <WhiteText>{wrapMode === "wrap" ? "Wrapping" : "Unwrapping"} tokens...</WhiteText>
           </Box>
           {executionTxHash && (
             <ExplorerLink hash={executionTxHash} label={`${wrapMode === "wrap" ? "Wrap" : "Unwrap"} tx`} />
@@ -86,7 +94,7 @@ export const TxStatus = ({
         <>
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <CheckCircleIcon style={{ fontSize: 16, color: "#4CAF50" }} />
-            <Typography>Transaction completed successfully!</Typography>
+            <WhiteText>Transaction completed successfully!</WhiteText>
           </Box>
           {executionTxHash && <ExplorerLink hash={executionTxHash} label="View transaction" />}
         </>
@@ -96,12 +104,12 @@ export const TxStatus = ({
         <>
           <Box display="flex" alignItems="center" style={{ gap: 8 }}>
             <ErrorIcon style={{ fontSize: 16, color: "#f44336" }} />
-            <Typography>Transaction failed</Typography>
+            <WhiteText>Transaction failed</WhiteText>
           </Box>
           {errorMessage && (
-            <Typography variant="caption" style={{ color: "#f44336" }}>
+            <WhiteCaption variant="caption" style={{ color: "#f44336" }}>
               {errorMessage}
-            </Typography>
+            </WhiteCaption>
           )}
         </>
       )}

@@ -6,11 +6,13 @@ import { ContainerVoteDetail, Header } from "components/ui/etherlink/styled"
 interface ConfigChangeProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
   proposalType: string
+  compact?: boolean
 }
 
 export const ConfigChangeProposalRenderer: React.FC<ConfigChangeProposalRendererProps> = ({
   proposalData,
-  proposalType
+  proposalType,
+  compact = false
 }) => {
   // Extract the new value from the proposal data
   const newValueParam = proposalData.find(
@@ -21,7 +23,6 @@ export const ConfigChangeProposalRenderer: React.FC<ConfigChangeProposalRenderer
       item.parameter.match(/^(new|value)\s*\(/)
   )
 
-  // Determine the header text based on proposal type
   const getHeaderText = () => {
     const type = proposalType.toLowerCase()
     if (type === "quorum") return "Change Quorum"
@@ -29,6 +30,17 @@ export const ConfigChangeProposalRenderer: React.FC<ConfigChangeProposalRenderer
     if (type === "voting period") return "Change Voting Period"
     if (type === "proposal threshold") return "Change Proposal Threshold"
     return "Change Configuration"
+  }
+
+  const content = (
+    <Grid item>
+      <Header style={{ fontSize: 14, marginBottom: 8 }}>New Value:</Header>
+      <ShortenedValueField value={newValueParam?.value || ""} label="New Value" />
+    </Grid>
+  )
+
+  if (compact) {
+    return <>{content}</>
   }
 
   return (
@@ -42,10 +54,7 @@ export const ConfigChangeProposalRenderer: React.FC<ConfigChangeProposalRenderer
           {getHeaderText()}
         </Typography>
       </Grid>
-      <Grid item>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>New Value:</Header>
-        <ShortenedValueField value={newValueParam?.value || ""} label="New Value" />
-      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

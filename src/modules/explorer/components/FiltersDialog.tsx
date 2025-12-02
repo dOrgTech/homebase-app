@@ -218,6 +218,7 @@ export const FilterProposalsDialog: React.FC<Props> = ({
                 "token",
                 "registry",
                 "transfer",
+                "batch",
                 "contract call",
                 "voting delay",
                 "voting period",

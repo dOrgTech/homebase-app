@@ -26,6 +26,33 @@ export const EvmDaoSummary = () => {
 
   const isWrappedToken = data?.tokenDeploymentMechanism === "wrapped"
 
+  // Format duration helper
+  const formatDuration = (days: number, hours: number, minutes: number) => {
+    const parts = []
+    if (days > 0) parts.push(`${days}d`)
+    if (hours > 0) parts.push(`${hours}h`)
+    if (minutes > 0) parts.push(`${minutes}m`)
+    return parts.length > 0 ? parts.join(" ") : "0m"
+  }
+
+  const votingDelay = formatDuration(
+    Number(data?.voting?.votingBlocksDay) || 0,
+    Number(data?.voting?.votingBlocksHours) || 0,
+    Number(data?.voting?.votingBlocksMinutes) || 0
+  )
+
+  const votingDuration = formatDuration(
+    Number(data?.voting?.proposalFlushBlocksDay) || 0,
+    Number(data?.voting?.proposalFlushBlocksHours) || 0,
+    Number(data?.voting?.proposalFlushBlocksMinutes) || 0
+  )
+
+  const executionDelay = formatDuration(
+    Number(data?.voting?.proposalExpiryBlocksDay) || 0,
+    Number(data?.voting?.proposalExpiryBlocksHours) || 0,
+    Number(data?.voting?.proposalExpiryBlocksMinutes) || 0
+  )
+
   const tableData = isWrappedToken
     ? [
         { key: "Name", value: data?.name },
@@ -42,7 +69,10 @@ export const EvmDaoSummary = () => {
         {
           key: "Proposal Threshold",
           value: `${data?.quorum?.proposalThreshold || 0}`
-        }
+        },
+        { key: "Voting Delay", value: votingDelay },
+        { key: "Voting Duration", value: votingDuration },
+        { key: "Execution Delay", value: executionDelay }
       ]
     : [
         { key: "Name", value: data?.name },
@@ -66,7 +96,10 @@ export const EvmDaoSummary = () => {
         {
           key: "Quorum",
           value: `${data?.quorum?.returnedTokenPercentage}%`
-        }
+        },
+        { key: "Voting Delay", value: votingDelay },
+        { key: "Voting Duration", value: votingDuration },
+        { key: "Execution Delay", value: executionDelay }
       ]
   return (
     <div className="evm-dao-summary">

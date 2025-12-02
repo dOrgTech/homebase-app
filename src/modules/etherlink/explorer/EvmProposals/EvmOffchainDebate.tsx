@@ -1,5 +1,14 @@
 import React from "react"
-import { Grid, Typography, IconButton, FormControlLabel, FormField, FormTextField, InputAdornment } from "components/ui"
+import {
+  Grid,
+  Typography,
+  IconButton,
+  FormControlLabel,
+  FormField,
+  FormTextField,
+  InputAdornment,
+  useTheme
+} from "components/ui"
 import { Add as AddIcon, RemoveCircleOutline } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { Switch } from "components/ui"
@@ -7,6 +16,7 @@ import { Switch } from "components/ui"
 // Styled components replaced by shared InputContainer and inline styles
 
 export const EvmOffchainDebate: React.FC = () => {
+  const theme = useTheme()
   const { offchainDebate, setOffchainDebate } = useEvmProposalOps()
   const choices = offchainDebate?.options
   const setChoices = (x: string[]) => setOffchainDebate("options", x)
@@ -94,7 +104,10 @@ export const EvmOffchainDebate: React.FC = () => {
                     endAdornment:
                       choices.length > 2 ? (
                         <InputAdornment position="end">
-                          <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
+                          <IconButton
+                            onClick={() => removeChoice(index)}
+                            style={{ padding: 4, color: theme.palette.error.main }}
+                          >
                             <RemoveCircleOutline />
                           </IconButton>
                         </InputAdornment>
@@ -109,7 +122,7 @@ export const EvmOffchainDebate: React.FC = () => {
           <Grid
             onClick={addChoice}
             style={{
-              background: "#1c2024",
+              background: theme.palette.primary.main,
               padding: 12,
               borderRadius: 4,
               cursor: "pointer",

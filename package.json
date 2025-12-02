@@ -40,6 +40,7 @@
     "@taquito/tzip12": "^20.0.0",
     "@taquito/tzip16": "^20.0.0",
     "@taquito/utils": "^20.0.0",
+    "@types/dompurify": "^3.2.0",
     "@types/prismjs": "^1.26.0",
     "@types/react-paginate": "^7.1.2",
     "@types/react-router-hash-link": "^2.4.5",
@@ -52,6 +53,7 @@
     "connectkit": "^1.8.2",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.11",
+    "dompurify": "^3.3.0",
     "ethers": "^6.13.1",
     "export-to-csv": "^1.2.4",
     "firebase": "11.0.2",
@@ -108,6 +110,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "craco-esbuild": "^0.6.1",
+    "dotenv": "^17.2.3",
     "esbuild": "^0.25.10",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
@@ -167,5 +170,6 @@
     "src/**/*.{js,jsx,ts,tsx}": [
       "npm run lint:check"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

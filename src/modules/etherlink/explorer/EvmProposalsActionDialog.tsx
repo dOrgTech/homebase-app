@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useContext } from "react"
+import { ethers } from "ethers"
 import { Box, Grid, useMediaQuery, useTheme, Typography } from "components/ui"
 import { NextButton } from "components/ui/NextButton"
 import { FormField, FormTextArea, FormTextField } from "components/ui"
 import { LinearProgressLoader } from "components/ui/LinearProgress"
 
-import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { EvmResponsiveDialog } from "../components/EvmResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
@@ -17,6 +18,7 @@ import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
 import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
 import { EvmProposalOptions } from "../config"
 import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
+import { EvmPropBatchActions } from "./EvmProposals/EvmPropBatchActions"
 import { EProposalType } from "../types"
 
 import { OptionContainer, ActionText, ActionDescriptionText, TitleContainer } from "components/ui"
@@ -24,6 +26,8 @@ import { isFeatureEnabled } from "utils/features"
 
 const renderModal = (modal: EProposalType) => {
   switch (modal) {
+    case "batch_actions":
+      return <EvmPropBatchActions />
     case "transfer_assets":
       return <EvmPropTransferAssets />
     case "edit_registry":
@@ -46,14 +50,28 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
   const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
-  const daoCtx = React.useContext(EtherlinkContext)
+  const { daoSelected } = useContext(EtherlinkContext)
   const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
+
+  // Check if this is a wrapped token DAO
+  const isWrappedTokenDao =
+    !!daoSelected?.underlyingToken &&
+    typeof daoSelected.underlyingToken === "string" &&
+    ethers.isAddress(daoSelected.underlyingToken)
+
   const availableOptions = React.useMemo(() => {
-    if (offchainEnabled) return EvmProposalOptions
-    return EvmProposalOptions.filter(option => option.modal !== "off_chain_debate")
-  }, [offchainEnabled])
+    let options = EvmProposalOptions
+    if (!offchainEnabled) {
+      options = options.filter(option => option.modal !== "off_chain_debate")
+    }
+    // Hide token operations for wrapped token DAOs (they can't mint/burn)
+    if (isWrappedTokenDao) {
+      options = options.filter(option => option.modal !== "token_operation")
+    }
+    return options
+  }, [offchainEnabled, isWrappedTokenDao])
   React.useEffect(() => {
     if (!offchainEnabled && metadata.type === "off_chain_debate") {
       setMetadataFieldValue("type", "")
@@ -61,27 +79,9 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   }, [offchainEnabled, metadata.type, setMetadataFieldValue])
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
 
-  const thresholdRaw = React.useMemo(() => {
-    try {
-      return BigInt(daoCtx?.daoSelected?.proposalThreshold || 0)
-    } catch (_) {
-      return BigInt(0)
-    }
-  }, [daoCtx?.daoSelected?.proposalThreshold])
-
-  const decimals = Number(daoCtx?.daoSelected?.decimals || 0)
-  const toHuman = (x: bigint | number) => {
-    const v = typeof x === "number" ? BigInt(Math.trunc(x)) : x
-    if (!decimals) return v.toString()
-    const s = v.toString().padStart(decimals + 1, "0")
-    const intPart = s.slice(0, -decimals)
-    const frac = s.slice(-decimals).replace(/0+$/, "")
-    return frac ? `${intPart}.${frac}` : intPart
-  }
-
   return (
     <>
-      <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
+      <EvmResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
         <TitleContainer container direction="row">
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
@@ -102,14 +102,23 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             </Grid>
           ))}
         </Grid>
-      </ResponsiveDialog>
+      </EvmResponsiveDialog>
 
-      <ResponsiveDialog
+      <EvmResponsiveDialog
         open={currentStep === 1}
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        <Grid>
+        <div
+          style={
+            {
+              flexWrap: "nowrap",
+              display: "flex",
+              flexDirection: "column",
+              boxSizing: "border-box"
+            } as React.CSSProperties
+          }
+        >
           <Grid container direction="column" style={{ gap: 18, marginBottom: 32 }}>
             <FormField label="Proposal Title" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
@@ -154,11 +163,6 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           >
             <Typography color="textPrimary" style={{ flex: 1 }}>
               Voting power:
-              {/* 
-              TODO: Fix this
-              {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
-              {toHuman(thresholdRaw)} 
-              */}
             </Typography>
             <NextButton
               disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}
@@ -183,30 +187,60 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <BackButton onClick={prevStep.handler} />
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
           </Grid>
-        </Grid>
-      </ResponsiveDialog>
+        </div>
+      </EvmResponsiveDialog>
 
-      <ResponsiveDialog
+      <EvmResponsiveDialog
         template="md"
         open={currentStep >= 2}
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        {isDeploying ? (
-          <>
-            <Typography>Deploying Proposal...</Typography>
-            <LinearProgressLoader />
-          </>
-        ) : (
-          renderModal(metadata.type as EProposalType)
-        )}
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <BackButton disabled={isDeploying} onClick={prevStep.handler} />
-          <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
-            {nextStep.text}
-          </NextButton>
-        </Grid>
-      </ResponsiveDialog>
+        <div
+          className="hb-wrapper"
+          style={{
+            flexWrap: "nowrap",
+            display: "flex",
+            flexDirection: "column",
+            boxSizing: "border-box",
+            maxHeight: "calc(100vh - 250px)"
+          }}
+        >
+          <Box
+            style={{
+              flexGrow: 1,
+              overflowY: "auto",
+              overflowX: "hidden",
+              minHeight: 0
+            }}
+          >
+            {isDeploying ? (
+              <>
+                <Typography>Deploying Proposal...</Typography>
+                <br />
+                <LinearProgressLoader />
+              </>
+            ) : (
+              renderModal(metadata.type as EProposalType)
+            )}
+          </Box>
+          <Box
+            style={{
+              borderTop: `1px solid ${theme.palette.divider}`,
+              paddingTop: 20,
+              marginTop: 20,
+              flexShrink: 0
+            }}
+          >
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
+              <BackButton disabled={isDeploying} onClick={prevStep.handler} />
+              <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
+                {nextStep.text}
+              </NextButton>
+            </Grid>
+          </Box>
+        </div>
+      </EvmResponsiveDialog>
     </>
   )
 }

@@ -10,16 +10,16 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 import { EtherlinkContext } from "services/wagmi/context"
 
-const OptionContainer = styled(Grid)({
-  "background": "#1c2024",
+const OptionContainer = styled(Grid)(({ theme }) => ({
+  "background": theme.palette.primary.main,
   "padding": "20px",
   "borderRadius": "8px",
   "cursor": "pointer",
   "height": "100%",
   "&:hover": {
-    background: "#3F444A"
+    background: theme.palette.secondary.dark
   }
-})
+}))
 
 const IconContainer = styled(Box)({
   marginBottom: "16px"
@@ -186,10 +186,10 @@ export const EvmPropDaoConfig = () => {
     }
   }
 
-  if (currentStep == 3) return <Box style={{ marginBottom: "20px" }}>{renderSelectedOption()}</Box>
+  if (currentStep == 3) return <Box style={{ marginBottom: 0 }}>{renderSelectedOption()}</Box>
 
   return (
-    <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
+    <Grid container spacing={0} style={{ gap: 0, marginBottom: 0 }}>
       <ConfigOption
         icon={<HowToVoteIcon fontSize="large" />}
         title="Quorum"

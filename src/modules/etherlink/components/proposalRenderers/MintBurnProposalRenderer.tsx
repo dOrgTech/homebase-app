@@ -9,13 +9,15 @@ interface MintBurnProposalRendererProps {
   proposalType: string
   tokenSymbol?: string
   decimals?: number
+  compact?: boolean
 }
 
 export const MintBurnProposalRenderer: React.FC<MintBurnProposalRendererProps> = ({
   proposalData,
   proposalType,
   tokenSymbol = "SSE",
-  decimals = 18
+  decimals = 18,
+  compact = false
 }) => {
   const isMint = proposalType?.toLowerCase().includes("mint")
   const actionType = isMint ? "Mint" : "Burn"
@@ -33,10 +35,8 @@ export const MintBurnProposalRenderer: React.FC<MintBurnProposalRendererProps> =
       item.parameter.toLowerCase().includes("amount") || item.parameter === "1" || item.parameter.match(/^amount\s*\(/)
   )
 
-  // Format the amount if it's a large number
   const formatAmount = (value: string) => {
     try {
-      // If the value looks like a large number, try to format it with decimals
       if (value && !isNaN(Number(value)) && value.length > 10) {
         const formatted = ethers.formatUnits(value, decimals)
         return formatted
@@ -45,6 +45,23 @@ export const MintBurnProposalRenderer: React.FC<MintBurnProposalRendererProps> =
     } catch {
       return value
     }
+  }
+
+  const content = (
+    <>
+      <Grid item style={{ marginBottom: 16 }}>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>To Address:</Header>
+        <ShortenedValueField value={addressParam?.value || ""} label="To Address" />
+      </Grid>
+      <Grid item>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount:</Header>
+        <ShortenedValueField value={formatAmount(amountParam?.value || "")} label="Amount" />
+      </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
   }
 
   return (
@@ -58,14 +75,7 @@ export const MintBurnProposalRenderer: React.FC<MintBurnProposalRendererProps> =
           {actionType} {tokenSymbol} Tokens
         </Typography>
       </Grid>
-      <Grid item style={{ marginBottom: 16 }}>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>To Address:</Header>
-        <ShortenedValueField value={addressParam?.value || ""} label="To Address" />
-      </Grid>
-      <Grid item>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount:</Header>
-        <ShortenedValueField value={formatAmount(amountParam?.value || "")} label="Amount" />
-      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

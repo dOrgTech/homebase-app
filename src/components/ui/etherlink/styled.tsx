@@ -1,4 +1,5 @@
 import {
+  Box,
   DialogContent,
   Grid,
   Link,
@@ -153,11 +154,11 @@ export const HistoryKey = styled(Typography)({
   textTransform: "capitalize"
 })
 
-export const HistoryValue = styled(Typography)({
+export const HistoryValue = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   fontWeight: 300,
-  color: "#BFC5CA"
-})
+  color: theme.palette.primary.light
+}))
 
 export const AssetLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
@@ -217,16 +218,49 @@ export const StyledLink = styled(Link)(({ theme }) => ({
   }
 }))
 
-export const CustomPopover = withStyles({
+export const CustomPopover = withStyles(theme => ({
   paper: {
     "marginTop": 10,
     "padding": 8,
     "cursor": "pointer",
-    "background": "#1c1f23 !important",
+    "background": `${theme.palette.primary.dark} !important`,
     "&:hover": {
-      background: "#81feb76b !important"
+      background: `${theme.palette.secondary.dark} !important`
     }
   }
-})(Popover)
+}))(Popover)
+
+export const DelegationBox = styled(Box)(({ theme }) => ({
+  borderRadius: 12,
+  padding: "32px",
+  marginBottom: "20px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  textAlign: "center",
+  gap: "16px",
+  border: "1px solid rgba(255, 255, 255, 0.2)"
+}))
+
+export const AddressDisplay = styled(Typography)({
+  color: "#fff",
+  fontSize: "14px",
+  fontFamily: "monospace",
+  marginBottom: "20px"
+})
+
+export const DelegationTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "24px",
+  color: theme.palette.common.white,
+  marginBottom: "16px",
+  textTransform: "uppercase",
+  letterSpacing: 1
+}))
+
+export const DelegationDescription = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  fontSize: "16px",
+  marginBottom: "24px"
+}))
 
 export { ContentContainer }

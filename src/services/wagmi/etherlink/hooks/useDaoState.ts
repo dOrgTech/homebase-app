@@ -3,7 +3,7 @@ import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestor
 import dayjs from "dayjs"
 import BigNumber from "bignumber.js"
 import { Timestamp } from "firebase/firestore"
-import { networkConfig } from "modules/etherlink/utils"
+import { networkConfig, getFirestoreNetworkName } from "modules/etherlink/utils"
 import { getCallDataFromBytes, getBlockExplorerUrl } from "modules/etherlink/utils"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
 import { IEvmDAO, IEvmFirebaseContract, IEvmFirebaseDAOMember, IEvmFirebaseProposal } from "modules/etherlink/types"
@@ -25,7 +25,7 @@ export const useDaoState = ({ network }: { network: string }) => {
 
   const [isLoadingDaos, setIsLoadingDaos] = useState(!!firebaseRootCollection)
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
-  const [contractData, setContractData] = useState<any[]>([])
+  const [contractData, setContractData] = useState<IEvmFirebaseContract | null>(null)
   const [daoData, setDaoData] = useState<IEvmDAO[]>([])
   const [daoSelected, setDaoSelected] = useState<IEvmDAO | null>(null)
   const [daoProposals, setDaoProposals] = useState<any[]>([])
@@ -73,10 +73,11 @@ export const useDaoState = ({ network }: { network: string }) => {
 
   // Initial fetch triggers
   useEffect(() => {
-    fetchCollection("contracts")
+    const firestoreNetworkName = getFirestoreNetworkName(network)
+    fetchDoc("contracts", firestoreNetworkName)
     if (firebaseRootCollection) fetchCollection(firebaseRootCollection)
     if (firebaseRootTokenCollection) fetchCollection(firebaseRootTokenCollection)
-  }, [fetchCollection, firebaseRootCollection, firebaseRootTokenCollection])
+  }, [fetchCollection, fetchDoc, firebaseRootCollection, firebaseRootTokenCollection, network])
 
   // When the root collection changes (i.e., network change), clear previous data promptly
   useEffect(() => {
@@ -100,19 +101,22 @@ export const useDaoState = ({ network }: { network: string }) => {
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
       const allDaoList = firestoreData[firebaseRootCollection]
-      setDaoData(allDaoList)
+      const normalizedDaoList = allDaoList.map((dao: any) => ({
+        ...dao,
+        // decimals: dao.decimals || 18
+        // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
+        decimals: 18
+      }))
+      setDaoData(normalizedDaoList)
       setIsLoadingDaos(false)
     }
-    if (firestoreData?.["contracts"]) {
-      const isTestnet = firebaseRootCollection?.toLowerCase().includes("testnet")
-      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: IEvmFirebaseContract) => {
-        return isTestnet
-          ? contract.id?.toLowerCase().includes("testnet")
-          : !contract.id?.toLowerCase().includes("testnet")
-      })
-      setContractData(contractDataForNetwork)
+    const firestoreNetworkName = getFirestoreNetworkName(network)
+    const contractDocKey = `contracts/${firestoreNetworkName}`
+    if (firestoreData?.[contractDocKey]) {
+      const contractDoc = firestoreData[contractDocKey]
+      setContractData(Array.isArray(contractDoc) ? contractDoc[0] : contractDoc)
     }
-  }, [firestoreData, firebaseRootCollection])
+  }, [firestoreData, firebaseRootCollection, network])
 
   // When a DAO is selected, subscribe to its subcollections and compute proposal summaries
   useEffect(() => {
@@ -723,7 +727,10 @@ export const useDaoState = ({ network }: { network: string }) => {
     (daoId: string) => {
       const dao = daoData.find(dao => (dao?.id || "").toLowerCase() === (daoId || "").toLowerCase())
       if (dao) {
-        setDaoSelected(dao)
+        setDaoSelected({
+          ...dao,
+          decimals: dao.decimals || 18
+        })
         selectedDaoIdRef.current = daoId
       }
     },

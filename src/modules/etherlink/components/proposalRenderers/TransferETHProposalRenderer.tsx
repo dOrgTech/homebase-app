@@ -17,6 +17,7 @@ interface TransferETHProposalRendererProps {
   values?: any[]
   tokenSymbol?: string
   decimals?: number
+  compact?: boolean
 }
 
 export const TransferETHProposalRenderer: React.FC<TransferETHProposalRendererProps> = ({
@@ -25,7 +26,8 @@ export const TransferETHProposalRenderer: React.FC<TransferETHProposalRendererPr
   callDataPlain: _callDataPlain,
   values: _values,
   tokenSymbol: _tokenSymbol,
-  decimals: _decimals
+  decimals: _decimals,
+  compact = false
 }) => {
   // For Transfer XTZ, the proposalData structure is an array of parameter objects:
   // [
@@ -61,17 +63,8 @@ export const TransferETHProposalRenderer: React.FC<TransferETHProposalRendererPr
 
   const formattedAmount = formatAmount(amountRaw)
 
-  return (
-    <ContainerVoteDetail
-      container
-      direction="column"
-      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
-    >
-      <Grid item style={{ marginBottom: 20 }}>
-        <Typography variant="h3" color="textPrimary">
-          Transfer XTZ
-        </Typography>
-      </Grid>
+  const content = (
+    <>
       <Grid item style={{ marginBottom: 16 }}>
         <Header style={{ fontSize: 14, marginBottom: 8 }}>To Address:</Header>
         <ShortenedValueField value={toAddress} label="To Address" />
@@ -83,6 +76,25 @@ export const TransferETHProposalRenderer: React.FC<TransferETHProposalRendererPr
           <AssetLabel>XTZ</AssetLabel>
         </AmountContainer>
       </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
+  }
+
+  return (
+    <ContainerVoteDetail
+      container
+      direction="column"
+      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
+    >
+      <Grid item style={{ marginBottom: 20 }}>
+        <Typography variant="h3" color="textPrimary">
+          Transfer XTZ
+        </Typography>
+      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getEtherAddressDetails, getEtherTokenBalances, getEtherlinkDAONfts } from "modules/etherlink/utils"
 import { ethers } from "ethers"
 
-export const useTreasury = (network: string, registryAddress?: string) => {
+export const useTreasury = (network: string, registryAddress?: string, refreshKey?: number) => {
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{ balance: string }>({ balance: "0" })
   const [daoTreasuryTokens, setDaoTreasuryTokens] = useState<any[]>([])
   const [daoNfts, setDaoNfts] = useState<any[]>([])
@@ -46,7 +46,7 @@ export const useTreasury = (network: string, registryAddress?: string) => {
         setDaoNfts(data?.items)
       })
     ])
-  }, [network, registryAddress])
+  }, [network, registryAddress, refreshKey])
 
   return { daoRegistryDetails, daoTreasuryTokens, daoNfts }
 }

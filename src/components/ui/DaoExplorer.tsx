@@ -4,6 +4,7 @@ const PageLayout = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
   width: "1000px",
   margin: "42px auto 0px auto",
+  minHeight: "calc(100vh - 200px)",
 
   ["@media (max-width: 1425px)"]: {},
 

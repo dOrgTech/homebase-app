@@ -47,8 +47,7 @@
             { "internalType": "address[]","name": "initialMembers",    "type": "address[]" },
             { "internalType": "uint256[]","name": "initialAmounts",    "type": "uint256[]" },
             { "internalType": "string[]","name": "keys",               "type": "string[]" },
-            { "internalType": "string[]","name": "values",             "type": "string[]" },
-            { "internalType": "bool",    "name": "transferrable",      "type": "bool" }
+            { "internalType": "string[]","name": "values",             "type": "string[]" }
           ],
           "internalType": "struct WrapperContract.DaoParams",
           "name": "params",
