@@ -18,17 +18,20 @@
 .env.development.local
 .env.test.local
 .env.production.local
-
+debug-api-test.js
+xss-issue.txt
+DAO_DEPLOYMENT_GUIDE.md
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .eslintcache
 .vscode
-
+share.md
 .idea
 .env.example
 .cosine
-
+.aiaccess
+aiaccess.py
 # Ignore for yarn.lock
 bun.lockb
 package-lock.json
@@ -41,3 +44,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/contract-call-layout-fixed.png
 e2e/contract-call-layout.spec.ts
+CLAUDE.md
+.claude/

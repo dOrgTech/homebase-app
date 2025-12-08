@@ -2,7 +2,17 @@ import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery, Tooltip
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
+import DOMPurify from "dompurify"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
+
+// Sanitize HTML content to prevent XSS attacks
+const sanitizeHtml = (html: string): string => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ["b", "i", "em", "strong", "a", "p", "br", "ul", "ol", "li", "span"],
+    ALLOWED_ATTR: ["href", "target", "rel"],
+    ALLOW_DATA_ATTR: false
+  })
+}
 import BigNumber from "bignumber.js"
 import { getDaoHref } from "utils"
 import { ethers } from "ethers"
@@ -178,7 +188,7 @@ export const DAOItem: React.FC<{
           </Grid>
         </Grid>
         <Grid container direction="row">
-          <DescriptionText>{ReactHtmlParser(dao.description)}</DescriptionText>
+          <DescriptionText>{ReactHtmlParser(sanitizeHtml(dao.description || ""))}</DescriptionText>
         </Grid>
         <Grid container direction="row" justifyContent="space-between">
           <Grid xs={6} container item direction="column">
