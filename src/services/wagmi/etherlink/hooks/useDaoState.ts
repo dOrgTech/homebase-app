@@ -9,6 +9,7 @@ import { fetchOffchainProposals } from "services/services/lite/lite-services"
 import { IEvmDAO, IEvmFirebaseContract, IEvmFirebaseDAOMember, IEvmFirebaseProposal } from "modules/etherlink/types"
 import { toDisplayStatus, isReadyToQueue } from "modules/etherlink/status"
 import { useProposalData } from "../hooks/useProposalData"
+import { sanitizeDaoName, sanitizeDaoDescription, sanitizeDaoSymbol } from "utils/sanitize"
 
 export const useDaoState = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
@@ -105,7 +106,10 @@ export const useDaoState = ({ network }: { network: string }) => {
         ...dao,
         // decimals: dao.decimals || 18
         // Hardcoded because of https://github.com/dOrgTech/homebase-app/issues/932
-        decimals: 18
+        decimals: 18,
+        name: sanitizeDaoName(dao.name),
+        description: sanitizeDaoDescription(dao.description),
+        symbol: sanitizeDaoSymbol(dao.symbol)
       }))
       setDaoData(normalizedDaoList)
       setIsLoadingDaos(false)
