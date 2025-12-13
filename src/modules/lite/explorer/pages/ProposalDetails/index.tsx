@@ -94,8 +94,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     if (historyLength > 1) {
       navigate.goBack()
     } else {
-      const daoUrl = pathname?.replace(`proposal/${proposalId}`, "")
-      navigate.push(daoUrl)
+      // If daoId is provided in state, user came from a V3 DAO, navigate to full DAO view
+      if (state?.daoId) {
+        navigate.push(`/explorer/dao/${state.daoId}`)
+      } else {
+        // Otherwise, navigate to lite DAO view
+        const daoUrl = pathname?.replace(`proposal/${proposalId}`, "")
+        navigate.push(daoUrl)
+      }
     }
   }
 
