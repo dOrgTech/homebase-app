@@ -1,3 +1,4 @@
+// Demo test - AI assisted development
 import React from "react"
 import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
