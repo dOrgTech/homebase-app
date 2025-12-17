@@ -22,6 +22,7 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import NewReleasesIcon from "@mui/icons-material/NewReleases"
 import DeleteIcon from "@mui/icons-material/Delete"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import HowToVoteIcon from "@mui/icons-material/HowToVote"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "../User/components/UserMovements"
 import { EvmProposalsPage } from "modules/etherlink/explorer/EtherlinkDAO/EvmProposalsPage"
@@ -112,6 +113,7 @@ const TezosProposals = () => {
   const [selectedTab, setSelectedTab] = React.useState(0)
 
   const { data: proposals } = useProposals(daoId)
+  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
@@ -260,6 +262,17 @@ const TezosProposals = () => {
                   Off-Chain
                 </StyledTab>
               </Grid>
+              <Grid item>
+                <StyledTab
+                  startIcon={<HowToVoteIcon style={{ fontSize: 20, color: selectedTab === 2 ? "#85C4FF" : "#fff" }} />}
+                  disableElevation={true}
+                  variant="contained"
+                  onClick={() => handleChangeTab(2)}
+                  isSelected={selectedTab === 2}
+                >
+                  Active
+                </StyledTab>
+              </Grid>
             </TabsContainer>
           </Grid>
 
@@ -314,6 +327,29 @@ const TezosProposals = () => {
                   <Grid item>
                     <Typography color="textPrimary" align="center">
                       No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
+            </Grid>
+          </TabPanel>
+
+          <TabPanel value={selectedTab} index={2}>
+            <Grid item xs={12} style={{ marginTop: 38, gap: 16 }}>
+              {activeProposals && cycleInfo && (
+                <ProposalsList
+                  proposalStyle={{ marginBottom: 32 }}
+                  currentLevel={cycleInfo.currentLevel}
+                  proposals={activeProposals}
+                  liteProposals={undefined}
+                  filters={filters}
+                />
+              )}
+              {!(activeProposals && activeProposals.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No active proposals
                     </Typography>
                   </Grid>
                 </ProposalsFooter>
