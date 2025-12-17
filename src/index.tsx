@@ -1,3 +1,4 @@
+// Demo v2 - testing history logging
 import { createRoot } from "react-dom/client"
 
 import { PostHogProvider, PostHogErrorBoundary } from "posthog-js/react"
