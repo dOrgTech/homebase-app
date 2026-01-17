@@ -44,10 +44,10 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
   const defaultsAppliedRef = React.useRef(false)
 
   React.useEffect(() => {
-    const isEtherlinkTestnet = network === "etherlink_testnet"
+    const isEtherlinkShadownet = network === "etherlink_shadownet"
     const isEtherlinkMainnet = network === "etherlink_mainnet"
 
-    if (!(isEtherlinkTestnet || isEtherlinkMainnet)) return
+    if (!(isEtherlinkShadownet || isEtherlinkMainnet)) return
     if (defaultsAppliedRef.current) return
 
     const delayDays = Number(daoData.voting.votingBlocksDay) || 0

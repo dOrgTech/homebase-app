@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 
-test("shows v4 daos on switching to etherlink testnet", async ({ page }) => {
+test("shows v4 daos on switching to etherlink shadownet", async ({ page }) => {
   await page.goto(`/explorer/daos`)
 
   await page.waitForLoadState("domcontentloaded")
@@ -13,10 +13,10 @@ test("shows v4 daos on switching to etherlink testnet", async ({ page }) => {
   console.log("Modal Title", modalTitleText)
   await expect(modalTitleText).toContain("Choose Network")
 
-  const etherlinkTestnet = await modalTitle.locator("text=Etherlink Testnet")
-  await expect(etherlinkTestnet).toBeVisible()
+  const etherlinkShadownet = await modalTitle.locator("text=Etherlink Shadownet")
+  await expect(etherlinkShadownet).toBeVisible()
 
-  await etherlinkTestnet.click()
+  await etherlinkShadownet.click()
 
   await page.waitForTimeout(10000)
   await page.reload()

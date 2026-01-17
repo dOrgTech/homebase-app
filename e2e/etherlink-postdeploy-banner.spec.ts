@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test"
 
 test("shows post-deploy banner with explorer link", async ({ page }) => {
   const tx = `0x${"a".repeat(64)}`
-  await page.goto(`/explorer/daos?postDeploy=dao-created&network=etherlink_testnet&tx=${tx}`)
+  await page.goto(`/explorer/daos?postDeploy=dao-created&network=etherlink_shadownet&tx=${tx}`)
 
   await page.waitForLoadState("domcontentloaded")
 
@@ -14,7 +14,7 @@ test("shows post-deploy banner with explorer link", async ({ page }) => {
   await expect(viewTx).toBeVisible()
 
   const href = await viewTx.getAttribute("href")
-  expect(href).toContain("https://testnet.explorer.etherlink.com")
+  expect(href).toContain("https://shadownet.explorer.etherlink.com")
   expect(href).toContain("/tx/")
 })
 

@@ -30,7 +30,7 @@ export const TxStatus = ({
     <Typography variant="caption">
       {label}:{" "}
       <Link
-        href={`https://testnet.explorer.etherlink.com/tx/${hash}`}
+        href={`https://shadownet.explorer.etherlink.com/tx/${hash}`}
         target="_blank"
         rel="noopener noreferrer"
         style={{ color: "#4FC3F7" }}
