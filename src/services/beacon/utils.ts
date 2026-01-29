@@ -107,20 +107,10 @@ export const connectWithBeacon = async (
   wallet: BeaconWallet
 }> => {
   const wallet = createWallet(envNetwork)
-  const networkType = getNetworkTypeByEnvNetwork(envNetwork)
 
-  // Explicitly pass network to requestPermissions to ensure wallet connects to correct network
-  const permissionRequest =
-    envNetwork === "shadownet"
-      ? {
-          network: {
-            type: networkType,
-            rpcUrl: rpcNodes.shadownet
-          }
-        }
-      : { network: { type: networkType } }
-
-  await wallet.requestPermissions(permissionRequest)
+  // Network is already configured in createWallet via DAppClientOptions.network
+  // In Beacon SDK 4.7.0+, requestPermissions only accepts scopes, not network
+  await wallet.requestPermissions()
 
   const accounts: any[] = JSON.parse(localStorage.getItem("beacon:accounts") as string)
 
