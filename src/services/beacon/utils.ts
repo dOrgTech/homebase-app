@@ -59,19 +59,11 @@ export const getTezosNetwork = (): Network => {
 
 export const createWallet = (network: Network) => {
   const networkType = getNetworkTypeByEnvNetwork(network)
-  const networkConfig =
-    network === "shadownet"
-      ? {
-          type: networkType,
-          name: "shadownet",
-          rpcUrl: rpcNodes.shadownet
-        }
-      : { type: networkType }
 
   return new BeaconWallet({
     name: "Homebase",
     iconUrl: "https://tezostaquito.io/img/favicon.png",
-    network: networkConfig,
+    network: { type: networkType },
     walletConnectOptions: {
       projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
       relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
@@ -89,7 +81,7 @@ export const createTezos = (network: Network) => {
 export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => {
   switch (envNetwork) {
     case "shadownet":
-      return NetworkType.CUSTOM
+      return NetworkType.SHADOWNET
 
     case "mainnet":
       return NetworkType.MAINNET
