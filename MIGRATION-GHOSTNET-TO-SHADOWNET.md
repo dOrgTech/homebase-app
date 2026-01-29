@@ -23,7 +23,7 @@ Reference: https://teztnets.com/shadownet-about
 | TzKT Explorer | ✅ Ready | `shadownet.tzkt.io` |
 | Shadownet Faucet | ✅ Ready | `faucet.shadownet.teztnets.com` |
 | SmartPy RPC | ❓ Unknown | May not support shadownet |
-| Beacon Wallet SDK | ⚠️ Custom | Needs `NetworkType.CUSTOM` |
+| Beacon Wallet SDK | ✅ Ready | Upgraded to 4.7.0 with native `NetworkType.SHADOWNET` |
 | Better Call Dev | ❓ Unknown | May not support shadownet |
 
 ---
@@ -80,9 +80,10 @@ REACT_APP_RPC_NETWORK_SHADOWNET=https://rpc.shadownet.teztnets.com
 
 ## Testing Checklist
 
-- [ ] Get tez from shadownet faucet
-- [ ] Test wallet connection with Temple/Kukai
-- [ ] Test token creation
+- [x] Get tez from shadownet faucet
+- [x] Test wallet connection with Temple/Kukai (Kukai works with Beacon SDK 4.7.0)
+- [x] Fix: Wallet was connecting to mainnet instead of shadownet (now passes network to `requestPermissions`)
+- [ ] Test token creation (on correct network)
 - [ ] Test DAO creation flow
 - [ ] Test staking
 - [ ] Test proposal creation

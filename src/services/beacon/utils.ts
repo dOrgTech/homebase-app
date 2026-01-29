@@ -60,10 +60,19 @@ export const getTezosNetwork = (): Network => {
 export const createWallet = (network: Network) => {
   const networkType = getNetworkTypeByEnvNetwork(network)
 
+  // For Shadownet, include the RPC URL so wallets know exactly which network to connect to
+  const networkConfig =
+    network === "shadownet"
+      ? {
+          type: networkType,
+          rpcUrl: rpcNodes.shadownet
+        }
+      : { type: networkType }
+
   return new BeaconWallet({
     name: "Homebase",
     iconUrl: "https://tezostaquito.io/img/favicon.png",
-    network: { type: networkType },
+    network: networkConfig,
     walletConnectOptions: {
       projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
       relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
@@ -98,8 +107,20 @@ export const connectWithBeacon = async (
   wallet: BeaconWallet
 }> => {
   const wallet = createWallet(envNetwork)
+  const networkType = getNetworkTypeByEnvNetwork(envNetwork)
 
-  await wallet.requestPermissions()
+  // Explicitly pass network to requestPermissions to ensure wallet connects to correct network
+  const permissionRequest =
+    envNetwork === "shadownet"
+      ? {
+          network: {
+            type: networkType,
+            rpcUrl: rpcNodes.shadownet
+          }
+        }
+      : { network: { type: networkType } }
+
+  await wallet.requestPermissions(permissionRequest)
 
   const accounts: any[] = JSON.parse(localStorage.getItem("beacon:accounts") as string)
 
