@@ -10,7 +10,7 @@ import { ethers } from "ethers"
 
 // Mock hooks that require wallet/providers
 jest.mock("services/beacon/hooks/useTezos", () => ({
-  useTezos: () => ({ etherlink: {}, network: "etherlink_testnet" })
+  useTezos: () => ({ etherlink: {}, network: "etherlink_shadownet" })
 }))
 
 jest.mock("services/wagmi/etherlink/hooks/useProposalUiOverride", () => ({

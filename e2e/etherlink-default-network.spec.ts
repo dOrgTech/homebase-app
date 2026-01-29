@@ -23,17 +23,17 @@ test.describe("url-driven default network", () => {
   test("does not override an existing user-selected network", async ({ page }) => {
     await page.goto("/")
     await page.evaluate(() => {
-      localStorage.setItem("homebase:network", "ghostnet")
+      localStorage.setItem("homebase:network", "shadownet")
     })
 
     await page.goto(`/explorer/etherlink/dao/${EXAMPLE_ETHERLINK_DAO}/overview`)
     await page.waitForLoadState("domcontentloaded")
 
     const storedNetwork = await page.evaluate(() => localStorage.getItem("homebase:network"))
-    expect(storedNetwork).toBe("ghostnet")
+    expect(storedNetwork).toBe("shadownet")
 
-    // Tezos network label remains as Ghostnet (DAO metadata may switch later; bootstrap should not)
-    await expect(page.getByText(/Tezos Ghostnet/i).first()).toBeVisible()
+    // Tezos network label remains as Shadownet (DAO metadata may switch later; bootstrap should not)
+    await expect(page.getByText(/Tezos Shadownet/i).first()).toBeVisible()
   })
 })
 

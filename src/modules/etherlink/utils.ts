@@ -3,13 +3,13 @@ import { proposalInterfaces } from "./config"
 import { IContractWriteMethod, IProposalType } from "./types"
 
 export const networkConfig = {
-  etherlink_testnet: {
-    network: "testnet",
-    explorerUrl: "https://testnet.explorer.etherlink.com",
-    explorerApiUrl: "https://testnet.explorer.etherlink.com/api/v2",
-    firebaseRootCollection: "idaosEtherlink-Testnet",
-    firebaseRootTokenCollection: "tokensEtherlink-Testnet",
-    firebaseMemberCollection: "iMembersEtherlink-Testnet"
+  etherlink_shadownet: {
+    network: "shadownet",
+    explorerUrl: "https://shadownet.explorer.etherlink.com",
+    explorerApiUrl: "https://shadownet.explorer.etherlink.com/api/v2",
+    firebaseRootCollection: "idaosEtherlink-Shadownet",
+    firebaseRootTokenCollection: "tokensEtherlink-Shadownet",
+    firebaseMemberCollection: "iMembersEtherlink-Shadownet"
   },
   etherlink_mainnet: {
     network: "mainnet",
@@ -22,7 +22,7 @@ export const networkConfig = {
 }
 
 export function getFirestoreNetworkName(internalNetwork: string): string {
-  if (internalNetwork === "etherlink_testnet") return "Etherlink-Testnet"
+  if (internalNetwork === "etherlink_shadownet") return "Etherlink-Shadownet"
   if (internalNetwork === "etherlink_mainnet") return "Etherlink"
   if (internalNetwork === "localhost") return "Localhost"
   return internalNetwork

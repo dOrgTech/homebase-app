@@ -56,15 +56,15 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
 const getInitialState = (data: MigrationParams) => {
   const network = getTezosNetwork()
 
-  data.votingSettings.votingBlocksDay = network === networkNameMap.ghostnet ? 0 : 3
-  data.votingSettings.votingBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  data.votingSettings.votingBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  data.votingSettings.proposalFlushBlocksDay = network === networkNameMap.ghostnet ? 0 : 1
-  data.votingSettings.proposalFlushBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  data.votingSettings.proposalFlushBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  data.votingSettings.proposalExpiryBlocksDay = network === networkNameMap.ghostnet ? 0 : 6
-  data.votingSettings.proposalExpiryBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  data.votingSettings.proposalExpiryBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  data.votingSettings.votingBlocksDay = network === networkNameMap.shadownet ? 0 : 3
+  data.votingSettings.votingBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  data.votingSettings.votingBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
+  data.votingSettings.proposalFlushBlocksDay = network === networkNameMap.shadownet ? 0 : 1
+  data.votingSettings.proposalFlushBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  data.votingSettings.proposalFlushBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
+  data.votingSettings.proposalExpiryBlocksDay = network === networkNameMap.shadownet ? 0 : 6
+  data.votingSettings.proposalExpiryBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  data.votingSettings.proposalExpiryBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
 
   return data
 }
@@ -156,15 +156,15 @@ export const reducer = (state: CreatorState, action: CreatorAction): CreatorStat
 }
 
 const updateInitialState = (network: string, values: MigrationParams) => {
-  values.votingSettings.votingBlocksDay = network === networkNameMap.ghostnet ? 0 : 3
-  values.votingSettings.votingBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.votingSettings.votingBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  values.votingSettings.proposalFlushBlocksDay = network === networkNameMap.ghostnet ? 0 : 1
-  values.votingSettings.proposalFlushBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.votingSettings.proposalFlushBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  values.votingSettings.proposalExpiryBlocksDay = network === networkNameMap.ghostnet ? 0 : 6
-  values.votingSettings.proposalExpiryBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.votingSettings.proposalExpiryBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  values.votingSettings.votingBlocksDay = network === networkNameMap.shadownet ? 0 : 3
+  values.votingSettings.votingBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  values.votingSettings.votingBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
+  values.votingSettings.proposalFlushBlocksDay = network === networkNameMap.shadownet ? 0 : 1
+  values.votingSettings.proposalFlushBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  values.votingSettings.proposalFlushBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
+  values.votingSettings.proposalExpiryBlocksDay = network === networkNameMap.shadownet ? 0 : 6
+  values.votingSettings.proposalExpiryBlocksHours = network === networkNameMap.shadownet ? 0 : 0
+  values.votingSettings.proposalExpiryBlocksMinutes = network === networkNameMap.shadownet ? 5 : 0
 
   return values
 }

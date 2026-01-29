@@ -344,7 +344,7 @@ async function parseContractScript(c: any, initTokenTable: Record<string, tokenV
 
 async function getContractEndpoints(network: string, contractAddress: string) {
   try {
-    const tezosNetwork = network === "ghostnet" ? "ghostnet" : "mainnet"
+    const tezosNetwork = network === "shadownet" ? "shadownet" : "mainnet"
     const tezos = new TezosToolkit(rpcNodes[tezosNetwork])
     const contract = await tezos.contract.at(contractAddress)
     const endpoints = await parseContractScript(contract, {})
