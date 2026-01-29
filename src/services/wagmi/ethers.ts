@@ -5,7 +5,9 @@ import { BrowserProvider, JsonRpcSigner } from "ethers"
 import { type HttpTransport } from "viem"
 
 export function publicClientToProvider(publicClient: any) {
+  if (!publicClient) return undefined
   const { chain, transport } = publicClient
+  if (!chain || !transport) return undefined
   const network = {
     chainId: chain.id,
     name: chain.name,

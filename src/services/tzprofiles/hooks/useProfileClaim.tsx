@@ -6,7 +6,7 @@ import { Claim } from "../claims/types"
 export const useProfileClaim = (tzAddress: string) => {
   const { network } = useTezos()
 
-  const isTezosNetwork = !!network && (network.includes("tezos") || network === "mainnet" || network === "ghostnet")
+  const isTezosNetwork = !!network && (network.includes("tezos") || network === "mainnet" || network === "shadownet")
   const isTezosAddress = typeof tzAddress === "string" && tzAddress.startsWith("tz")
 
   const result = useQuery<Claim, Error>(
