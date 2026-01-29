@@ -31,7 +31,7 @@ export const getNetworkHead = async (network: Network): Promise<number> => {
   if (network.startsWith("etherlink")) {
     const [_, etherlinkNetwork] = network.split("_")
     const reqUrl = `https://${
-      etherlinkNetwork === "mainnet" ? "" : "shadownet."
+      etherlinkNetwork === "mainnet" ? "" : "testnet-"
     }explorer.etherlink.com/api/v2/blocks?type=block`
 
     const etherlinkData = await fetch(reqUrl).then(x => x.json())
