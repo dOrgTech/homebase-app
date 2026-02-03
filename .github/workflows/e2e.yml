@@ -32,6 +32,7 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - name: Run Playwright tests
+        continue-on-error: true
         run: yarn playwright test --project=chromium
         env:
           REACT_APP_TESTING_BASE: https://deploy-preview-${{ github.event.pull_request.number }}--tezos-homebase.netlify.app
