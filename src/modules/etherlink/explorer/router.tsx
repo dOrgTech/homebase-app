@@ -116,7 +116,7 @@ const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) 
     // If not found and we have a list, try alternate network once.
     if (daos.length > 0 && !isLoadingDaos && !attemptedSwitchRef.current) {
       attemptedSwitchRef.current = true
-      const alt = network === "etherlink_testnet" ? "etherlink_mainnet" : "etherlink_testnet"
+      const alt = network === "etherlink_shadownet" ? "etherlink_mainnet" : "etherlink_shadownet"
       switchToNetwork?.(alt)
     }
   }, [daoId, daos, isLoadingDaos, network, selectDao, switchToNetwork, daoSelected?.id])

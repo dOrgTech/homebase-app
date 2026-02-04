@@ -1,8 +1,8 @@
 import { useState, createContext, ReactNode, useMemo, useEffect, useCallback, useRef } from "react"
 import { useSwitchChain, useAccount as useWagmiAccount } from "wagmi"
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
-import { config as wagmiConfig } from "services/wagmi/config"
-import { etherlink, etherlinkTestnet } from "wagmi/chains"
+import { config as wagmiConfig, etherlinkShadownet } from "services/wagmi/config"
+import { etherlink } from "wagmi/chains"
 import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import { useNetwork } from "services/useNetwork"
@@ -43,11 +43,11 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (chain?.id === etherlink.id || chain?.name === "Etherlink") {
       return "etherlink_mainnet"
     }
-    if (chain?.id === etherlinkTestnet.id || chain?.name === "Etherlink Testnet") {
-      return "etherlink_testnet"
+    if (chain?.id === etherlinkShadownet.id || chain?.name === "Etherlink Shadownet") {
+      return "etherlink_shadownet"
     }
-    // Default to testnet when no explicit app selection or wallet chain
-    return "etherlink_testnet"
+    // Default to shadownet when no explicit app selection or wallet chain
+    return "etherlink_shadownet"
   }, [chain?.id, chain?.name, contextNetwork])
 
   // Bind provider/signer to the wallet's active chain to avoid
@@ -57,7 +57,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const switchToNetwork = useCallback(
     (network: string) => {
-      const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
+      const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkShadownet.id
       // Switch wallet chain
       switchChain({ chainId: networkId })
 

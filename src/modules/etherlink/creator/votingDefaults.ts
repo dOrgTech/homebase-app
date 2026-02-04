@@ -19,12 +19,12 @@ export interface VotingDefaults {
 
 /**
  * Get network-specific voting defaults based on the Etherlink network.
- * @param network - The network identifier ("etherlink_testnet" | "etherlink_mainnet")
+ * @param network - The network identifier ("etherlink_shadownet" | "etherlink_mainnet")
  * @returns VotingDefaults object or undefined for unrecognized networks
  */
 export function getVotingDefaults(network: string): VotingDefaults | undefined {
   switch (network) {
-    case "etherlink_testnet":
+    case "etherlink_shadownet":
       return {
         voting: {
           // Voting Delay: 1 minute

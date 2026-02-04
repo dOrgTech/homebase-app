@@ -8,7 +8,7 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { EtherlinkContext } from "services/wagmi/context"
 
 jest.mock("services/beacon/hooks/useTezos", () => ({
-  useTezos: () => ({ etherlink: {}, network: "etherlink_testnet" })
+  useTezos: () => ({ etherlink: {}, network: "etherlink_shadownet" })
 }))
 
 jest.mock("services/wagmi/etherlink/hooks/useProposalUiOverride", () => ({
