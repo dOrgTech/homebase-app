@@ -20,7 +20,7 @@ module.exports = {
         fs: false,
       };
 
-      // add persistent cache
+      // persistent cache for faster rebuilds
       config.cache = {
         type: "filesystem",
         buildDependencies: { config: [__filename] },

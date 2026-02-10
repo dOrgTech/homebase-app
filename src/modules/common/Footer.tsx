@@ -80,8 +80,8 @@ export const ExplorerFooter: React.FC = () => {
   }
 
   const goToExplorer = () => {
-    return network === "ghostnet"
-      ? window.open("https://ghostnet.tzkt.io/", "_blank")
+    return network === "shadownet"
+      ? window.open("https://shadownet.tzkt.io/", "_blank")
       : window.open("https://tzkt.io/", "_blank")
   }
 

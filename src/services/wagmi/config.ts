@@ -1,12 +1,11 @@
 import { createConfig, http } from "wagmi"
 import { etherlink, hardhat } from "wagmi/chains"
 import { defineChain } from "viem"
-import { metaMask, injected, safe } from "wagmi/connectors"
 
 import { DeployContract } from "./token"
 import { getDefaultConfig } from "connectkit"
 
-// Custom chain definition for Etherlink Shadownet
+// Define custom Etherlink Shadownet chain
 export const etherlinkShadownet = defineChain({
   id: 127823,
   name: "Etherlink Shadownet",
