@@ -8,6 +8,7 @@ import GitHubIcon from "@material-ui/icons/GitHub"
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg"
 import { MainButton } from "../common/MainButton"
 import { EnvKey, getEnv } from "services/config"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -83,6 +84,8 @@ const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 export const Landing: React.FC = () => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const { account } = useTezos()
+  const discordLink = account ? "https://discord.gg/ZRVk6zu3xR" : "https://discord.gg/yqv8ABG2EN"
 
   return (
     <Background container direction="column" justifyContent="space-between" wrap="nowrap">
@@ -178,7 +181,7 @@ export const Landing: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link target="_blank" href="https://discord.gg/XufcBNu277">
+            <Link target="_blank" href={discordLink}>
               <IconContainer>
                 <SvgIcon>
                   <DiscordIcon />

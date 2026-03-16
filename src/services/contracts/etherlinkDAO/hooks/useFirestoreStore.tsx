@@ -3,6 +3,7 @@ import { create } from "zustand"
 import { collection, CollectionReference, doc, DocumentData, getDocs, onSnapshot } from "firebase/firestore"
 import { db } from "../firebase-config"
 import { dbg } from "utils/debug"
+import { trackAppError } from "services/supportNotification"
 
 interface FirestoreState {
   data: Record<string, any[]>
@@ -83,6 +84,7 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       }))
     } catch (error) {
       console.log("FirebaseError", error)
+      trackAppError()
       set(state => ({
         error: { ...state.error, [collectionName]: (error as Error).message ?? "Unknown error" },
         loading: { ...state.loading, [collectionName]: false }
@@ -128,6 +130,7 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       }))
     } catch (error) {
       console.log("FirebaseError:fetchDoc", error)
+      trackAppError()
       set(state => ({
         error: { ...state.error, [key]: (error as Error).message ?? "Unknown error" },
         loading: { ...state.loading, [key]: false }

@@ -3,6 +3,7 @@ import { Button, styled } from "@material-ui/core"
 import { OptionsObject, useSnackbar } from "notistack"
 import { Close, OpenInNew } from "@material-ui/icons"
 import { ExternalLink } from "modules/common/ExternalLink"
+import { trackAppError } from "services/supportNotification"
 
 const CloseIcon = styled(Close)({
   color: "#fff"
@@ -42,6 +43,10 @@ export const useNotification = () => {
       autoHideDuration: options.autoHideDuration ?? 5000,
       action: <NotificationActions detailsLink={detailsLink} onClose={() => closeSnackbar(key)} />
     })
+
+    if (options.variant === "error") {
+      trackAppError()
+    }
 
     return { key, closeSnackbar }
   }
