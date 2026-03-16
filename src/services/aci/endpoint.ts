@@ -3,6 +3,7 @@ import { validateAddress, encodePubKey, encodeKey, encodeKeyHash } from "@taquit
 import { TokenSchema, Schema } from "@taquito/michelson-encoder"
 import { rpcNodes } from "services/beacon"
 import { assertNever } from "assert-never"
+import { trackAppError } from "services/supportNotification"
 import type { token, tokenValueType } from "."
 import type { MichelineMichelsonV1Expression } from "@airgap/beacon-sdk"
 
@@ -352,6 +353,7 @@ async function getContractEndpoints(network: string, contractAddress: string) {
     return [endpoints, null]
   } catch (error) {
     console.error("Error fetching contract:", error)
+    trackAppError()
     return [null, error]
   }
 }

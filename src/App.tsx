@@ -1,10 +1,10 @@
-import React from "react"
+import React, { useEffect } from "react"
 import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "react-query"
 
 import { Box, ThemeProvider, styled } from "@material-ui/core"
-import { SnackbarProvider } from "notistack"
+import { SnackbarProvider, useSnackbar } from "notistack"
 
 import { DAOExplorerRouter } from "modules/explorer/router"
 import { CreatorProvider } from "modules/creator/state"
@@ -22,8 +22,21 @@ import { EnvKey, HUMANITEZ_DAO, getEnv } from "services/config"
 import { DAOCreatorRouter } from "modules/creator/router"
 import { CommunityCreator } from "modules/lite/creator"
 import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import {
+  DISCORD_SUPPORT_LINK,
+  SUPPORT_SHOWN_KEY,
+  hasSupportThresholdBeenMet,
+  trackAppError
+} from "services/supportNotification"
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: () => trackAppError()
+  }),
+  mutationCache: new MutationCache({
+    onError: () => trackAppError()
+  }),
   defaultOptions: {
     queries: {
       retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 60000),
@@ -67,6 +80,51 @@ const InfoSnackbar = styled("div")({
 // PostHog tracking is now handled globally via PostHogProvider in index.tsx
 // Visit tracking can be done via PostHog's auto-capture or custom events
 
+const SupportNotificationListener: React.FC = () => {
+  const { enqueueSnackbar } = useSnackbar()
+  const { account } = useTezos()
+
+  const showSupportNotification = React.useCallback(() => {
+    if (sessionStorage.getItem(SUPPORT_SHOWN_KEY) === "true") return
+    sessionStorage.setItem(SUPPORT_SHOWN_KEY, "true")
+
+    enqueueSnackbar("Having trouble? Get support on our Discord.", {
+      variant: "info",
+      autoHideDuration: 8000,
+      action: (
+        <a
+          href={DISCORD_SUPPORT_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#fff", display: "flex", alignItems: "center" }}
+        >
+          Open Discord
+        </a>
+      )
+    })
+  }, [enqueueSnackbar])
+
+  // Check on login if errors already accumulated before wallet was connected
+  useEffect(() => {
+    if (!account) return
+    if (hasSupportThresholdBeenMet()) {
+      showSupportNotification()
+    }
+  }, [account, showSupportNotification])
+
+  // Listen for new errors after login
+  useEffect(() => {
+    if (!account) return
+
+    const handler = () => showSupportNotification()
+
+    window.addEventListener("homebase-support-needed", handler)
+    return () => window.removeEventListener("homebase-support-needed", handler)
+  }, [account, showSupportNotification])
+
+  return null
+}
+
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
@@ -84,6 +142,7 @@ const App: React.FC = () => {
       >
         {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
         <QueryClientProvider client={queryClient}>
+          <SupportNotificationListener />
           <ActionSheetProvider>
             <Box bgcolor="primary.dark" position="absolute" width="100%">
               <Router>

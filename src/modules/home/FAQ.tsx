@@ -4,6 +4,7 @@ import { Header } from "./Header"
 import { ContentContainer } from "../explorer/components/ContentContainer"
 import { FAQItem } from "./FAQItem"
 import { useGenerateFAQ } from "./hooks/useGenerateFAQ"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const PageContainer = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -46,6 +47,8 @@ export const FAQ: React.FC = () => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const faqList = useGenerateFAQ()
+  const { account } = useTezos()
+  const discordLink = account ? "https://discord.gg/ZRVk6zu3xR" : "https://discord.gg/yqv8ABG2EN"
 
   return (
     <PageContainer>
@@ -62,7 +65,7 @@ export const FAQ: React.FC = () => {
           <BodyTextGrid container>
             <BodyText color="textPrimary">
               We strive to make Homebase super user-centered. Feel free to reach out to our team at any time on the{" "}
-              <Link color="secondary" target="_blank" href="https://discord.gg/XufcBNu277">
+              <Link color="secondary" target="_blank" href={discordLink}>
                 Discord
               </Link>
               .

@@ -1,6 +1,7 @@
 import { useQuery } from "react-query"
 import { ethers } from "ethers"
 import { registryContractABI } from "modules/etherlink/utils"
+import { trackAppError } from "services/supportNotification"
 
 export interface RegistryEntry {
   key: string
@@ -43,6 +44,7 @@ export const useRegistry = (provider: any, registryAddress: string | undefined, 
         return entries
       } catch (error) {
         console.error("[Registry RPC] Error fetching registry:", error)
+        trackAppError()
         throw error
       }
     },

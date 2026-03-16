@@ -73,7 +73,8 @@ const Container = styled(Grid)(({ theme }) => ({
 export const ExplorerFooter: React.FC = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const { network } = useTezos()
+  const { network, account } = useTezos()
+  const discordLink = account ? "https://discord.gg/ZRVk6zu3xR" : "https://discord.gg/yqv8ABG2EN"
 
   const goToFAQ = () => {
     window.open("https://faq.tezos-homebase.io/homebase-faq/", "_blank")
@@ -94,7 +95,7 @@ export const ExplorerFooter: React.FC = () => {
   }
 
   const goToDiscord = () => {
-    window.open("https://discord.gg/autFpNaFYu", "_blank")
+    window.open(discordLink, "_blank")
   }
 
   const goToYoutube = () => {
