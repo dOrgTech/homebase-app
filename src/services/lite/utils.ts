@@ -5,7 +5,7 @@ import updateLocale from "dayjs/plugin/updateLocale"
 import { Choice } from "models/Choice"
 import { networkNameMap } from "services/bakingBad"
 import { BeaconWallet } from "@taquito/beacon-wallet"
-import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
+import { RequestSignPayloadInput, SigningType } from "@ecadlabs/beacon-types"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
 

@@ -5,7 +5,7 @@ import { Choice } from "models/Choice"
 import { mkConfig, generateCsv, download } from "export-to-csv"
 import { useNotification } from "modules/lite/components/hooks/useNotification"
 import BigNumber from "bignumber.js"
-import { bytes2Char } from "@taquito/utils"
+import { bytesToString } from "@taquito/utils"
 import dayjs from "dayjs"
 
 interface GroupedVotes {
@@ -45,7 +45,9 @@ export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, 
         signature: item.options[0].signature,
         ipfsStorage: item.options[0].cidLink,
         timestamp:
-          item.options[0] && item.options[0].payloadBytes ? bytes2Char(item.options[0].payloadBytes).split(" ")[4] : ""
+          item.options[0] && item.options[0].payloadBytes
+            ? bytesToString(item.options[0].payloadBytes).split(" ")[4]
+            : ""
       }
       return arr.push(formattedVote)
     })

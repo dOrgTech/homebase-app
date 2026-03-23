@@ -131,11 +131,11 @@ export class LambdaDAO extends BaseDAO {
       proposal_meta_michelson_type
     )
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }
@@ -162,11 +162,11 @@ export class LambdaDAO extends BaseDAO {
       proposal_meta_michelson_type
     )
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }
@@ -201,11 +201,11 @@ export class LambdaDAO extends BaseDAO {
       proposal_meta_michelson_type
     )
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }
@@ -244,11 +244,11 @@ export class LambdaDAO extends BaseDAO {
       proposal_meta_michelson_type
     )
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }
@@ -258,11 +258,11 @@ export class LambdaDAO extends BaseDAO {
 
     const proposalMetadata = await BaseDAO.encodeLambdaAddMetadata(data, proposelambda, tezos)
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }
@@ -284,12 +284,12 @@ export class LambdaDAO extends BaseDAO {
       type: michelsonType as Expr
     })
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
       // frozen_extra_value is 0 for lambda remove
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata
-    )
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata
+    })
 
     return await contractMethod.send()
   }

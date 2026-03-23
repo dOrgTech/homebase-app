@@ -122,7 +122,7 @@ export abstract class BaseDAO {
   public static transfer_ownership = async (newOwner: string, address: string, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, address)
 
-    return await contract.methods.transfer_ownership(newOwner).send()
+    return await contract.methodsObject.transfer_ownership(newOwner).send()
   }
 
   protected constructor(public data: BaseDAOData) {}
@@ -132,10 +132,10 @@ export abstract class BaseDAO {
     const initialBatch = await tezos.wallet.batch()
 
     const batch = expiredProposalIds.reduce((prev, current) => {
-      return prev.withContractCall(daoContract.methods.drop_proposal(current))
+      return prev.withContractCall(daoContract.methodsObject.drop_proposal(current))
     }, initialBatch)
 
-    batch.withContractCall(daoContract.methods.flush(numerOfProposalsToFlush))
+    batch.withContractCall(daoContract.methodsObject.flush(numerOfProposalsToFlush))
 
     return await batch.send()
   }
@@ -143,7 +143,7 @@ export abstract class BaseDAO {
   public dropProposal = async (proposalId: string, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
-    return await contract.methods.drop_proposal(proposalId).send()
+    return await contract.methodsObject.drop_proposal(proposalId).send()
   }
 
   public dropAllExpired = async (expiredProposalIds: string[], tezos: TezosToolkit) => {
@@ -151,7 +151,7 @@ export abstract class BaseDAO {
     const initialBatch = await tezos.wallet.batch()
 
     const batch = expiredProposalIds.reduce((prev, current) => {
-      return prev.withContractCall(daoContract.methods.drop_proposal(current))
+      return prev.withContractCall(daoContract.methodsObject.drop_proposal(current))
     }, initialBatch)
 
     return await batch.send()
@@ -162,7 +162,7 @@ export abstract class BaseDAO {
     const initialBatch = await tezos.wallet.batch()
 
     const batch = proposals.reduce((prev, current) => {
-      return prev.withContractCall(daoContract.methods.unstake_vote([current]))
+      return prev.withContractCall(daoContract.methodsObject.unstake_vote([current]))
     }, initialBatch)
 
     return await batch.send()
@@ -171,10 +171,15 @@ export abstract class BaseDAO {
   public sendXtz = async (xtzAmount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
-    return await contract.methods.callCustom("receive_xtz", "").send({
-      amount: xtzToMutez(xtzAmount).toNumber(),
-      mutez: true
-    })
+    return await contract.methodsObject
+      .callCustom({
+        0: "receive_xtz",
+        1: ""
+      })
+      .send({
+        amount: xtzToMutez(xtzAmount).toNumber(),
+        mutez: true
+      })
   }
 
   public vote = async ({
@@ -189,7 +194,7 @@ export abstract class BaseDAO {
     tezos: TezosToolkit
   }) => {
     const contract = await getContract(tezos, this.data.address)
-    return await contract.methods
+    return await contract.methodsObject
       .vote([
         {
           argument: {
@@ -210,7 +215,7 @@ export abstract class BaseDAO {
     const batch = await tezos.wallet
       .batch()
       .withContractCall(
-        govTokenContract.methods.update_operators([
+        govTokenContract.methodsObject.update_operators([
           {
             add_operator: {
               owner: await tezos.wallet.pkh(),
@@ -220,9 +225,9 @@ export abstract class BaseDAO {
           }
         ])
       )
-      .withContractCall(daoContract.methods.freeze(formatUnits(amount, tokenMetadata.decimals).toString()))
+      .withContractCall(daoContract.methodsObject.freeze(formatUnits(amount, tokenMetadata.decimals).toString()))
       .withContractCall(
-        govTokenContract.methods.update_operators([
+        govTokenContract.methodsObject.update_operators([
           {
             remove_operator: {
               owner: await tezos.wallet.pkh(),
@@ -239,13 +244,13 @@ export abstract class BaseDAO {
   public unfreeze = async (amount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
-    return await contract.methods.unfreeze(formatUnits(amount, this.data.token.decimals).toString()).send()
+    return await contract.methodsObject.unfreeze(formatUnits(amount, this.data.token.decimals).toString()).send()
   }
 
   public unstakeVotes = async (proposalId: string, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
-    return await contract.methods.unstake_vote([proposalId]).send()
+    return await contract.methodsObject.unstake_vote([proposalId]).send()
   }
 
   static async encodeProposalMetadata(dataToEncode: any, michelsonSchemaString: string, tezos: TezosToolkit) {
@@ -330,11 +335,11 @@ export abstract class BaseDAO {
       proposal_meta_michelson_type
     )
 
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata.bytes
-    )
+    const contractMethod = contract.methodsObject.propose({
+      from: await tezos.wallet.pkh(),
+      frozen_token: formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposal_metadata: proposalMetadata.bytes
+    })
 
     return await contractMethod.send()
   }

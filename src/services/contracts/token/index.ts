@@ -107,7 +107,7 @@ export const setDelegate = async ({
 }) => {
   try {
     const contract = await getContract(tezos, tokenAddress)
-    return contract.methods.set_delegate(delegateAddress).send()
+    return contract.methodsObject.set_delegate(delegateAddress).send()
   } catch (e) {
     console.error(e)
     return e

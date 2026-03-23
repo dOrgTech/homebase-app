@@ -1,4 +1,4 @@
-import { NetworkType } from "@airgap/beacon-types"
+import { NetworkType } from "@ecadlabs/beacon-types"
 import { capitalize } from "@material-ui/core"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
