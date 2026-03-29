@@ -65,7 +65,12 @@ export const useAllDAOs = (network: Network) => {
         lite_daos = []
       }
 
-      return [...homebase_daos, ...lite_daos]
+      // Filter out lite DAOs that already have a corresponding full (on-chain) DAO,
+      // since the full DAO page already displays their off-chain polls.
+      const fullDaoAddresses = new Set(homebase_daos.map((dao: any) => dao.address))
+      const dedupedLiteDaos = lite_daos.filter((dao: any) => !dao.daoContract || !fullDaoAddresses.has(dao.daoContract))
+
+      return [...homebase_daos, ...dedupedLiteDaos]
     },
     {
       // Always create the hook; let the fetcher short-circuit for Etherlink networks.

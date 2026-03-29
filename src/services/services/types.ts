@@ -203,6 +203,7 @@ export interface DAOListItem {
   token: TokenDTO
   votingAddressesCount: number
   allowPublicAccess: boolean
+  daoContract?: string
 }
 
 export type FetchedDAO = DAODTO & {
@@ -251,4 +252,5 @@ export interface Community {
   decimals: string
   network: Network
   votingAddressesCount: number
+  daoContract?: string
 }
