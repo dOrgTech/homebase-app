@@ -496,11 +496,11 @@ const ContractInteractionForm = ({
                     daoDetails?.data?.token?.decimals as number
                   )
 
-                  const contractMethod = contract.methods.propose(
-                    await tezos.wallet.pkh(),
-                    frozenToken,
-                    finalPackedDataBytes
-                  )
+                  const contractMethod = contract.methodsObject.propose({
+                    from: await tezos.wallet.pkh(),
+                    frozen_token: frozenToken,
+                    proposal_metadata: finalPackedDataBytes
+                  })
 
                   const result = await contractMethod.send()
 

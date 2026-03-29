@@ -6,7 +6,7 @@ import { assertNever } from "assert-never"
 import { BigNumber } from "bignumber.js"
 
 import { Schema } from "@taquito/michelson-encoder"
-import type { MichelineMichelsonV1Expression } from "@airgap/beacon-sdk"
+import type { MichelsonV1Expression as MichelineMichelsonV1Expression } from "@taquito/rpc"
 import type { TokenSchema } from "@taquito/michelson-encoder"
 
 type version = "1.0.0" | "unknown version"
