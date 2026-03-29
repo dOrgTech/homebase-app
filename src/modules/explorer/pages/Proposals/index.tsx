@@ -307,6 +307,7 @@ const TezosProposals = () => {
                   proposals={undefined}
                   liteProposals={polls}
                   filters={filters}
+                  daoId={daoId}
                 />
               )}
               {!(polls && polls.length > 0) ? (
