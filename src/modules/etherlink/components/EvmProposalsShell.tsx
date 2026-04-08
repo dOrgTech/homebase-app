@@ -2,6 +2,7 @@ import React from "react"
 import { Button, Grid, Theme, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ContentContainer } from "components/ui/Table"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import HowToVoteIcon from "@mui/icons-material/HowToVote"
 import { ReactComponent as LinkActive } from "assets/img/link_active.svg"
 import { ReactComponent as LinkInactive } from "assets/img/link_inactive.svg"
 import { ReactComponent as UnlinkActive } from "assets/img/unlink_active.svg"
@@ -147,6 +148,23 @@ export const EvmProposalsShell: React.FC<Props> = ({
                   isSelected={selectedTab === 1}
                 >
                   Off-Chain
+                </StyledTab>
+              </Grid>
+
+              <Grid item>
+                <StyledTab
+                  startIcon={
+                    <HowToVoteIcon
+                      style={{ color: selectedTab === 2 ? theme.palette.secondary.main : "#fff" }}
+                      fontSize="small"
+                    />
+                  }
+                  disableElevation={true}
+                  variant="contained"
+                  onClick={() => onChangeTab(2)}
+                  isSelected={selectedTab === 2}
+                >
+                  Active
                 </StyledTab>
               </Grid>
             </TabsContainer>

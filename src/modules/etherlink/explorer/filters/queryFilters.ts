@@ -1,6 +1,6 @@
 import { DisplayStatus } from "modules/etherlink/status"
 
-export type TypeKey = "onchain" | "offchain"
+export type TypeKey = "onchain" | "offchain" | "active"
 
 // Canonical, hyphenated keys for URL usage
 export type StatusKey =
@@ -104,7 +104,9 @@ const splitCsv = (v?: string | null) =>
 
 export function canonicalType(value?: string | null): TypeKey {
   const v = normalize(value)
-  return v === "offchain" ? "offchain" : "onchain"
+  if (v === "offchain") return "offchain"
+  if (v === "active") return "active"
+  return "onchain"
 }
 
 export function canonicalStatuses(
@@ -173,7 +175,7 @@ export function parseFiltersFromSearch(search: string): ParsedFilters {
   const t = canonicalType(sp.get("type"))
   const author = sp.get("author")
   const status = canonicalStatuses(sp.get("status"), t)
-  const ptype = t === "offchain" ? [] : canonicalPtypes(sp.get("ptype"))
+  const ptype = t === "offchain" || t === "active" ? [] : canonicalPtypes(sp.get("ptype"))
   return { type: t, status, ptype, author }
 }
 
@@ -185,8 +187,9 @@ export function serializeFiltersToSearch(filters: ParsedFilters, prevSearch: str
   sp.delete("status")
   sp.delete("ptype")
 
-  // type: only emit when offchain (onchain is default)
+  // type: only emit when offchain or active (onchain is default)
   if (filters.type === "offchain") sp.set("type", "offchain")
+  if (filters.type === "active") sp.set("type", "active")
 
   // status
   const statuses = (filters.status || []).filter(Boolean) as string[]
@@ -196,7 +199,8 @@ export function serializeFiltersToSearch(filters: ParsedFilters, prevSearch: str
     const off = statusSet.filter(s => s === "active" || s === "closed" || s === "no-quorum")
     if (off.length === 1) sp.set("status", off[0])
     if (off.length > 1) sp.set("status", off.sort().join(","))
-  } else {
+  } else if (filters.type !== "active") {
+    // Active tab doesn't need status filters in URL
     const withoutAll = statusSet.filter(s => s !== "all")
     if (withoutAll.length > 0) sp.set("status", withoutAll.sort().join(","))
   }

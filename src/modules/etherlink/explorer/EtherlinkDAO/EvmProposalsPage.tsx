@@ -23,7 +23,7 @@ export const EvmProposalsPage = () => {
     daoSelected as any
   )
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
-  const selectedTab = offchainEnabled && qFilters.type === "offchain" ? 1 : 0
+  const selectedTab = qFilters.type === "active" ? 2 : offchainEnabled && qFilters.type === "offchain" ? 1 : 0
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [debouncedSearchText, setDebouncedSearchText] = useState("")
@@ -35,7 +35,8 @@ export const EvmProposalsPage = () => {
   const onChangeTab = useCallback(
     (idx: number) => {
       if (!offchainEnabled && idx === 1) return
-      setQFilters({ type: idx === 1 ? "offchain" : "onchain" })
+      const type = idx === 2 ? "active" : idx === 1 ? "offchain" : "onchain"
+      setQFilters({ type: type as any })
     },
     [offchainEnabled, setQFilters]
   )
@@ -61,10 +62,13 @@ export const EvmProposalsPage = () => {
 
   const resolveDisplayStatus = (p: any) => toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
 
-  const isOffchainActive = (p: any) => {
+  const isProposalActive = (p: any) => {
     const disp = resolveDisplayStatus(p)
     return disp === "Active" || disp === "Pending"
   }
+
+  // Alias for backwards compatibility
+  const isOffchainActive = isProposalActive
 
   const offchainStatusKeyForProposal = (p: any): "active" | "closed" | "no-quorum" => {
     const disp = resolveDisplayStatus(p)
@@ -103,13 +107,16 @@ export const EvmProposalsPage = () => {
       if (ptypes.length > 0) {
         base = base.filter((p: any) => (ptypes as PTypeKey[]).some(k => matchesPtypeKey(p, k)))
       }
-    } else if (offchainEnabled) {
+    } else if (selectedTab === 1 && offchainEnabled) {
       // off-chain
       base = base.filter(p => p.type === "offchain")
       const offStatuses = ((qFilters.status || []) as string[]).filter(s => s !== "all")
       if (offStatuses.length > 0) {
         base = base.filter(p => offStatuses.includes(offchainStatusKeyForProposal(p)))
       }
+    } else if (selectedTab === 2) {
+      // Active tab - show all active/pending proposals (both on-chain and off-chain)
+      base = base.filter(p => isProposalActive(p))
     }
 
     if (debouncedSearchText) {
@@ -163,6 +170,9 @@ export const EvmProposalsPage = () => {
               <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type === "offchain")} />
             </TabPanel>
           ) : null}
+          <TabPanel value={selectedTab} index={2}>
+            <EvmDaoProposalList proposals={filteredProposals || []} />
+          </TabPanel>
         </Grid>
       </EvmProposalsShell>
       <EvmProposalsActionDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
