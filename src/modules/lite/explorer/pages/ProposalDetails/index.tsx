@@ -91,7 +91,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const navigateToDao = () => {
-    if (historyLength > 1) {
+    if (state?.daoId) {
+      navigate.push(`/explorer/dao/${state.daoId}`)
+    } else if (historyLength > 1) {
       navigate.goBack()
     } else {
       const daoUrl = pathname?.replace(`proposal/${proposalId}`, "")

@@ -280,6 +280,7 @@ export const UserMovements: React.FC<{
                   liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
                   showFullList={showActivity}
                   filters={filters}
+                  daoId={daoId}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -304,6 +305,7 @@ export const UserMovements: React.FC<{
                   liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
                   showFullList={showActivity}
                   filters={filters}
+                  daoId={daoId}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(votedPolls && votedPolls.length > 0) ? (
