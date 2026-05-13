@@ -49,7 +49,7 @@
     "connectkit": "^1.8.2",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.11",
-    "dompurify": "^3.3.0",
+    "dompurify": "^3.4.3",
     "ethers": "^6.13.1",
     "export-to-csv": "^1.2.4",
     "firebase": "11.10.0",
@@ -130,7 +130,8 @@
     "wagmi": "2.10.10",
     "mipd": "0.0.7",
     "protobufjs": "7.5.8",
-    "@noble/hashes": "1.8.0"
+    "@noble/hashes": "1.8.0",
+    "dompurify": "3.4.3"
   },
   "overrides": {
     "viem": "2.17.4",
