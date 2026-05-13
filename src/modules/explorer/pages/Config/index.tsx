@@ -261,8 +261,8 @@ export const Config: React.FC = () => {
                   elem.id === "off-chain"
                     ? handleLiteProposal()
                     : elem.isLambda
-                    ? handleOpenCustomProposalModal(elem.id)
-                    : handleOpenSupportedExecuteProposalModal(elem.id)
+                      ? handleOpenCustomProposalModal(elem.id)
+                      : handleOpenSupportedExecuteProposalModal(elem.id)
                 }
               >
                 <ActionText color="textPrimary">{elem.name}</ActionText>

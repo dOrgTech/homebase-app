@@ -236,10 +236,10 @@ const ProposalActionsDialogForTezos: React.FC<{
                       elem.id === "off-chain"
                         ? handleLiteProposal()
                         : !shouldDisable
-                        ? elem.isLambda
-                          ? handleOpenCustomProposalModal(elem.id)
-                          : handleOpenSupportedExecuteProposalModal(elem.id)
-                        : null
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
                     }
                   >
                     <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
@@ -322,10 +322,10 @@ const ProposalActionsDialogForTezos: React.FC<{
                       elem.id === "off-chain"
                         ? handleLiteProposal()
                         : !shouldDisable
-                        ? elem.isLambda
-                          ? handleOpenCustomProposalModal(elem.id)
-                          : handleOpenSupportedExecuteProposalModal(elem.id)
-                        : null
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
                     }
                   >
                     <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
