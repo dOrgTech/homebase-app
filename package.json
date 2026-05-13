@@ -123,6 +123,7 @@
     "ts-jest": "^29.4.9",
     "typescript": "^5.0.4"
   },
+  "//resolutions": "wagmi/viem are pinned because @taquito 24.x's nested @noble/curves needs @noble/hashes 1.x (pinned below), while current viem (via ox) needs @noble/hashes 2.x. The two ecosystems have incompatible @noble/hashes requirements. Revisit once @taquito ships a build that works against @noble/hashes 2.x.",
   "resolutions": {
     "@types/react": "~17.0.3",
     "react-error-overlay": "6.0.9",
