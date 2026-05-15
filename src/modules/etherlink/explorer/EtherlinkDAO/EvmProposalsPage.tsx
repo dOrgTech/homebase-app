@@ -183,12 +183,12 @@ export const EvmProposalsPage = () => {
               l === "passed"
                 ? "succeeded"
                 : l === "failed"
-                ? "defeated"
-                : l === "no quorum"
-                ? "no-quorum"
-                : l === "dropped"
-                ? "defeated"
-                : l
+                  ? "defeated"
+                  : l === "no quorum"
+                    ? "no-quorum"
+                    : l === "dropped"
+                      ? "defeated"
+                      : l
             )
           const offchainStatus = f?.offchainStatus || "all"
           const status = type === "offchain" ? [offchainStatus] : statusFromDialog.length ? statusFromDialog : ["all"]

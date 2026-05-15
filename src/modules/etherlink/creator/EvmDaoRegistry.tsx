@@ -12,12 +12,15 @@ interface RegistryEntry {
 // Use StyledTextField from src/components/ui
 
 const updateRegistryStore = (entries: RegistryEntry[], setFieldValue: (field: string, value: any) => void) => {
-  const registryObject = entries.reduce((acc, entry) => {
-    if (entry.key) {
-      acc[entry.key] = entry.value
-    }
-    return acc
-  }, {} as Record<string, string>)
+  const registryObject = entries.reduce(
+    (acc, entry) => {
+      if (entry.key) {
+        acc[entry.key] = entry.value
+      }
+      return acc
+    },
+    {} as Record<string, string>
+  )
   setFieldValue("registry", registryObject)
 }
 

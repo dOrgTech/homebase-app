@@ -178,8 +178,8 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
               {(userVotingWeight || 0) > 0
                 ? "Voting Power Ready"
                 : isDelegating
-                ? "Delegating..."
-                : "Self‑delegate (Claim Voting Power)"}
+                  ? "Delegating..."
+                  : "Self‑delegate (Claim Voting Power)"}
             </NextButton>
           </Box>
 

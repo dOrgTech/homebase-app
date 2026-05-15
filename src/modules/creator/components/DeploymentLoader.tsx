@@ -73,8 +73,8 @@ export const DeploymentLoader: React.FC<Props> = ({ states, activeStep, error })
                 ? errorMessage
                 : states[focusedState].activeText
               : showCompletedText
-              ? states[focusedState].completedText
-              : ""}
+                ? states[focusedState].completedText
+                : ""}
             {showActiveText && !error && <SuspenseDots />}
           </WaitingText>
         </Grid>
