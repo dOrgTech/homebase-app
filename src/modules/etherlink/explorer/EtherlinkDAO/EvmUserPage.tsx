@@ -150,10 +150,10 @@ export const EvmUserPage = () => {
     ? isNotDelegatingNotClaimed
       ? "not delegating - not claimed"
       : isNotDelegatingClaimed
-      ? "not delegating - claimed"
-      : isDelegating
-      ? "delegating"
-      : ""
+        ? "not delegating - claimed"
+        : isDelegating
+          ? "delegating"
+          : ""
     : ""
   // For vote-directly label, compare voting weight vs personal balance
   const EPS = 1e-9

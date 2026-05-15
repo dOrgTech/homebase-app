@@ -302,8 +302,8 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
           location.pathname.match("/explorer/daos")
             ? classes.explorer
             : location.pathname.match("/explorer/lite")
-            ? classes.lite
-            : classes.home
+              ? classes.lite
+              : classes.home
         }
       >
         {pages.map((page, i) => (
