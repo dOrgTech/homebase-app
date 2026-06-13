@@ -1,7 +1,7 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { BigNumber } from "bignumber.js"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -16,8 +16,8 @@ export const useSendXTZ = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, Params>(
-    async params => {
+  return useMutation<TransactionWalletOperation | Error, Error, Params>({
+    mutationFn: async params => {
       const { key: notification, closeSnackbar: closeNotification } = openNotification({
         message: "XTZ transfer is being processed...",
         persist: true,
@@ -57,10 +57,8 @@ export const useSendXTZ = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

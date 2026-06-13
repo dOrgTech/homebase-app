@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getLatestDelegation } from "services/bakingBad/delegations"
@@ -7,9 +7,9 @@ export const useDelegate = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress)
   const { tezos, network } = useTezos()
 
-  const result = useQuery<{ address: string; alias?: string } | null, Error>(
-    ["daoDelegate", contractAddress],
-    async () => {
+  const result = useQuery<{ address: string; alias?: string } | null, Error>({
+    queryKey: ["daoDelegate", contractAddress],
+    queryFn: async () => {
       const latestDelegation = await getLatestDelegation(contractAddress, network)
 
       if (!latestDelegation) {
@@ -18,10 +18,8 @@ export const useDelegate = (contractAddress: string) => {
 
       return latestDelegation.newDelegate
     },
-    {
-      enabled: !!dao && !!tezos
-    }
-  )
+    enabled: !!dao && !!tezos
+  })
 
   return result
 }

@@ -1,7 +1,7 @@
 import React from "react"
 import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { Box, ThemeProvider, styled } from "@material-ui/core"
 import { SnackbarProvider } from "notistack"
@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnWindowFocus: true,
       staleTime: 5000,
-      cacheTime: 300000
+      gcTime: 300000
     }
   }
 })
@@ -82,7 +82,6 @@ const App: React.FC = () => {
           horizontal: "center"
         }}
       >
-        {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
         <QueryClientProvider client={queryClient}>
           <ActionSheetProvider>
             <Box bgcolor="primary.dark" position="absolute" width="100%">
@@ -137,7 +136,6 @@ const App: React.FC = () => {
             </Box>
           </ActionSheetProvider>
         </QueryClientProvider>
-        {/* </TanStackQueryClientProvider> */}
       </SnackbarProvider>
     </ThemeProvider>
   )

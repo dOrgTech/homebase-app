@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { ContractAbstraction, ContractProvider, TezosToolkit, Wallet } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { TokenContractParams } from "modules/creator/deployment/state/types"
@@ -24,8 +24,8 @@ export const useTokenOriginate = (tokenData: TokenContractParams) => {
 
   const openNotification = useNotification()
 
-  const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, TokenContractParams>(
-    async ({ tokenDistribution, tokenSettings }) => {
+  const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, TokenContractParams>({
+    mutationFn: async ({ tokenDistribution, tokenSettings }) => {
       console.log({ tokenDistribution, tokenSettings, network })
 
       if (network.startsWith("etherlink")) {
@@ -110,12 +110,10 @@ export const useTokenOriginate = (tokenData: TokenContractParams) => {
         }
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 
   return { mutation: result }
 }
