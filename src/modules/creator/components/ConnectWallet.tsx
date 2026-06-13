@@ -1,4 +1,14 @@
-import { Grid, Typography, Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, styled } from "@mui/material"
+import {
+  Grid,
+  Typography,
+  Box,
+  List,
+  ListItemButton,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  styled
+} from "@mui/material"
 import ImageIcon from "@mui/icons-material/Image"
 import React from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -25,7 +35,7 @@ export const ConnectWallet: React.FC = () => {
         </SpacingTitle>
         <Box>
           <List>
-            <ListItem button={true} onClick={() => connect()}>
+            <ListItemButton onClick={() => connect()}>
               <ListItemAvatar>
                 <Avatar>
                   <ImageIcon />
@@ -37,7 +47,7 @@ export const ConnectWallet: React.FC = () => {
                   Connect
                 </Typography>{" "}
               </ListItemText>
-            </ListItem>
+            </ListItemButton>
           </List>
         </Box>
       </Grid>
