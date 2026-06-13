@@ -52,7 +52,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
   const { daoSelected } = useContext(EtherlinkContext)
   const [isDelegating, setIsDelegating] = React.useState(false)
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
 
   // Check if this is a wrapped token DAO

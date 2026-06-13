@@ -1,5 +1,5 @@
-import { Grid, Typography, Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, styled } from "@material-ui/core"
-import ImageIcon from "@material-ui/icons/Image"
+import { Grid, Typography, Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, styled } from "@mui/material"
+import ImageIcon from "@mui/icons-material/Image"
 import React from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 

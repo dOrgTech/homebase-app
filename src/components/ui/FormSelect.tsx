@@ -1,5 +1,5 @@
 import React from "react"
-import { TextField, TextFieldProps } from "@material-ui/core"
+import { TextField, TextFieldProps } from "@mui/material"
 
 type Props = Omit<TextFieldProps, "select"> & {
   native?: boolean

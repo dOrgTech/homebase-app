@@ -1,4 +1,4 @@
-import { styled, Grid } from "@material-ui/core"
+import { styled, Grid } from "@mui/material"
 
 export const ContentContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,

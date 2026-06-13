@@ -1,6 +1,8 @@
-import { Grid, Paper, Stepper, TextareaAutosize, Typography, styled, withStyles, withTheme } from "@material-ui/core"
-import InfoRounded from "@material-ui/icons/InfoRounded"
-import { TextField as FormikTextField } from "formik-material-ui"
+import { Grid, Paper, Stepper, TextareaAutosize, Typography, styled } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
+import InfoRounded from "@mui/icons-material/InfoRounded"
+import { TextField as FormikTextField } from "formik-mui"
 
 export const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main

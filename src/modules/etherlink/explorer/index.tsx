@@ -20,7 +20,7 @@ export const EtherlinkDAOOverview: React.FC = () => {
   const { daoSelected } = useContext(EtherlinkContext)
 
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
   const { setMetadataFieldValue, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
 

@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react"
-import { Box, Grid, styled, Typography, Paper } from "@material-ui/core"
+import { Box, Grid, styled, Typography, Paper } from "@mui/material"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import BigNumber from "bignumber.js"
@@ -31,7 +31,7 @@ const ItemContent = styled(Grid)({
 const ItemTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   fontWeight: 500,
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     fontSize: 15
   }
 }))
@@ -41,7 +41,7 @@ const ItemValue = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   overflowX: "scroll",
   cursor: "default",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 28
   }
 }))

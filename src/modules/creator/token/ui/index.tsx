@@ -1,12 +1,14 @@
-import { Grid, Link, styled, Typography, withTheme, withStyles } from "@material-ui/core"
-import { TextareaAutosize, Paper, Stepper } from "@material-ui/core"
-import { TextField as FormikTextField } from "formik-material-ui"
-import { RemoveCircleOutline } from "@material-ui/icons"
+import { Grid, Link, styled, Typography } from "@mui/material"
+import withTheme from "@mui/styles/withTheme"
+import withStyles from "@mui/styles/withStyles"
+import { TextareaAutosize, Paper, Stepper } from "@mui/material"
+import { TextField as FormikTextField } from "formik-mui"
+import { RemoveCircleOutline } from "@mui/icons-material"
 
 export const Title = styled(Typography)(({ theme }) => ({
   fontSize: 32,
   fontWeight: 600,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 26
   }
 }))
@@ -15,7 +17,7 @@ export const CenterTitle = styled(Typography)(({ theme }) => ({
   fontSize: 32,
   fontWeight: 600,
   textAlign: "center",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 26
   }
 }))
@@ -80,7 +82,7 @@ export const CustomInputContainer = styled(Grid)(({ theme }) => ({
   "& input::placeholder": {
     fontWeight: 300
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "100%"
   }
 }))
@@ -111,7 +113,7 @@ export const CustomAmountContainer = styled(Grid)(({ theme }) => ({
   "& input::placeholder": {
     fontWeight: 300
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "100%"
   }
 }))
@@ -127,7 +129,7 @@ export const AddButtonContainer = styled(Grid)(({ theme }) => ({
   "& input::placeholder": {
     fontWeight: 300
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "100%"
   }
 }))
@@ -157,7 +159,7 @@ export const PageContent = styled(Grid)(({ theme }) => ({
   ["@media (max-width:1167px)"]: {
     width: "86vw"
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 10
   }
 }))
@@ -167,27 +169,27 @@ export const CardContainer = styled(Grid)(({ theme }) => ({
   gap: 32,
   borderRadius: 8,
   padding: "40px 48px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 38px"
   }
 }))
 
 export const DescriptionContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingLeft: "4%",
     paddingRight: "4%"
   }
 }))
 
 export const OptionsContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingLeft: "4%",
     paddingRight: "4%"
   }
 }))
 
 export const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gap: 32
   }
 }))
@@ -196,13 +198,13 @@ export const DescriptionText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
   color: theme.palette.text.secondary,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 14
   }
 }))
 
 export const OptionButton = styled(Link)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     display: "flex",
     textAlign: "center"
   }

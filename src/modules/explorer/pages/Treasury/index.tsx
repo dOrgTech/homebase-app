@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react"
-import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../DAO/router"
 import { BalancesTable } from "./components/BalancesTable"
@@ -7,7 +7,7 @@ import { TransfersTable } from "./components/TransfersTable"
 import { TransferWithBN, useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
-import { styled } from "@material-ui/core"
+import { styled } from "@mui/material"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import { NFTs } from "../NFTs"
 import TollIcon from "@mui/icons-material/Toll"
@@ -36,7 +36,7 @@ const TabsBox = styled(Grid)(({ theme }) => ({
   padding: "40px 56px",
   minHeight: 300,
   width: "100%",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 36px"
   }
 }))
@@ -98,14 +98,14 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "0px",
   display: "inline-flex",
   alignItems: "center",
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     maxHeight: "fit-content"
   }
 }))
 
 export const Treasury: React.FC = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)

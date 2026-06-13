@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { Grid, InputAdornment, makeStyles, styled, TextField, Theme, withStyles } from "@material-ui/core"
-import { SearchOutlined } from "@material-ui/icons"
-import { Autocomplete } from "@material-ui/lab"
+import { Grid, InputAdornment, styled, TextField, Theme } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
+import withStyles from "@mui/styles/withStyles"
+import { SearchOutlined } from "@mui/icons-material"
+import { Autocomplete } from "@mui/material"
 import { ArbitraryContract } from "models/Contract"
 
 export interface ContractEndpoint {

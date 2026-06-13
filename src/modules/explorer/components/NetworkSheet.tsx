@@ -1,4 +1,4 @@
-import { styled, Grid, Typography, Tooltip, GridProps } from "@material-ui/core"
+import { styled, Grid, Typography, Tooltip, GridProps } from "@mui/material"
 import React, { useContext, useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network, getNetworkDisplayName, networkDotColorMap, rpcNodes } from "services/beacon"

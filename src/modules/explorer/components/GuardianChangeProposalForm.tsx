@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, TextField } from "@material-ui/core"
+import { Grid, styled, Typography, TextField } from "@mui/material"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"

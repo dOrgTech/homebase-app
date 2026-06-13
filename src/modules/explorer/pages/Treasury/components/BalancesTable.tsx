@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Card, CardContent, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Card, CardContent, Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 import { DAOHolding } from "services/bakingBad/tokenBalances"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
@@ -53,14 +53,14 @@ const BalanceText = styled(Typography)(({ theme }) => ({
   fontSize: 24,
   fontWeight: 300,
   marginBottom: 16,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: "24px !important"
   }
 }))
 
 const BalanceTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: "18px !important"
   }
 }))
@@ -175,7 +175,7 @@ const BalancesList: React.FC<TableProps> = ({
 
 export const BalancesTable: React.FC = () => {
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const daoId = useDAOID()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
   const { tokenHoldings } = useDAOHoldings(daoId)

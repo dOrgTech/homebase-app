@@ -1,4 +1,4 @@
-import { Grid, styled, Button, Box, Tooltip, useTheme } from "@material-ui/core"
+import { Grid, styled, Button, Box, Tooltip, useTheme } from "@mui/material"
 
 export const ThemedTabButton = styled(Button)(({ active }: { active?: boolean }) => ({
   "marginRight": "8px",

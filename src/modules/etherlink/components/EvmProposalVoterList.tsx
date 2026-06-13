@@ -53,7 +53,7 @@ export const EvmProposalVoterList = () => {
   const [searchTerm, setSearchTerm] = useState("")
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { copyAddress, showProposalVoterList, setShowProposalVoterList } = useEvmDaoUiOps()
   const { daoProposalSelected, daoProposalVoters, network, daoSelected } = useContext(EtherlinkContext)
 

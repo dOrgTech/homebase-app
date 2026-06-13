@@ -1,4 +1,5 @@
-import { Button, ButtonProps, makeStyles, useTheme } from "@material-ui/core"
+import { Button, ButtonProps, useTheme } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import React from "react"
 import hexToRgba from "hex-to-rgba"
 

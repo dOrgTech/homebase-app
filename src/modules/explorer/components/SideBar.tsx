@@ -1,4 +1,4 @@
-import { Grid, styled, IconButton, useMediaQuery, useTheme, Theme } from "@material-ui/core"
+import { Grid, styled, IconButton, useMediaQuery, useTheme, Theme } from "@mui/material"
 import React, { useEffect, useMemo, useState } from "react"
 
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg"
@@ -27,7 +27,7 @@ export const debounce = <T extends (...args: any[]) => any>(callback: T, waitFor
 const Bar = styled(Grid)(({ theme }) => ({
   minWidth: 102,
   borderRight: `2px solid ${theme.palette.primary.light}`,
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     width: "100%",
     borderBottom: `2px solid ${theme.palette.primary.light}`,
     borderRight: `unset`
@@ -37,7 +37,7 @@ const Bar = styled(Grid)(({ theme }) => ({
 const SidebarButton = styled(IconButton)(({ theme }) => ({
   paddingTop: 32,
   width: "100%",
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     paddingTop: 12
   }
 }))
@@ -108,7 +108,7 @@ const BottomNavBar: React.FC = ({ children }) => {
 
 const SideNavBar: React.FC = ({ children }) => {
   const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   return (
     <Bar item>
@@ -130,7 +130,7 @@ export const SideBar: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
   const SIDE_BAR_ICONS = useMemo(() => {
     if (!dao) {
       return []

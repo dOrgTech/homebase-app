@@ -5,17 +5,17 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  makeStyles,
   Radio,
   styled,
   Typography,
-  useMediaQuery,
-  withStyles
-} from "@material-ui/core"
+  useMediaQuery
+} from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
+import withStyles from "@mui/styles/withStyles"
 import { theme } from "theme"
-import { AddCircleOutline, DeleteTwoTone } from "@material-ui/icons"
+import { AddCircleOutline, DeleteTwoTone } from "@mui/icons-material"
 import { FieldArray, Field } from "formik"
-import { TextField as FormikTextField } from "formik-material-ui"
+import { TextField as FormikTextField } from "formik-mui"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
@@ -40,14 +40,14 @@ const ChoiceText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
   marginLeft: 12,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
 
 const VotingContainer = styled(Grid)(({ theme }) => ({
   height: 80,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     height: 120
   }
 }))
@@ -122,7 +122,7 @@ export const Choices: React.FC<any> = ({
   touched,
   errors
 }) => {
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const daoId = useDAOID()
   const { data } = useDAO(daoId)

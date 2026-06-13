@@ -1,10 +1,10 @@
 import React from "react"
-import { styled, Grid } from "@material-ui/core"
+import { styled, Grid } from "@mui/material"
 import { ViewButton, ViewButtonProps } from "./ViewButton"
 import { MainButton } from "modules/common/MainButton"
 
 const SendContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     height: 100
   }
 }))

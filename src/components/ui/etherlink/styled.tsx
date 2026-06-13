@@ -1,18 +1,8 @@
-import {
-  Box,
-  DialogContent,
-  Grid,
-  Link,
-  Popover,
-  styled,
-  TableCell,
-  TableRow,
-  Theme,
-  Typography,
-  withStyles
-} from "@material-ui/core"
+import { Box, DialogContent, Grid, Link, Popover, styled, TableCell, TableRow, Theme, Typography } from "@mui/material"
 
-import { FileCopyOutlined } from "@material-ui/icons"
+import withStyles from "@mui/styles/withStyles"
+
+import { FileCopyOutlined } from "@mui/icons-material"
 import { GridContainer } from "modules/common/GridContainer"
 
 import { ContentContainer } from "components/ui/ContentContainer"
@@ -55,7 +45,7 @@ export const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
   display: "grid",
   marginTop: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 0,
     display: "inline",
     paddingTop: "0px !important"
@@ -70,7 +60,7 @@ export const VotesRow = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   padding: ".5rem 1rem",
   width: 400,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: 200,
     textAlign: "center"
   }
@@ -114,7 +104,7 @@ export const TitleContainer = styled(Grid)(({ theme }) => ({
   paddingRight: 46,
   paddingBottom: 18,
   borderBottom: `0.3px solid ${theme.palette.primary.light}`,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "18px 25px"
   }
 }))
@@ -143,7 +133,7 @@ export const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   paddingBottom: 4,
   display: "flex",
   height: "auto",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "unset"
   }
 }))
@@ -168,7 +158,7 @@ export const AssetLabel = styled(Typography)(({ theme }) => ({
 
 export const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     height: 10
   }
 }))
@@ -178,7 +168,7 @@ export const TextContainer = styled(Typography)(({ theme }) => ({
   alignItems: "center",
   gap: 10,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -188,13 +178,13 @@ export const EndTextContainer = styled(Typography)(({ theme }) => ({
   alignItems: "center",
   gap: 10,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
 
 export const EndText = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -202,7 +192,7 @@ export const EndText = styled(Typography)(({ theme }) => ({
 export const Divider = styled(Typography)(({ theme }) => ({
   marginLeft: 8,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -212,7 +202,7 @@ export const StyledLink = styled(Link)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 16,
   marginLeft: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontWeight: 100,
     fontSize: 10
   }

@@ -12,9 +12,9 @@ import {
   TableRow,
   TableHead,
   TableCell
-} from "@material-ui/core"
+} from "@mui/material"
 import { toShortAddress } from "services/contracts/utils"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { FileCopyOutlined } from "@mui/icons-material"
 import { Choice } from "models/Choice"
 import { getTotalVoters } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
@@ -29,7 +29,7 @@ const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
   display: "grid",
   marginTop: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 0,
     display: "inline",
     paddingTop: "0px !important"
@@ -39,7 +39,7 @@ const CustomContent = styled(DialogContent)(({ theme }) => ({
 const CustomDialogActions = styled(DialogActions)(({ theme }) => ({
   justifyContent: "flex-end !important",
   paddingBottom: 20,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 46
   }
 }))
@@ -73,7 +73,7 @@ const VotesRow = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   padding: ".5rem 1rem",
   width: 400,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: 200,
     textAlign: "center"
   }
@@ -123,7 +123,7 @@ export const VotesDialog: React.FC<{
   const openNotification = useNotification()
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const pageCount = Math.ceil(groupedVotes ? groupedVotes.length / 4 : 0)

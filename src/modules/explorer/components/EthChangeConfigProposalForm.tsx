@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { ResponsiveDialog } from "./ResponsiveDialog"
-import { Grid, TextField, Typography, MenuItem, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, TextField, Typography, MenuItem, useMediaQuery, useTheme } from "@mui/material"
 import { SendButton } from "./ProposalFormSendButton"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 
@@ -15,7 +15,7 @@ const EthChangeConfigProposalForm: React.FC<EthContractCallFormProps> = ({ open,
   const [offChainResources, setOffChainResources] = useState("")
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   return (
     <ResponsiveDialog
       open={open}

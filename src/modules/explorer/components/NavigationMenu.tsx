@@ -1,14 +1,6 @@
-import {
-  Grid,
-  styled,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  alpha,
-  withStyles,
-  makeStyles
-} from "@material-ui/core"
+import { Grid, styled, Theme, Typography, useMediaQuery, useTheme, alpha } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import makeStyles from "@mui/styles/makeStyles"
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg"
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
@@ -79,7 +71,7 @@ const PageItemMobile = styled(({ isSelected, ...other }: any) => <Grid {...other
     "& > a > * > * > *": {
       transition: ".15s ease-out"
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("lg")]: {
       width: "45px"
     }
   })
@@ -116,7 +108,7 @@ const PageItem = styled(({ isSelected, ...other }: any) => <Grid {...other} />)(
     "& > a > * > * > *": {
       transition: ".15s ease-out"
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("lg")]: {
       width: "45px"
     }
   })

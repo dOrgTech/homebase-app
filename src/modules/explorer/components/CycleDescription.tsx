@@ -1,4 +1,4 @@
-import { Typography, useMediaQuery, useTheme, Theme, styled } from "@material-ui/core"
+import { Typography, useMediaQuery, useTheme, Theme, styled } from "@mui/material"
 import React from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 

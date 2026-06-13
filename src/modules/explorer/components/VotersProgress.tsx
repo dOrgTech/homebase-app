@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { MultiColorBar as CustomBar, ProgressBar } from "modules/explorer/components/ProgressBar"
 import { useVotesStats } from "../hooks/useVotesStats"
 import BigNumber from "bignumber.js"
@@ -26,7 +26,7 @@ const StatusTitle = styled(Typography)({
 
 const PercentageValue = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontWeight: 300,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 8
   }
 }))
@@ -41,7 +41,7 @@ const formatConfig = {
 export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, proposalId, wrapAll }) => {
   const theme = useTheme()
   const [open, setOpen] = useState(false)
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { data: proposalData } = useProposal(daoId, proposalId)
   const proposal = proposalData as Proposal | undefined
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)

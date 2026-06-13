@@ -5,7 +5,7 @@ import {
   HowToVote as HowToVoteIcon,
   Schedule as ScheduleIcon,
   AccountBalance as AccountBalanceIcon
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 import { EtherlinkContext } from "services/wagmi/context"

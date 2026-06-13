@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react"
-import { CircularProgress, Grid, Theme, Typography, styled, withStyles } from "@material-ui/core"
+import { CircularProgress, Grid, Theme, Typography, styled } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { Edit } from "@material-ui/icons"
+import { Edit } from "@mui/icons-material"
 import { DelegationDialog } from "./DelegationModal"
 import { useDelegationStatus } from "services/contracts/token/hooks/useDelegationStatus"
 import { useTezos } from "services/beacon/hooks/useTezos"

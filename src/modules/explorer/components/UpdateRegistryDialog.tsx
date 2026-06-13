@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react"
-import { Grid, DialogContent, TextField, styled } from "@material-ui/core"
+import { Grid, DialogContent, TextField, styled } from "@mui/material"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import { Registry } from "services/contracts/baseDAO"
 import * as Yup from "yup"

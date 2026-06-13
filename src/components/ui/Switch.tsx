@@ -1,4 +1,4 @@
-import { styled, Switch as MuiSwitch } from "@material-ui/core"
+import { styled, Switch as MuiSwitch } from "@mui/material"
 
 export const Switch = styled(MuiSwitch)({
   "& .MuiSwitch-thumb": {

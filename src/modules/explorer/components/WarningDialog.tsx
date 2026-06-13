@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { styled, Grid, Typography, Checkbox, FormControlLabel, Link } from "@material-ui/core"
+import { styled, Grid, Typography, Checkbox, FormControlLabel, Link } from "@mui/material"
 import { SendButton } from "./ProposalFormSendButton"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 

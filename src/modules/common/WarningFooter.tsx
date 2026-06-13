@@ -1,7 +1,7 @@
-import { Box, Grid, IconButton, Typography, styled } from "@material-ui/core"
+import { Box, Grid, IconButton, Typography, styled } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { ReactComponent as WarningIcon } from "assets/logos/warning.svg"
-import CloseIcon from "@material-ui/icons/Close"
+import CloseIcon from "@mui/icons-material/Close"
 import hexToRgba from "hex-to-rgba"
 
 const Container = styled(Box)({
@@ -52,7 +52,7 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
               <ContainerText align="center">{text}</ContainerText>
             </Grid>
             <Grid item>
-              <IconButton onClick={closeButton}>
+              <IconButton onClick={closeButton} size="large">
                 <CloseIcon htmlColor="#FFC839" />
               </IconButton>
             </Grid>

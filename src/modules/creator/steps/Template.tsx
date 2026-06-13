@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Tooltip } from "@material-ui/core"
+import { Grid, styled, Typography, Box, useMediaQuery, useTheme, Tooltip } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import { useHistory } from "react-router"
 
 import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
@@ -96,7 +97,7 @@ export const Template = (): JSX.Element => {
   const { network } = useTezos()
   const isEtherLink = network?.startsWith("etherlink")
 
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const [selectedTemplate, setTemplate] = useState<DAOTemplate>(template)
   const [error, setError] = useState<boolean>(false)

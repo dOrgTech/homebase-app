@@ -7,16 +7,16 @@ import {
   Checkbox,
   useMediaQuery,
   useTheme,
-  withStyles,
-  withTheme,
   TextareaAutosize,
   CircularProgress,
   InputAdornment,
   Tooltip
-} from "@material-ui/core"
+} from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
 import { UploadAvatar } from "./components/UploadAvatar"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
-import { TextField as FormikTextField } from "formik-material-ui"
+import { TextField as FormikTextField } from "formik-mui"
 import { Community } from "models/Community"
 import { useHistory } from "react-router"
 
@@ -27,7 +27,7 @@ import { getEthSignature, getSignature, validateTokenAddress } from "services/ut
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
-import { InfoRounded } from "@material-ui/icons"
+import { InfoRounded } from "@mui/icons-material"
 import CodeIcon from "@mui/icons-material/Code"
 import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
@@ -58,7 +58,7 @@ const CodeOffButton = styled(CodeOffIcon)(({ theme }) => ({
 const CommunityContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   padding: "0px 15px",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 0
   }
 }))
@@ -73,7 +73,7 @@ const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
 const AvatarCommunityContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   padding: "0px 15px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 30
   }
 }))
@@ -81,7 +81,7 @@ const AvatarCommunityContainer = styled(Grid)(({ theme }) => ({
 const CommunityContainerBottom = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   padding: "0px 15px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 30,
     gap: 12
   },
@@ -91,7 +91,7 @@ const CommunityContainerBottom = styled(Grid)(({ theme }) => ({
 const TitleContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   padding: "0px 15px",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 0
   },
   marginBottom: 26
@@ -191,7 +191,7 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const CheckboxContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     maxWidth: "16.666667%",
     flexBasis: "16.666667%"
   },
@@ -221,7 +221,7 @@ const validateForm = (network: Network, values: Community) => {
 const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched, isSubmitting }: any) => {
   const theme = useTheme()
   const { isEtherlink } = useTezos()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
   console.log("TokenMetadata", tokenMetadata)

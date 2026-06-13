@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Divider, Grid, styled, Typography } from "@material-ui/core"
+import { Button, Divider, Grid, styled, Typography } from "@mui/material"
 
 const PluginsContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,

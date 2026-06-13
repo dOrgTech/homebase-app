@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Grid, styled, Typography } from "@material-ui/core"
+import { Grid, styled, Typography } from "@mui/material"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useState } from "react"

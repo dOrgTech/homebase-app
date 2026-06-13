@@ -14,7 +14,7 @@ import {
 const StyledContentContainer = styled(ContentContainer)(({ theme }) => ({
   gap: 10,
   padding: "32px 46px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "18px 25px"
   }
 }))

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, LinearProgress, styled, Typography } from "@material-ui/core"
+import { Grid, LinearProgress, styled, Typography } from "@mui/material"
 import { Choice } from "models/Choice"
 import { Poll } from "models/Polls"
 import { calculateChoiceTotal, calculateWeight, nFormatter } from "services/lite/utils"

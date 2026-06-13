@@ -4,7 +4,7 @@ import { ethers } from "ethers"
 import { Box, Grid, styled, Typography, IconButton, Tooltip } from "components/ui"
 import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
-import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined"
+import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined"
 
 import { EtherlinkContext } from "services/wagmi/context"
 import { IEvmProposal } from "../types"

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Box, Grid, styled, Tooltip, Typography } from "@material-ui/core"
+import { Box, Grid, styled, Tooltip, Typography } from "@mui/material"
 import DownloadIcon from "assets/img/download.svg"
 
 const CopyIcon = styled("img")({

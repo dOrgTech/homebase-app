@@ -24,7 +24,7 @@ const TitleContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   marginTop: 20,
   gap: 32,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "18px 25px"
   }
 }))
@@ -55,7 +55,7 @@ export const OffchainVotesLayout: React.FC<{
   onOpenVotes?: () => void
 }> = ({ header = "Votes", items, totalLabelLeft = "Total Votes:", totalValue = "", rightExtras, onOpenVotes }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const total = typeof totalValue === "number" ? totalValue : Number(totalValue || 0)
 

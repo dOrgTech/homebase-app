@@ -108,7 +108,7 @@ const validateForm = (values: EvmDaoSettings) => {
 
 export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const { data: daoData, setFieldValue, getIn } = useEvmDaoCreateStore()
 
   const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Box, CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { NFT as NFTModel } from "models/Token"
 import { NFT } from "modules/explorer/components/NFT"
 import { NFTDialog } from "modules/explorer/components/NFTDialog"
@@ -69,7 +69,7 @@ export const NFTs: React.FC = () => {
   const { account } = useTezos()
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
   const [selectedNFT, setSelectedNFT] = useState<NFTDAOHolding>()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [filters, setFilters] = useState<TokensFilters>()

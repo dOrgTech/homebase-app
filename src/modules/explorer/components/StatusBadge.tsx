@@ -1,5 +1,5 @@
 import React from "react"
-import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
+import { styled, Grid, Theme, Typography, GridProps } from "@mui/material"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 export const statusColors = (status: ProposalStatus | string): { background: string; color: string; text: string } => {
@@ -100,7 +100,9 @@ export const statusColors = (status: ProposalStatus | string): { background: str
   }
 }
 
-export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | string; theme: Theme }) => ({
+export const Badge = styled(Grid, { shouldForwardProp: prop => prop !== "status" })<{
+  status: ProposalStatus | string
+}>(({ status }) => ({
   "borderRadius": 50,
   "boxSizing": "border-box",
   "minWidth": 87,

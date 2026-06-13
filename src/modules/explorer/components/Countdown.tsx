@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Typography } from "@material-ui/core"
+import { Grid, Typography } from "@mui/material"
 import { CycleInfo } from "services/contracts/baseDAO"
 
 export const Countdown: React.FC<{ cycleInfo: CycleInfo }> = ({ cycleInfo }) => {

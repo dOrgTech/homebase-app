@@ -1,4 +1,4 @@
-import { Button, Grid, styled, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material"
 import React, { useCallback, useState } from "react"
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
@@ -79,7 +79,7 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   display: "inline-flex",
   alignItems: "center",
   maxHeight: 132,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     maxHeight: "fit-content"
   }
 }))
@@ -123,7 +123,7 @@ const defaultOpenSupportedExecuteProposalModal = "none"
 
 export const Config: React.FC = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [openModal, setOpenModal] = useState(false)
   const [openModalLambda, setOpenModalLambda] = useState(false)
   const daoId = useDAOID()

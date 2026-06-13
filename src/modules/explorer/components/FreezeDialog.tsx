@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react"
-import { Grid, styled, Typography, TextField, InputAdornment, Button } from "@material-ui/core"
+import { Grid, styled, Typography, TextField, InputAdornment, Button } from "@mui/material"
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze"
 import BigNumber from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"

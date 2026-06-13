@@ -1,10 +1,10 @@
-import { Box, Grid, Link, styled, SvgIcon, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Grid, Link, styled, SvgIcon, Theme, Typography, useMediaQuery, useTheme } from "@mui/material"
 import React from "react"
 import { Header } from "./LandingHeader"
 import HomebaseLogo from "assets/logos/homebase_logo.svg"
 import Vector1 from "assets/vectors/Vector1.svg"
 import Vector2 from "assets/vectors/Vector2.svg"
-import GitHubIcon from "@material-ui/icons/GitHub"
+import GitHubIcon from "@mui/icons-material/GitHub"
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg"
 import { MainButton } from "../common/MainButton"
 import { EnvKey, getEnv } from "services/config"
@@ -56,7 +56,7 @@ const LogoContainer = styled(Box)(({ theme }) => ({
   width: 408,
   height: 370,
 
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     width: 290,
     height: 265
   }
@@ -82,7 +82,7 @@ const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 
 export const Landing: React.FC = () => {
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   return (
     <Background container direction="column" justifyContent="space-between" wrap="nowrap">

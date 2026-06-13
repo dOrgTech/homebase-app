@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from "@material-ui/core"
+import { Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from "@mui/material"
 import { toShortAddress } from "../../../services/contracts/utils"
 import { Blockie } from "modules/common/Blockie"
 import ReactPaginate from "react-paginate"

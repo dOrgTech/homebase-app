@@ -1,6 +1,6 @@
 import React from "react"
 import Editor from "react-simple-code-editor"
-import { Grid, styled, Typography } from "@material-ui/core"
+import { Grid, styled, Typography } from "@mui/material"
 
 const StyledBody = styled(Grid)(({ theme }) => ({
   "borderRadius": 8,

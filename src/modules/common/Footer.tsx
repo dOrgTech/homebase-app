@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import HomeButton from "assets/logos/footer_logo.svg"
 import Documentation from "assets/logos/footer_documentation.svg"
 import Help from "assets/logos/footer_help.svg"
@@ -18,7 +18,7 @@ const Footer = styled(Grid)(({ theme }) => ({
   paddingTop: 40,
   paddingBottom: 40,
   marginTop: 32,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     height: "auto",
     paddingTop: 30,
     paddingBottom: 30
@@ -49,7 +49,7 @@ const DesignedByText = styled(Typography)({
 })
 
 const BottomContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gap: 12
   }
 }))
@@ -72,7 +72,7 @@ const Container = styled(Grid)(({ theme }) => ({
 
 export const ExplorerFooter: React.FC = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { network } = useTezos()
 
   const goToFAQ = () => {

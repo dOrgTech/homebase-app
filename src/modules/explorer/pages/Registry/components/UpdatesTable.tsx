@@ -10,7 +10,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "@mui/material"
 import dayjs from "dayjs"
 import { OverflowCell } from "./OverflowCell"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
@@ -135,7 +135,7 @@ const DesktopUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
 
 export const UpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <TableContainer item>

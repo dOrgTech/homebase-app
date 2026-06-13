@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
-import { styled, Grid, Box, Typography, IconButton, useTheme, useMediaQuery } from "@material-ui/core"
+import { styled, Grid, Box, Typography, IconButton, useTheme, useMediaQuery } from "@mui/material"
 import dayjs from "dayjs"
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward"
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
 import { useHistory } from "react-router-dom"
 import { RowContainer } from "./tables/RowContainer"
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge"
@@ -11,7 +11,7 @@ import {
   PauseCircleOutline,
   RemoveCircleOutline,
   PlayCircleOutlineOutlined
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 import { toShortAddress } from "services/contracts/utils"
 import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
@@ -24,7 +24,7 @@ export interface ProposalTableRowData {
 
 const ArrowContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     display: "none"
   }
 }))
@@ -41,13 +41,13 @@ const StatusText = styled(Typography)({
 
 const RowContent = styled(Box)(({ theme }) => ({
   marginTop: 25,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 15
   }
 }))
 
 const ArrowInfo = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 15
   }
 }))
@@ -55,7 +55,7 @@ const ArrowInfo = styled(Typography)(({ theme }) => ({
 export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({ proposal }) => {
   const history = useHistory()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { cycleInfo } = useDAO(proposal.dao.data.address)
 
   const formattedDate = dayjs(proposal.startDate).format("LLL")

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Button, Typography } from "@material-ui/core"
+import { Button, Typography } from "@mui/material"
 import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
 import { Choice } from "models/Choice"
 import { mkConfig, generateCsv, download } from "export-to-csv"

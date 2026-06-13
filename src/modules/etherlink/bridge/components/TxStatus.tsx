@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Typography, CircularProgress, Link, styled } from "components/ui"
-import CheckCircleIcon from "@material-ui/icons/CheckCircle"
-import ErrorIcon from "@material-ui/icons/Error"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import ErrorIcon from "@mui/icons-material/Error"
 
 const WhiteText = styled(Typography)({
   color: "#fff !important"

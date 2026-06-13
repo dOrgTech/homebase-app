@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useState } from "react"
@@ -80,7 +80,7 @@ export const TreasuryDialog: React.FC<Props> = ({ open, handleClose, handleChang
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [openTransfer, setOpenTransfer] = useState(false)
   const [selectedTab, setSelectedTab] = useState(0)
 

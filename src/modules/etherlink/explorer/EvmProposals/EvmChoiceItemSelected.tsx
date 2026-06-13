@@ -29,7 +29,7 @@ export const EvmChoiceItemSelected: React.FC<{
   multiple: boolean
 }> = ({ choice, setSelectedVotes, votes, multiple }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const handleVotes = (choice: IEvmOffchainChoice) => {
     if (multiple) {

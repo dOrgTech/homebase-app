@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Grid, styled, Theme } from "@material-ui/core"
+import { Button, Grid, styled, Theme } from "@mui/material"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",

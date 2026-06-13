@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { Grid, TextField, Typography, styled, withStyles } from "@material-ui/core"
+import { Grid, TextField, Typography, styled } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { SmallButton } from "modules/common/SmallButton"
 import { TokensFilters } from "../pages/NFTs"
@@ -19,7 +20,7 @@ const SectionTitle = styled(Typography)({
 const Container = styled(Grid)(({ theme }) => ({
   marginTop: 6,
   gap: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 30
   }
 }))
