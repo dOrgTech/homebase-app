@@ -12,7 +12,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "@mui/material"
 import { TransferWithBN } from "services/contracts/baseDAO/hooks/useTransfers"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network } from "services/beacon"
@@ -72,7 +72,7 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   gap: 8,
   borderRadius: 8,
   background: theme.palette.primary.main,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 38px",
     gap: 20
   }
@@ -244,7 +244,7 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   useEffect(() => {
     setOffset(0)

@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from "react"
-import { Grid, styled, Paper, DialogContent, TextField } from "@material-ui/core"
+import { Grid, styled, Paper, DialogContent, TextField } from "@mui/material"
 import { useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import * as Yup from "yup"
-import { Autocomplete } from "@material-ui/lab"
+import { Autocomplete } from "@mui/material"
 
 import { Controller, useFieldArray, useFormContext } from "react-hook-form"
 import { NFT } from "modules/explorer/components/NFT"

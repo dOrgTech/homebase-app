@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext, useEffect } from "react"
-import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@mui/material"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -43,7 +43,7 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "0px",
   display: "inline-flex",
   alignItems: "center",
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     maxHeight: "fit-content"
   }
 }))
@@ -87,7 +87,7 @@ const TabsBox = styled(Grid)(({ theme }) => ({
   padding: "40px 56px",
   minHeight: 300,
   width: "100%",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 36px"
   }
 }))
@@ -113,7 +113,7 @@ const TezosProposals = () => {
 
   const { data: proposals } = useProposals(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
   const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
   const [openDialog, setOpenDialog] = useState(false)
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)

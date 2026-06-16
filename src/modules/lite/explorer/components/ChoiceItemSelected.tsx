@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Button, Divider, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Divider, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Choice } from "models/Choice"
 
 const StyledContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -29,7 +29,7 @@ export const ChoiceItemSelected: React.FC<{
   multiple: boolean
 }> = ({ choice, setSelectedVotes, votes, multiple }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const handleVotes = (choice: Choice) => {
     if (multiple) {

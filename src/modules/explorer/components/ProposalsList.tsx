@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { CircularProgress, Collapse, Grid, Typography, styled } from "@material-ui/core"
+import { CircularProgress, Collapse, Grid, Typography, styled } from "@mui/material"
 import { ProposalItem } from "modules/explorer/pages/User"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Grid, Typography, styled } from "components/ui"
-import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab"
-import { makeStyles } from "@material-ui/core/styles"
+import { ToggleButtonGroup, ToggleButton } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import { useMemberActivity } from "../hooks/useMemberActivity"
 import { EvmDaoProposalList } from "./EvmDaoProposalList"
 
@@ -11,7 +11,7 @@ const ActivityContainer = styled(Grid)(({ theme }) => ({
   padding: "24px 56px 16px",
   width: "100%",
   marginTop: "12px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "20px 32px 16px"
   }
 }))

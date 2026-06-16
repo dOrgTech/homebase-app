@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react"
 import BigNumber from "bignumber.js"
-import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
+import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@mui/material"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "./router"
@@ -14,7 +14,7 @@ import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { SettingsDialog } from "./components/SettingsDialog"
 import { IconButton } from "@mui/material"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { FileCopyOutlined } from "@mui/icons-material"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -23,7 +23,7 @@ export const StyledAvatar = styled(Avatar)({
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: 38,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "inherit"
   }
 }))
@@ -86,7 +86,7 @@ export const DAOOverview: React.FC = () => {
   const { data, cycleInfo, ledger } = useDAO(daoId)
   console.log("dataDAO", data)
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
   const symbol = data?.data?.token?.symbol?.toUpperCase() || "Unknown"
 
   const name = data?.data?.name

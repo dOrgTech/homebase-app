@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from "react"
-import { Grid, Typography, TextField, Button, useTheme, styled } from "@material-ui/core"
+import { Grid, Typography, TextField, Button, useTheme, styled } from "@mui/material"
 import { useParams } from "react-router-dom"
 import { useVote } from "services/contracts/baseDAO/hooks/useVote"
 import BigNumber from "bignumber.js"

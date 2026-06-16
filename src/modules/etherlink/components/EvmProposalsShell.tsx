@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Grid, Theme, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, styled, useMediaQuery, useTheme } from "@mui/material"
 import { ContentContainer } from "components/ui/Table"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { ReactComponent as LinkActive } from "assets/img/link_active.svg"
@@ -28,7 +28,7 @@ const TabsBox = styled(Grid)(({ theme }) => ({
   padding: "24px 56px 36px",
   minHeight: 300,
   width: "100%",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "20px 32px 28px"
   }
 }))
@@ -91,7 +91,7 @@ export const EvmProposalsShell: React.FC<Props> = ({
   proposalCount
 }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   return (
     <Grid container direction="column" style={{ gap: 16 }}>

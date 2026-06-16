@@ -2,8 +2,8 @@ import React, { useState } from "react"
 import { Box } from "@mui/material"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ProposalFormInput } from "./ProposalFormInput"
-import { Grid, TextField, Paper, styled, useTheme, useMediaQuery } from "@material-ui/core"
-import { Autocomplete } from "@material-ui/lab"
+import { Grid, TextField, Paper, styled, useTheme, useMediaQuery } from "@mui/material"
+import { Autocomplete } from "@mui/material"
 import { SendButton } from "./ProposalFormSendButton"
 
 interface EthContractCallFormProps {
@@ -34,7 +34,7 @@ const EthTransferFundsForm: React.FC<EthContractCallFormProps> = ({ open, handle
   const [title, setTitle] = useState("")
   const [offChainResources, setOffChainResources] = useState("")
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   return (
     <ResponsiveDialog
       open={open}

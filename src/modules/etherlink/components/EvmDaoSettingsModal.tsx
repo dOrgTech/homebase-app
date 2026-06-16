@@ -19,11 +19,11 @@ import { CopyAddress } from "modules/common/CopyAddress"
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
   width: "inherit",
-  [theme.breakpoints.down("sm")]: {}
+  [theme.breakpoints.down("lg")]: {}
 }))
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingBottom: 0,
     paddingLeft: "16px !important",
     textAlign: "end"
@@ -31,7 +31,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 }))
 
 const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingTop: 0,
     paddingRight: "16px !important",
     textAlign: "end",
@@ -42,7 +42,7 @@ const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
 const RowValue = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
@@ -53,7 +53,7 @@ export const EvmDaoSettingModal: React.FC<{
 }> = ({ open, handleClose }) => {
   const { daoSelected } = useContext(EtherlinkContext)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const tableData = [
     {

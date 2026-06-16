@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, styled } from "@material-ui/core"
+import { Box, Grid, Typography, styled } from "@mui/material"
 import React from "react"
 
 const chartColor = ["#FFC2CF", "#FFC839", "#62CEAE", "#DB6C6C", "#56CAE3", "#E99571", "#FF486E", "#3866F9", "#81FEB7"]

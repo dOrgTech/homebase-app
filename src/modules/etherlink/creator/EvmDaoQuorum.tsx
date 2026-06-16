@@ -8,7 +8,7 @@ import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDa
 
 export const EvmDaoQuorum: React.FC = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const { data, getIn, setFieldValue } = useEvmDaoCreateStore()
   return (
     <div className="evm-dao-quorum">

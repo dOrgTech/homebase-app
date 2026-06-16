@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js"
 import { ethers } from "ethers"
 import { Box, Grid, Typography, styled, IconButton } from "components/ui"
 import { Button } from "components/ui/Button"
-import { HowToVote } from "@material-ui/icons"
+import { HowToVote } from "@mui/icons-material"
 import HandshakeIcon from "@mui/icons-material/Handshake"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
@@ -57,10 +57,10 @@ const StatsGrid = styled(Grid)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "repeat(4, 1fr)",
   gap: "16px",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     gridTemplateColumns: "repeat(2, 1fr)"
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gridTemplateColumns: "1fr"
   }
 }))

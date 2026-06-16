@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react"
-import { Box, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
@@ -126,7 +126,7 @@ export const Summary = (): JSX.Element => {
   const match = useRouteMatch()
   const theme = useTheme()
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   const goToVoting = () => {
     history.push(`voting`)

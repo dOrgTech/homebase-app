@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import { Collapse, Grid, IconButton, Typography } from "@material-ui/core"
+import { Collapse, Grid, IconButton, Typography } from "@mui/material"
 
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"
 import { ProposalCodeEditorInput } from "./ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { TableContainer, TableHeader } from "components/ui/Table"

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
-import { Grid, TextField, styled, IconButton } from "@material-ui/core"
+import { Grid, TextField, styled, IconButton } from "@mui/material"
 import { useNotification } from "modules/common/hooks/useNotification"
-import ContentCopyIcon from "@material-ui/icons/FileCopy"
+import ContentCopyIcon from "@mui/icons-material/FileCopy"
 
 const ValueContainer = styled(Grid)({
   position: "relative",

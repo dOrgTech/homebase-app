@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useCallback, useEffect, useState } from "react"
@@ -152,7 +152,7 @@ const ProposalActionsDialogForTezos: React.FC<{
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { clearParams } = useQueryParams()
 
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)

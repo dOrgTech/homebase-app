@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Grid, IconButton, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Field, FieldArray, Form, Formik, FormikErrors } from "formik"
 import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
@@ -56,7 +56,7 @@ const validateForm = (values: TokenDistributionSettings) => {
 
 const TokenSettingsForm = ({ submitForm, values, errors, touched }: any) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   const newValue: Holder = { walletAddress: "", amount: null }
 
@@ -152,6 +152,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched }: any) => {
                             <IconButton
                               style={{ cursor: "pointer", padding: 0 }}
                               onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
+                              size="large"
                             >
                               <AddCircleIcon
                                 style={{ cursor: "pointer", fontSize: 18 }}
@@ -194,7 +195,7 @@ export const ContractDistribution: React.FC = () => {
   const { account } = useTezos()
 
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   tokenDistribution.totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
 

@@ -1,4 +1,4 @@
-import { Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import React, { useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -81,7 +81,7 @@ const OnChainBox = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   background: theme.palette.primary.main,
   maxWidth: "32% !important",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     maxWidth: "100% !important",
     marginBottom: 12
   }

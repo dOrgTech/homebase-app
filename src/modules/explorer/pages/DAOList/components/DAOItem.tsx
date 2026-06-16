@@ -1,4 +1,4 @@
-import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery, Tooltip } from "@material-ui/core"
+import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery, Tooltip } from "@mui/material"
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
@@ -64,11 +64,11 @@ const SymbolText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   lineHeight: "normal",
   marginTop: 8,
 
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     fontSize: 18
   },
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 18,
     marginLeft: "0%"
   }

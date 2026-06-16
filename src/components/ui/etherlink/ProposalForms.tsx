@@ -1,4 +1,4 @@
-import { Grid, styled } from "@material-ui/core"
+import { Grid, styled } from "@mui/material"
 
 export const InputContainer = styled(Grid)({
   background: "#1c2024",

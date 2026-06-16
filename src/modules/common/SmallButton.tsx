@@ -1,4 +1,4 @@
-import { styled, Button } from "@material-ui/core"
+import { styled, Button } from "@mui/material"
 
 export const SmallButton = styled(Button)({
   "justifyItems": "center",

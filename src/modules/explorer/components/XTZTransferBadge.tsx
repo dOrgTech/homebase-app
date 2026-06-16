@@ -1,6 +1,6 @@
 import React from "react"
-import { Grid, GridProps, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import ArrowForward from "@material-ui/icons/ArrowForward"
+import { Grid, GridProps, Link, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
+import ArrowForward from "@mui/icons-material/ArrowForward"
 import { BigNumber } from "bignumber.js"
 import { mutezToXtz, toShortAddress } from "services/contracts/utils"
 import { CopyButton } from "./CopyButton"
@@ -35,7 +35,7 @@ const formatConfig = {
 export const XTZTransferBadge: React.FC<Props> = ({ address, amount, ...props }) => {
   const { network } = useTezos()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const openBlockExplorer = () => {
     window.open(`https://${networkNameMap[network]}.tzkt.io/` + address, "_blank")

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import { ReactComponent as VotingInactiveIcon } from "assets/logos/voting_inactive.svg"
 import { ReactComponent as VotingActiveIcon } from "assets/logos/voting_active.svg"
 import { ReactComponent as VotesActiveIcon } from "assets/logos/votes_active.svg"
@@ -18,7 +18,7 @@ import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
 import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
-import { ArrowBackIos } from "@material-ui/icons"
+import { ArrowBackIos } from "@mui/icons-material"
 import { FilterUserProposalsDialog } from "modules/explorer/components/FiltersUserDialog"
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
@@ -79,7 +79,7 @@ const ActivityContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 56px",
   borderRadius: 8,
   marginTop: 32,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 36px"
   }
 }))
@@ -133,7 +133,7 @@ export const UserMovements: React.FC<{
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
   const { account } = useTezos()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [filters, setFilters] = useState<Filters>()
 

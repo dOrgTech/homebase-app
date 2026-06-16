@@ -1,5 +1,7 @@
 import React from "react"
-import { makeStyles, Theme } from "@material-ui/core/styles"
+import { Theme } from "@mui/material/styles"
+
+import makeStyles from "@mui/styles/makeStyles"
 
 interface LoadingLineProps {
   color?: string

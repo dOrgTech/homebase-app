@@ -1,5 +1,5 @@
-import { Grid, GridProps, styled, Typography } from "@material-ui/core"
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward"
+import { Grid, GridProps, styled, Typography } from "@mui/material"
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge"
 import { UserBadge } from "modules/explorer/components/UserBadge"
 import React from "react"

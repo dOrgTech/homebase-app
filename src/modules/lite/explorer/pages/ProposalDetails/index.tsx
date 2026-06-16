@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { CircularProgress, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { CircularProgress, Grid, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
@@ -18,7 +18,7 @@ import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
-import { ArrowBackIosOutlined } from "@material-ui/icons"
+import { ArrowBackIosOutlined } from "@mui/icons-material"
 import { useIsMember } from "../../hooks/useIsMember"
 import { useHistoryLength } from "modules/explorer/context/HistoryLength"
 import { getEthSignature } from "services/utils/utils"
@@ -68,7 +68,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const theme = useTheme()
   const historyLength = useHistoryLength()
 
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const navigate = useHistory()
   const { network, account, wallet, etherlink } = useTezos()
   const openNotification = useNotification()

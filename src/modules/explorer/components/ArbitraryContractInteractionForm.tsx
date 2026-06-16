@@ -8,14 +8,14 @@ import {
   Typography,
   styled,
   useMediaQuery,
-  useTheme,
-  withStyles
-} from "@material-ui/core"
+  useTheme
+} from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { validateContractAddress } from "@taquito/utils"
 import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import { SmallButtonDialog } from "modules/common/SmallButton"
-import { ArrowBackIos } from "@material-ui/icons"
+import { ArrowBackIos } from "@mui/icons-material"
 import { ContractEndpoint, SearchEndpoints } from "./SearchEndpoints"
 import { formatUnits, toShortAddress } from "services/contracts/utils"
 import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
@@ -208,7 +208,7 @@ const ContractInteractionForm = ({
   const [formState, setFormState] = useState<any>({ address: "", amount: 0, shape: {} })
   const [endpoint, setEndpoint] = useState<ContractEndpoint | undefined>(undefined)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { mutate: fetchContractData, data } = useArbitraryContractData()
   const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
 

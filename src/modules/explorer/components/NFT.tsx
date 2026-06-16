@@ -1,4 +1,4 @@
-import { Grid, Link, styled, Typography } from "@material-ui/core"
+import { Grid, Link, styled, Typography } from "@mui/material"
 import React from "react"
 import { IPFS_GATEWAY_URI } from "services/ipfs"
 import { NFTMediaType } from "../../../models/Token"

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Box, Tooltip, styled } from "@material-ui/core"
+import { Box, Tooltip, styled } from "@mui/material"
 import { ReactComponent as CopyIcon } from "assets/img/copy_icon.svg"
 
 const TooltipButton = styled(Tooltip)({

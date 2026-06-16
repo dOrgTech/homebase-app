@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import { Button, Fade, Grid, styled, Popper, useTheme, useMediaQuery } from "@material-ui/core"
-import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons"
+import { Button, Fade, Grid, styled, Popper, useTheme, useMediaQuery } from "@mui/material"
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material"
 import { StatusBadge } from "./StatusBadge"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
@@ -53,7 +53,7 @@ export const ProposalFilter: React.FC<{ filterProposalByStatus: any }> = ({ filt
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [state, setState] = useState<ProposalStatus | "all">("all")
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)

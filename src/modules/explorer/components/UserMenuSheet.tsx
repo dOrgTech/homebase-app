@@ -1,9 +1,9 @@
-import { styled, Grid, Typography } from "@material-ui/core"
+import { styled, Grid, Typography } from "@mui/material"
 import { Blockie } from "modules/common/Blockie"
 import React from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { toShortAddress } from "services/contracts/utils"
-import { ArrowDownwardOutlined, ExitToApp, FileCopyOutlined } from "@material-ui/icons"
+import { ArrowDownwardOutlined, ExitToApp, FileCopyOutlined } from "@mui/icons-material"
 import { BottomSheet } from "./BottomSheet"
 
 const SheetContainer = styled(Grid)({

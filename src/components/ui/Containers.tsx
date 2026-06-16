@@ -1,4 +1,4 @@
-import { Grid, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "@mui/material"
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,

@@ -1,4 +1,4 @@
-import { Button, Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Tooltip, useMediaQuery, useTheme } from "@mui/material"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 
@@ -18,7 +18,7 @@ import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 
 export const Registry: React.FC = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const [updateRegistryOpen, setUpdateRegistryOpen] = useState(false)

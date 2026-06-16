@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react"
-import { Grid, Typography, Box, useMediaQuery, useTheme, InputAdornment, Tooltip, Link } from "@material-ui/core"
+import { Grid, Typography, Box, useMediaQuery, useTheme, InputAdornment, Tooltip, Link } from "@mui/material"
 import { validateContractAddress, validateAddress } from "@taquito/utils"
 
 import { useHistory, withRouter } from "react-router"
@@ -24,7 +24,7 @@ import {
 
 const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xl"))
 
   const {
     data: tokenMetadata,

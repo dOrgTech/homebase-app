@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, Box, styled } from "@material-ui/core"
+import { Grid, Typography, Box, styled } from "@mui/material"
 import { ethers } from "ethers"
 import { ContainerVoteDetail } from "components/ui/etherlink/styled"
 import { TransferETHProposalRenderer } from "./TransferETHProposalRenderer"

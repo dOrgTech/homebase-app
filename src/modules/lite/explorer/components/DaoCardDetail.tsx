@@ -1,4 +1,4 @@
-import { Avatar, Button, Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Avatar, Button, Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Community } from "models/Community"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"

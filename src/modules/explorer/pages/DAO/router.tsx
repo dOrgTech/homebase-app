@@ -1,4 +1,4 @@
-import { styled, useTheme } from "@material-ui/core"
+import { styled, useTheme } from "@mui/material"
 import { NotFound } from "modules/explorer/components/NotFound"
 import { NotIndexed } from "modules/explorer/components/NotIndexed"
 import { DAOOverview } from "modules/explorer/pages/DAO/index"

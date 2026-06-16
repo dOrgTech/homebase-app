@@ -1,5 +1,5 @@
 import { NetworkType } from "@ecadlabs/beacon-types"
-import { capitalize } from "@material-ui/core"
+import { capitalize } from "@mui/material"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
 import { Tzip16Module } from "@taquito/tzip16"

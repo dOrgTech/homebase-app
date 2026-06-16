@@ -1,4 +1,4 @@
-import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import React from "react"
 import { Header } from "./Header"
 import { ContentContainer } from "../explorer/components/ContentContainer"
@@ -44,7 +44,7 @@ const BodyTextGrid = styled(Grid)({
 
 export const FAQ: React.FC = () => {
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
   const faqList = useGenerateFAQ()
 
   return (

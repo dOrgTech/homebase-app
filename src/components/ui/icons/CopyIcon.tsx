@@ -1,5 +1,5 @@
-import { FileCopyOutlined } from "@material-ui/icons"
-import { styled } from "@material-ui/core"
+import { FileCopyOutlined } from "@mui/icons-material"
+import { styled } from "@mui/material"
 
 export const CopyIcon = styled(FileCopyOutlined)({
   marginRight: 8,

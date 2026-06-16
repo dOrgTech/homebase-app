@@ -11,7 +11,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "@mui/material"
 import dayjs from "dayjs"
 import { RegistryItemDialog } from "modules/explorer/components/ItemDialog"
 import { OverflowCell } from "./OverflowCell"
@@ -149,7 +149,7 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
 
 export const RegistryTable: React.FC<{ data: RowData[] }> = ({ data: propsData }) => {
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [selectedItem, setSelectedItem] = useState<RowData>()
   const [open, setOpen] = useState(false)
 

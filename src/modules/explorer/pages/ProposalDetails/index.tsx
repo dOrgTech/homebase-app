@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme, Tooltip } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme, Tooltip } from "@mui/material"
 import ReactHtmlParser from "react-html-parser"
 import { BigNumber } from "bignumber.js"
 import ProgressBar from "react-customizable-progressbar"
@@ -60,7 +60,7 @@ const Container = styled(ContentContainer)(({ theme }: { theme: Theme }) => ({
     color: "#81feb7",
     textDecoration: "underline"
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 38px"
   }
 }))
@@ -76,7 +76,7 @@ const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   display: "flex",
   height: "auto",
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: "unset"
   }
 }))
@@ -172,7 +172,7 @@ export const ProposalDetails: React.FC = () => {
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
   const { data: dao, cycleInfo } = useDAO(daoId)
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { mutate: dropProposal } = useDropProposal()
   const { data: holdings } = useDAOHoldings(daoId)
   const canDropProposal = useCanDropProposal(daoId, proposalId)
