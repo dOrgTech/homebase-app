@@ -1,5 +1,5 @@
 import { BaseDAO } from ".."
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getDAOTransfers } from "services/bakingBad/transfers"
@@ -32,9 +32,9 @@ export const useTransfers = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress)
   const { network } = useTezos()
 
-  const result = useQuery<TransferWithBN[], Error>(
-    ["transfers", contractAddress],
-    async () => {
+  const result = useQuery<TransferWithBN[], Error>({
+    queryKey: ["transfers", contractAddress],
+    queryFn: async () => {
       const tokenTransfersDTO = await getDAOTransfers((dao as BaseDAO).data.address, network)
 
       const xtzTransfersDTO = await getXTZTransfers((dao as BaseDAO).data.address)
@@ -62,10 +62,8 @@ export const useTransfers = (contractAddress: string) => {
 
       return tokenTransfers.concat(xtzTransfers).sort((a, b) => (dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1))
     },
-    {
-      enabled: !!dao
-    }
-  )
+    enabled: !!dao
+  })
 
   return result
 }

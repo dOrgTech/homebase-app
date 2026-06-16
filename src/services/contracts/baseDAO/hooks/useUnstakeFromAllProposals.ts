@@ -1,5 +1,5 @@
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -9,8 +9,8 @@ export const useUnstakeFromAllProposals = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<any | Error, Error, { dao: BaseDAO; allProposals: string[] }>(
-    async params => {
+  return useMutation<any | Error, Error, { dao: BaseDAO; allProposals: string[] }>({
+    mutationFn: async params => {
       const { key: unstakeNotification, closeSnackbar: closeFlushNotification } = openNotification({
         message: "Please sign the transaction to unstake tokens from all proposals",
         persist: true,
@@ -49,10 +49,8 @@ export const useUnstakeFromAllProposals = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

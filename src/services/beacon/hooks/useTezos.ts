@@ -1,4 +1,4 @@
-import { useQueryClient } from "react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useCallback, useContext, useEffect } from "react"
 import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"

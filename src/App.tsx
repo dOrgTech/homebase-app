@@ -1,7 +1,7 @@
 import React from "react"
 import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import { Box, ThemeProvider, Theme, StyledEngineProvider, styled } from "@mui/material"
 import { SnackbarProvider, MaterialDesignContent } from "notistack"
@@ -28,11 +28,6 @@ declare module "@mui/styles/defaultTheme" {
   interface DefaultTheme extends Theme {}
 }
 
-declare module "@mui/styles/defaultTheme" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,7 +37,7 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnWindowFocus: true,
       staleTime: 5000,
-      cacheTime: 300000
+      gcTime: 300000
     }
   }
 })

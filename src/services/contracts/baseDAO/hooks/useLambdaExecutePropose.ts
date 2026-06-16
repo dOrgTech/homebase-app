@@ -1,5 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { LambdaExecuteArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -17,8 +17,8 @@ export const useLambdaExecutePropose = () => {
     TransactionWalletOperation | Error,
     Error,
     { dao: LambdaDAO; args: LambdaExecuteArgs; handleClose: () => void }
-  >(
-    async ({ dao, args, handleClose }) => {
+  >({
+    mutationFn: async ({ dao, args, handleClose }) => {
       // debugger
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
@@ -68,10 +68,8 @@ export const useLambdaExecutePropose = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }
