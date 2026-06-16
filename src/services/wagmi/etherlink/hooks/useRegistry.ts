@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { ethers } from "ethers"
 import { registryContractABI } from "modules/etherlink/utils"
 
@@ -8,9 +8,9 @@ export interface RegistryEntry {
 }
 
 export const useRegistry = (provider: any, registryAddress: string | undefined, network: string) => {
-  return useQuery<RegistryEntry[], Error>(
-    ["registry", network, registryAddress],
-    async () => {
+  return useQuery<RegistryEntry[], Error>({
+    queryKey: ["registry", network, registryAddress],
+    queryFn: async () => {
       if (!provider || !registryAddress || !network) {
         throw new Error("Missing required parameters")
       }
@@ -46,12 +46,10 @@ export const useRegistry = (provider: any, registryAddress: string | undefined, 
         throw error
       }
     },
-    {
-      enabled: !!provider && !!registryAddress && !!network && ethers.isAddress(registryAddress || ""),
-      staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
-      retry: 2,
-      retryDelay: 1000
-    }
-  )
+    enabled: !!provider && !!registryAddress && !!network && ethers.isAddress(registryAddress || ""),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    retryDelay: 1000
+  })
 }

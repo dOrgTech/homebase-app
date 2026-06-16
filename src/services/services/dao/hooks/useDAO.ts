@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js"
 import { useState, useContext, useEffect, useMemo } from "react"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions"
 import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { Network } from "services/beacon"
@@ -28,9 +28,9 @@ export const useDAO = (address: string) => {
     state: { block }
   } = useContext(TZKTSubscriptionsContext)
 
-  const { data, ...rest } = useQuery(
-    ["dao", address],
-    async () => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["dao", address],
+    queryFn: async () => {
       const [response, liteDAO] = await Promise.all([getDAO(address as string), fetchLiteData(address, network)])
 
       console.log("useDAO.ts", { response, liteDAO })
@@ -109,12 +109,10 @@ export const useDAO = (address: string) => {
           throw new Error(`DAO with address '${dao.address}' has an unrecognized type '${dao.dao_type.name}'`)
       }
     },
-    {
-      enabled: !!address && !network?.startsWith("etherlink"),
-      refetchInterval: 30000,
-      refetchOnWindowFocus: false
-    }
-  )
+    enabled: !!address && !network?.startsWith("etherlink"),
+    refetchInterval: 30000,
+    refetchOnWindowFocus: false
+  })
 
   useEffect(() => {
     ;(async () => {

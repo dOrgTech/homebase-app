@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network } from "services/beacon"
@@ -20,8 +20,8 @@ export const useArbitraryContractData = () => {
       finishLoad: (status: boolean) => void
       showHeader: (status: boolean) => void
     }
-  >(
-    async ({ contract, network, handleContinue, finishLoad, showHeader }) => {
+  >({
+    mutationFn: async ({ contract, network, handleContinue, finishLoad, showHeader }) => {
       try {
         let tezosToolkit = tezos
 
@@ -58,10 +58,8 @@ export const useArbitraryContractData = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

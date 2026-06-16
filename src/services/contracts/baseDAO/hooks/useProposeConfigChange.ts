@@ -1,5 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from "../class"
@@ -13,8 +13,8 @@ export const useProposeConfigChange = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: BaseDAO; args: ConfigProposalParams }>(
-    async ({ dao, args }) => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: BaseDAO; args: ConfigProposalParams }>({
+    mutationFn: async ({ dao, args }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
         persist: true,
@@ -59,10 +59,8 @@ export const useProposeConfigChange = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

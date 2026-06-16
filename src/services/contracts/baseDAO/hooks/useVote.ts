@@ -2,7 +2,7 @@ import { TransactionWalletOperation } from "@taquito/taquito"
 import { BigNumber } from "bignumber.js"
 import AnalyticsService from "services/services/analytics"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -19,8 +19,8 @@ export const useVote = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, Params>(
-    async params => {
+  return useMutation<TransactionWalletOperation | Error, Error, Params>({
+    mutationFn: async params => {
       const { key: voteNotification, closeSnackbar: closeVoteNotification } = openNotification({
         message: "Vote is being created...",
         persist: true,
@@ -72,10 +72,8 @@ export const useVote = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

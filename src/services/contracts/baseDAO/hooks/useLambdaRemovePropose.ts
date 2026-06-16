@@ -1,5 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { LambdaRemoveArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -17,8 +17,8 @@ export const useLambdaRemovePropose = () => {
     TransactionWalletOperation | Error,
     Error,
     { dao: LambdaDAO; args: LambdaRemoveArgs; handleClose: () => void }
-  >(
-    async ({ dao, args, handleClose }) => {
+  >({
+    mutationFn: async ({ dao, args, handleClose }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
         persist: true,
@@ -66,10 +66,8 @@ export const useLambdaRemovePropose = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }
