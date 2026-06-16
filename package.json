@@ -130,7 +130,8 @@
     "mipd": "0.0.7",
     "protobufjs": "7.5.8",
     "@noble/hashes": "1.8.0",
-    "dompurify": "3.4.3"
+    "dompurify": "3.4.3",
+    "shell-quote": "1.8.4"
   },
   "overrides": {
     "viem": "2.17.4",
