@@ -76,13 +76,13 @@ const CustomFormikTextField = withStyles({
       fontSize: 18,
       background: "#2f3438"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }
@@ -101,13 +101,13 @@ const CustomFormikTimeTextField = withStyles({
       fontSize: 18,
       background: "#2f3438"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }

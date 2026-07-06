@@ -7,6 +7,12 @@ export const theme = createTheme(
     props: {
       MuiButtonBase: {
         disableRipple: true
+      },
+      // MUI v5+ changed the default TextField variant from "standard" to "outlined".
+      // This app's fields and theme overrides are all written for the standard
+      // (underline) variant, so restore it globally to avoid the stray outlined border.
+      MuiTextField: {
+        variant: "standard"
       }
     },
     palette: {

@@ -31,13 +31,14 @@ export type ProposalFormDefaultValues = RecursivePartial<Values>
 
 // TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
-  "minHeight": 80,
+  "minHeight": 110,
+  "height": "100%",
+  "boxSizing": "border-box",
   "background": theme.palette.primary.main,
   "borderRadius": 8,
-  "padding": "35px 42px",
+  "padding": "28px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,

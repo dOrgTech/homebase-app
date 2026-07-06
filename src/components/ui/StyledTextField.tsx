@@ -18,7 +18,7 @@ export const StyledTextField = styled(TextField)({
   "& label.Mui-focused": {
     color: "#fff"
   },
-  "& .MuiInput-underline:after": {
+  "& .MuiInput-root:after": {
     borderBottomColor: "#fff"
   },
   "& .MuiOutlinedInput-root": {
@@ -36,7 +36,7 @@ export const StyledTextField = styled(TextField)({
   "& .MuiInputLabel-root": {
     color: "rgba(255, 255, 255, 0.7)"
   },
-  "& .MuiInput-underline:before": {
+  "& .MuiInput-root:before": {
     borderBottomColor: "#ccc"
   }
 })

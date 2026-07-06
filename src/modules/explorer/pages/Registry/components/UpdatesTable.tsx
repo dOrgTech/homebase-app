@@ -137,6 +137,10 @@ export const UpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
+  if (!data || data.length === 0) {
+    return null
+  }
+
   return (
     <TableContainer item>
       {isSmall ? <MobileUpdatesTable data={data} /> : <DesktopUpdatesTable data={data} />}

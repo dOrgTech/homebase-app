@@ -142,13 +142,13 @@ export const CustomFormikTextField = withStyles({
     "& .MuiInputBase-root": {
       textWeight: 300
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }
