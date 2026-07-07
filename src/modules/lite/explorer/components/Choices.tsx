@@ -94,13 +94,13 @@ const CustomFormikChoiceTextField = withStyles({
     "& .MuiInputBase-input": {
       textAlign: "initial"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }

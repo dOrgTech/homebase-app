@@ -16,6 +16,7 @@ import dayjs from "dayjs"
 import { RegistryItemDialog } from "modules/explorer/components/ItemDialog"
 import { OverflowCell } from "./OverflowCell"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -171,7 +172,24 @@ export const RegistryTable: React.FC<{ data: RowData[] }> = ({ data: propsData }
   return (
     <>
       <TableContainer item>
-        {isSmall ? <MobileRegistryTable data={data} /> : <DesktopRegistryTable data={data} />}
+        {data.length === 0 ? (
+          <Grid
+            container
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            style={{ padding: "72px 0", gap: 16, opacity: 0.4 }}
+          >
+            <Inventory2OutlinedIcon style={{ fontSize: 64 }} color="inherit" />
+            <Typography variant="h5" color="textPrimary" align="center">
+              No items in registry yet…
+            </Typography>
+          </Grid>
+        ) : isSmall ? (
+          <MobileRegistryTable data={data} />
+        ) : (
+          <DesktopRegistryTable data={data} />
+        )}
       </TableContainer>
 
       <RegistryItemDialog

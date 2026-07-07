@@ -46,19 +46,16 @@ const CustomTextField = withStyles({
     "& .MuiInputBase-root": {
       textWeight: 300
     },
-    "& .MuiInput-underline": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     }
   }

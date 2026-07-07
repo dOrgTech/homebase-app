@@ -31,7 +31,13 @@ export const useDAO = (address: string) => {
   const { data, ...rest } = useQuery({
     queryKey: ["dao", address],
     queryFn: async () => {
-      const [response, liteDAO] = await Promise.all([getDAO(address as string), fetchLiteData(address, network)])
+      // Lite data is supplementary to an on-chain DAO. A lite-backend outage
+      // (or a DAO that has no lite community) must not prevent the on-chain DAO
+      // from loading, so treat any lite failure as "no lite data".
+      const [response, liteDAO] = await Promise.all([
+        getDAO(address as string),
+        fetchLiteData(address, network).catch(() => undefined)
+      ])
 
       console.log("useDAO.ts", { response, liteDAO })
 

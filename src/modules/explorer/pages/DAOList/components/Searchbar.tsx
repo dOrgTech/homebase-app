@@ -31,13 +31,13 @@ const StyledInput = withStyles((theme: Theme) => ({
         outline: "none"
       }
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottomColor: "transparent"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottomColor: "transparent"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottomColor: "transparent"
     }
   }

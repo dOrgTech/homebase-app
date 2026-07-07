@@ -22,13 +22,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: 0,
     cursor: "pointer"
   },
-  "& .MuiInput-underline:before": {
+  "& .MuiInput-root:before": {
     borderBottom: "none"
   },
-  "& .MuiInput-underline:after": {
+  "& .MuiInput-root:after": {
     borderBottom: "none"
   },
-  "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+  "& .MuiInput-root:hover:not(.Mui-disabled):before": {
     borderBottom: "none"
   }
 }))
