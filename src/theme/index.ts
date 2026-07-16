@@ -1,253 +1,276 @@
-import { createTheme, adaptV4Theme, DeprecatedThemeOptions } from "@mui/material/styles"
+import { createTheme, ThemeOptions } from "@mui/material/styles"
 const defaultTheme = createTheme()
 const { breakpoints } = defaultTheme
 
-export const theme = createTheme(
-  adaptV4Theme({
-    props: {
-      MuiButtonBase: {
-        disableRipple: true
-      },
-      // MUI v5+ changed the default TextField variant from "standard" to "outlined".
-      // This app's fields and theme overrides are all written for the standard
-      // (underline) variant, so restore it globally to avoid the stray outlined border.
-      MuiTextField: {
-        variant: "standard"
+export const theme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#2F3438",
+      dark: "#1C1F23",
+      light: "#bfc5ca",
+      contrastText: "#24282d"
+    },
+    secondary: {
+      main: "#81FEB7",
+      dark: "#6AE9A720",
+      contrastText: "#1C1F23",
+      light: "#24282D"
+    },
+    text: {
+      primary: "#FDFDFD"
+    },
+    error: {
+      main: "#ED254E"
+    },
+    info: {
+      main: "#3866F9"
+    },
+    warning: {
+      main: "#FFC839"
+    }
+  },
+  typography: {
+    fontFamily: "Roboto Flex",
+    h1: {
+      fontSize: 30,
+      [breakpoints.down("xs")]: {
+        fontSize: 22
       }
     },
-    palette: {
-      mode: "dark",
-      primary: {
-        main: "#2F3438",
-        dark: "#1C1F23",
-        light: "#bfc5ca",
-        contrastText: "#24282d"
-      },
-      secondary: {
-        main: "#81FEB7",
-        dark: "#6AE9A720",
-        contrastText: "#1C1F23",
-        light: "#24282D"
-      },
-      text: {
-        primary: "#FDFDFD"
-      },
-      error: {
-        main: "#ED254E"
-      },
-      info: {
-        main: "#3866F9"
-      },
-      warning: {
-        main: "#FFC839"
+    subtitle1: {
+      fontSize: 32,
+      [breakpoints.down("xs")]: {
+        fontSize: 26
       }
     },
-    typography: {
-      fontFamily: "Roboto Flex",
-      h1: {
-        fontSize: 30,
-        [breakpoints.down("xs")]: {
-          fontSize: 22
-        }
-      },
-      subtitle1: {
-        fontSize: 32,
-        [breakpoints.down("xs")]: {
-          fontSize: 26
-        }
-      },
-      subtitle2: {
-        fontSize: 16,
-        fontWeight: 300
-      },
-      h3: {
-        fontSize: 21,
-        fontWeight: 400
-      },
-      h2: {
-        fontSize: 24
-      },
-      h4: {
-        fontSize: 21,
-        [breakpoints.down("xs")]: {
-          fontSize: 16
-        }
-      },
-      h5: {
-        fontSize: 35,
-        [breakpoints.down("xs")]: {
-          fontSize: 21
-        }
-      },
-      body1: {
-        fontSize: 18,
-        [breakpoints.down("xs")]: {
-          fontSize: 16
-        }
-      },
-      body2: {
-        fontSize: 16,
-        [breakpoints.down("xs")]: {
-          fontSize: 14
-        }
-      },
-      h6: {
+    subtitle2: {
+      fontSize: 16,
+      fontWeight: 300
+    },
+    h3: {
+      fontSize: 21,
+      fontWeight: 400
+    },
+    h2: {
+      fontSize: 24
+    },
+    h4: {
+      fontSize: 21,
+      [breakpoints.down("xs")]: {
+        fontSize: 16
+      }
+    },
+    h5: {
+      fontSize: 35,
+      [breakpoints.down("xs")]: {
+        fontSize: 21
+      }
+    },
+    body1: {
+      fontSize: 18,
+      [breakpoints.down("xs")]: {
+        fontSize: 16
+      }
+    },
+    body2: {
+      fontSize: 16,
+      [breakpoints.down("xs")]: {
         fontSize: 14
       }
     },
-    overrides: {
-      MuiSvgIcon: {
+    h6: {
+      fontSize: 14
+    }
+  },
+  components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true
+      }
+    },
+    // MUI v5+ changed the default TextField variant from "standard" to "outlined".
+    // This app's fields and theme overrides are all written for the standard
+    // (underline) variant, so restore it globally to avoid the stray outlined border.
+    MuiTextField: {
+      defaultProps: {
+        variant: "standard"
+      }
+    },
+    MuiSvgIcon: {
+      styleOverrides: {
         root: {
           color: "#fff"
         },
         colorSecondary: {
           color: "#81FEB7 !important"
         }
-      },
-      MuiTypography: {
+      }
+    },
+    MuiTypography: {
+      styleOverrides: {
         root: {
           letterSpacing: "-0.03em !important"
         }
-      },
-      MuiMenu: {
+      }
+    },
+    MuiMenu: {
+      styleOverrides: {
         paper: {
           backgroundColor: "#2f3438",
           zIndex: 1000002,
           pointerEvents: "auto"
         }
-      },
-      MuiMenuItem: {
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
         root: {
           pointerEvents: "auto"
         }
-      },
-      MuiListItem: {
+      }
+    },
+    MuiListItem: {
+      styleOverrides: {
         root: {
           pointerEvents: "auto"
         }
-      },
-      MuiSlider: {
+      }
+    },
+    MuiSlider: {
+      styleOverrides: {
         root: {
           color: "#3D3D3D"
         }
-      },
-      MuiTab: {
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
         root: {
           maxWidth: "100%"
         }
-      },
-      MuiTooltip: {
+      }
+    },
+    MuiTooltip: {
+      styleOverrides: {
         tooltip: {
           backgroundColor: "#62eda5",
           fontSize: 14,
           padding: "10px 15px",
           color: "#1C1F23"
         }
-      },
-      MuiStepLabel: {
+      }
+    },
+    MuiStepLabel: {
+      styleOverrides: {
         label: {
           "cursor": "pointer",
           "color": "#FDFDFD",
           "opacity": 0.5,
           "marginLeft": 15,
           "lineHeight": "40px",
-          "&$completed": {
+          "&.Mui-completed": {
             fontWeight: 300
           },
-          "&$active": {
+          "&.Mui-active": {
+            color: "#FDFDFD !important",
+            opacity: 1,
             fontWeight: 300
           },
           "& .MuiStepLabel-completed": {
             fontWeight: 300
           }
-        },
-        active: {
-          color: "#FDFDFD !important",
-          opacity: 1
-        },
-        completed: {
-          color: "#FDFDFD !important",
-          opacity: 0.5,
-          fontWeight: 300
         }
-      },
-      MuiStepConnector: {
+      }
+    },
+    MuiStepConnector: {
+      styleOverrides: {
         lineVertical: {
           display: "none"
         }
-      },
-      MuiStepContent: {
+      }
+    },
+    MuiStepContent: {
+      styleOverrides: {
         root: {
           borderLeft: "none"
         }
-      },
-      MuiStep: {
+      }
+    },
+    MuiStep: {
+      styleOverrides: {
         root: {
           marginBottom: 15
         }
-      },
-      MuiStepIcon: {
-        active: {
-          color: "#1C1F23 !important"
-        },
-        completed: {
-          color: "#FDFDFD !important"
-        },
+      }
+    },
+    MuiStepIcon: {
+      styleOverrides: {
         root: {
           "height": 32,
           "width": 32,
           "color": "#1C1F23",
           "border": "1px solid #3D3D3D",
           "borderRadius": "50%",
-          "&$active": {
+          "&.Mui-active": {
+            "color": "#1C1F23 !important",
             "fill": "#FDFDFD",
             "border": "1px solid #3D3D3D",
             "borderRadius": "50%",
-            "& $text": {
+            "& .MuiStepIcon-text": {
               fill: "#1C1F23",
               border: "1px solid #3D3D3D"
             }
+          },
+          "&.Mui-completed": {
+            color: "#FDFDFD !important"
           }
         },
         text: {
           fill: "#FDFDFD"
         }
-      },
-      MuiIconButton: {
+      }
+    },
+    MuiIconButton: {
+      styleOverrides: {
         colorSecondary: {
           "&:hover": {
             background: "inherit !important"
           }
         }
-      },
-      MuiInput: {
+      }
+    },
+    MuiInput: {
+      styleOverrides: {
         underline: {
           "&:after": {
             borderBottom: "none"
           },
-          "&$focused:after": {
+          "&.Mui-focused:after": {
             borderBottom: "none"
           },
-          "&$error:after": {
+          "&.Mui-error:after": {
             borderBottom: "none"
           },
           "&:before": {
             borderBottom: "none",
             transition: "none"
           },
-          "&:hover:not($disabled):not($focused):not($error):before": {
+          "&:hover:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before": {
             borderBottom: "none"
           },
-          "&$disabled:before": {
+          "&.Mui-disabled:before": {
             borderBottom: "none"
           },
-          "&:active:not($disabled):not($focused):not($error):before": {
+          "&:active:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before": {
             borderBottom: "none"
           }
         }
-      },
+      }
+    },
 
-      MuiButton: {
+    MuiButton: {
+      styleOverrides: {
         root: {
           "textTransform": "capitalize",
           "fontWeight": 500,
@@ -260,13 +283,13 @@ export const theme = createTheme(
             boxShadow: "none"
           },
 
-          "&$disabled": {
+          "&.Mui-disabled": {
             color: "#2F3438 !important",
             background: "#41484d !important"
           }
         },
         outlined: {
-          "&$disabled": {
+          "&.Mui-disabled": {
             border: "2px solid #3d3d3d"
           },
           "borderWidth": "2px !important",
@@ -274,10 +297,9 @@ export const theme = createTheme(
           "padding": "1px 8px",
           "fontSize": "1rem"
         },
-        disabled: {},
         text: {
           "color": "#81FEB7",
-          "&$disabled": {
+          "&.Mui-disabled": {
             color: "#bfc5ca !important",
             background: "inherit !important"
           }
@@ -285,25 +307,33 @@ export const theme = createTheme(
         containedSecondary: {
           backgroundColor: "#4ed092"
         }
-      },
-      MuiInputBase: {
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
         input: {
           textAlign: "center",
           color: "#FDFDFD"
         }
-      },
-      MuiRadio: {
+      }
+    },
+    MuiRadio: {
+      styleOverrides: {
         root: {
           color: "#FDFDFD"
         }
-      },
-      MuiDivider: {
+      }
+    },
+    MuiDivider: {
+      styleOverrides: {
         root: {
           marginTop: 16,
           marginBottom: 16
         }
-      },
-      MuiDialog: {
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
         paper: {
           background: "#1C1F23",
           width: 615,
@@ -316,21 +346,27 @@ export const theme = createTheme(
           maxWidth: 615,
           height: "auto"
         }
-      },
-      MuiFormControl: {
+      }
+    },
+    MuiFormControl: {
+      styleOverrides: {
         root: {
           width: "100%"
         }
-      },
-      MuiDialogContent: {
+      }
+    },
+    MuiDialogContent: {
+      styleOverrides: {
         root: {
           "padding": "42px 54px",
           "&:first-child": {
             paddingTop: "42px"
           }
         }
-      },
-      MuiSelect: {
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
         select: {
           textAlign: "right",
           textTransform: "capitalize"
@@ -338,13 +374,17 @@ export const theme = createTheme(
         icon: {
           color: "#FDFDFD"
         }
-      },
-      MuiDialogContentText: {
+      }
+    },
+    MuiDialogContentText: {
+      styleOverrides: {
         root: {
           marginBottom: 0
         }
-      },
-      MuiSwitch: {
+      }
+    },
+    MuiSwitch: {
+      styleOverrides: {
         root: {
           width: 75,
           height: 50
@@ -353,7 +393,7 @@ export const theme = createTheme(
           "color": "red",
           "top": 8,
           "left": 8,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             opacity: 1,
             backgroundColor: "#1C1F23",
             color: "#81FEB7"
@@ -364,7 +404,7 @@ export const theme = createTheme(
           "backgroundColor": "inherit",
           "border": "1px solid #FDFDFD",
           "opacity": 0.5,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             opacity: 1,
             backgroundColor: "#1C1F23",
             color: "#81FEB7",
@@ -374,33 +414,39 @@ export const theme = createTheme(
         thumb: {
           "width": 18,
           "height": 18,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             color: "#81FEB7"
           }
         },
         colorSecondary: {
           "color": "#FDFDFD",
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             color: "#81FEB7"
           },
           "& .Mui-checked": {
             color: "#81FEB7"
           }
         }
-      },
-      MuiFormHelperText: {
+      }
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
         root: {
           display: "none"
         }
-      },
-      MuiTable: {
+      }
+    },
+    MuiTable: {
+      styleOverrides: {
         root: {
           borderRadius: "8px",
           backgroundColor: "#2F3438",
           overflow: "hidden"
         }
-      },
-      MuiTableHead: {
+      }
+    },
+    MuiTableHead: {
+      styleOverrides: {
         root: {
           minHeight: 58,
           fontSize: 16,
@@ -408,8 +454,10 @@ export const theme = createTheme(
           letterSpacing: "-0.01em",
           color: "#FFFFFF"
         }
-      },
-      MuiTableFooter: {
+      }
+    },
+    MuiTableFooter: {
+      styleOverrides: {
         root: {
           minHeight: 60,
           fontSize: 16,
@@ -418,16 +466,20 @@ export const theme = createTheme(
           color: "##81FEB7",
           borderTop: "0.3px solid rgba(125,140,139, 0.2)"
         }
-      },
-      MuiTableBody: {
+      }
+    },
+    MuiTableBody: {
+      styleOverrides: {
         root: {
           "& > *:not(:last-child)": {
             borderBottom: "0.3px solid #575757",
             minHeight: 90
           }
         }
-      },
-      MuiTableCell: {
+      }
+    },
+    MuiTableCell: {
+      styleOverrides: {
         root: {
           borderBottom: "unset"
         },
@@ -437,8 +489,10 @@ export const theme = createTheme(
         body: {
           fontWeight: 300
         }
-      },
-      MuiTableRow: {
+      }
+    },
+    MuiTableRow: {
+      styleOverrides: {
         root: {
           "height": 70,
           "& th:first-child, & td:first-child": {
@@ -459,16 +513,20 @@ export const theme = createTheme(
           backgroundColor: "#383E43 !important",
           borderBottom: "0.3px solid #575757"
         }
-      },
-      MuiLink: {
+      }
+    },
+    MuiLink: {
+      styleOverrides: {
         underlineHover: {
           "&:hover": {
             textUnderlineOffset: "4px",
             textDecorationColor: "#fdfdfd"
           }
         }
-      },
-      MuiLinearProgress: {
+      }
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
         root: {
           borderRadius: 50,
           background: "rgba(125,140,139, 0.2) !important"
@@ -476,13 +534,17 @@ export const theme = createTheme(
         barColorPrimary: {
           backgroundColor: "#3866f9"
         }
-      },
-      MuiPaper: {
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
         rounded: {
           borderRadius: "8px"
         }
-      },
-      MuiAccordionSummary: {
+      }
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
         root: {
           "minHeight": 91,
           "& .Mui-expanded": {
@@ -493,8 +555,8 @@ export const theme = createTheme(
         }
       }
     }
-  })
-)
+  }
+})
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -503,7 +565,7 @@ declare module "@mui/material/styles" {
   }
 }
 
-export const themeOptions: DeprecatedThemeOptions = {
+export const themeOptions: ThemeOptions = {
   breakpoints: {
     values: {
       xs: 0,

@@ -1,101 +1,109 @@
-import { createTheme, adaptV4Theme } from "@mui/material/styles"
-export const legacyTheme = createTheme(
-  adaptV4Theme({
-    palette: {
-      primary: {
-        main: "#1C1F23",
-        light: "#3D3D3D",
-        dark: "#2F3438"
-      },
-      secondary: {
-        main: "#81FEB7",
-        light: "#81FEB7",
-        dark: "#BFC5CA"
-      },
-      text: {
-        primary: "#000000",
-        secondary: "#FDFDFD"
-      },
-      error: {
-        main: "#ED254E"
-      },
-      info: {
-        main: "#3866F9"
-      },
-      warning: {
-        main: "#FFC839"
-      }
+import { createTheme } from "@mui/material/styles"
+export const legacyTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#1C1F23",
+      light: "#3D3D3D",
+      dark: "#2F3438"
     },
-    typography: {
-      fontFamily: "Roboto Flex",
-      h1: {
-        fontSize: 35,
-        letterSpacing: "-0.01em"
-      },
-      subtitle1: {
-        fontSize: 18,
-        fontWeight: 300,
-        lineHeight: "26.33px",
-        letterSpacing: "-0.01em"
-      },
-      subtitle2: {
-        fontSize: 16,
-        fontWeight: 300,
-        lineHeight: "26.33px",
-        letterSpacing: "-0.01em"
-      },
-      h3: {
-        fontSize: 32,
-        fontWeight: 600,
-        fontFamily: "Roboto Flex"
-      },
-      h2: {
-        color: "#000000",
-        fontSize: 25,
-        fontWeight: 500
-      },
-      h4: {
-        fontSize: 24,
-        fontWeight: 600
-      },
-      h5: {
-        fontSize: 35
-      },
-      body1: {
-        fontSize: 16
-      },
-      body2: {
-        fontSize: 16,
-        fontWeight: 300,
-        lineHeight: "413.4%",
-        opacity: 0.8
-      }
+    secondary: {
+      main: "#81FEB7",
+      light: "#81FEB7",
+      dark: "#BFC5CA"
     },
-    overrides: {
-      MuiLinearProgress: {
+    text: {
+      primary: "#000000",
+      secondary: "#FDFDFD"
+    },
+    error: {
+      main: "#ED254E"
+    },
+    info: {
+      main: "#3866F9"
+    },
+    warning: {
+      main: "#FFC839"
+    }
+  },
+  typography: {
+    fontFamily: "Roboto Flex",
+    h1: {
+      fontSize: 35,
+      letterSpacing: "-0.01em"
+    },
+    subtitle1: {
+      fontSize: 18,
+      fontWeight: 300,
+      lineHeight: "26.33px",
+      letterSpacing: "-0.01em"
+    },
+    subtitle2: {
+      fontSize: 16,
+      fontWeight: 300,
+      lineHeight: "26.33px",
+      letterSpacing: "-0.01em"
+    },
+    h3: {
+      fontSize: 32,
+      fontWeight: 600,
+      fontFamily: "Roboto Flex"
+    },
+    h2: {
+      color: "#000000",
+      fontSize: 25,
+      fontWeight: 500
+    },
+    h4: {
+      fontSize: 24,
+      fontWeight: 600
+    },
+    h5: {
+      fontSize: 35
+    },
+    body1: {
+      fontSize: 16
+    },
+    body2: {
+      fontSize: 16,
+      fontWeight: 300,
+      lineHeight: "413.4%",
+      opacity: 0.8
+    }
+  },
+  components: {
+    MuiLinearProgress: {
+      styleOverrides: {
         colorSecondary: {
           borderRadius: 8,
           height: 8
         }
-      },
-      MuiSlider: {
+      }
+    },
+    MuiSlider: {
+      styleOverrides: {
         root: {
           color: "#3D3D3D"
         }
-      },
-      MuiTab: {
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
         root: {
           maxWidth: "100%"
         }
-      },
-      MuiTooltip: {
+      }
+    },
+    MuiTooltip: {
+      styleOverrides: {
         tooltip: {
           backgroundColor: "#4BCF93",
           fontSize: 14,
           padding: "10px 15px"
         }
-      },
-      MuiStepLabel: {
+      }
+    },
+    MuiStepLabel: {
+      styleOverrides: {
         root: {
           marginTop: -3
         },
@@ -108,27 +116,22 @@ export const legacyTheme = createTheme(
           "height": 40,
           "display": "flex",
           "alignItems": "center",
-          "&$completed": {
+          "&.Mui-completed": {
             fontWeight: 300
           },
-          "&$active": {
+          "&.Mui-active": {
+            color: "#FDFDFD !important",
+            opacity: 1,
             fontWeight: 300
           },
           "& .MuiStepLabel-completed": {
             fontWeight: 300
           }
-        },
-        active: {
-          color: "#FDFDFD !important",
-          opacity: 1
-        },
-        completed: {
-          color: "#FDFDFD !important",
-          opacity: 0.5,
-          fontWeight: 300
         }
-      },
-      MuiStepConnector: {
+      }
+    },
+    MuiStepConnector: {
+      styleOverrides: {
         vertical: {
           padding: "0px",
           marginLeft: 17,
@@ -143,52 +146,56 @@ export const legacyTheme = createTheme(
           borderColor: "#FDFDFD",
           opacity: 0.2
         },
-        active: {
-          "& span": {
-            borderLeftColor: "#81feb7",
-            opacity: 1
-          }
-        },
-        completed: {
-          "& span": {
-            borderLeftColor: "#81feb7",
-            opacity: 1
+        root: {
+          "&.Mui-active": {
+            "& span": {
+              borderLeftColor: "#81feb7",
+              opacity: 1
+            }
+          },
+          "&.Mui-completed": {
+            "& span": {
+              borderLeftColor: "#81feb7",
+              opacity: 1
+            }
           }
         }
-      },
-      MuiStepContent: {
+      }
+    },
+    MuiStepContent: {
+      styleOverrides: {
         root: {
           borderLeft: "none"
         }
-      },
-      MuiStep: {
+      }
+    },
+    MuiStep: {
+      styleOverrides: {
         root: {
           marginBottom: 15
         }
-      },
-      MuiStepIcon: {
-        active: {
-          color: "#1C1F23 !important"
-        },
-        completed: {
-          color: "#FDFDFD !important"
-        },
+      }
+    },
+    MuiStepIcon: {
+      styleOverrides: {
         root: {
           "height": 32,
           "width": 32,
           "color": "#2f3438",
           "border": "3px solid rgba(255, 255, 255, 0.2)",
           "borderRadius": "50%",
-          "&$active": {
+          "&.Mui-active": {
+            "color": "#1C1F23 !important",
             "fill": "#81feb7",
             "border": "3px solid #81feb7",
             "borderRadius": "50%",
-            "& $text": {
+            "& .MuiStepIcon-text": {
               fill: "#1C1F23",
               border: "1px solid #2f3438"
             }
           },
-          "&$completed": {
+          "&.Mui-completed": {
+            color: "#FDFDFD !important",
             fill: "#81feb7",
             border: "3px solid #81feb7"
           }
@@ -196,45 +203,51 @@ export const legacyTheme = createTheme(
         text: {
           fill: "#FDFDFD"
         }
-      },
-      MuiInput: {
+      }
+    },
+    MuiInput: {
+      styleOverrides: {
         underline: {
           "&:after": {
             borderBottom: "none"
           },
-          "&$focused:after": {
+          "&.Mui-focused:after": {
             borderBottom: "none"
           },
-          "&$error:after": {
+          "&.Mui-error:after": {
             borderBottom: "none"
           },
           "&:before": {
             borderBottom: "none"
           },
-          "&:hover:not($disabled):not($focused):not($error):before": {
+          "&:hover:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before": {
             borderBottom: "none"
           },
-          "&$disabled:before": {
+          "&.Mui-disabled:before": {
             borderBottom: "none"
           },
-          "&:active:not($disabled):not($focused):not($error):before": {
+          "&:active:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before": {
             borderBottom: "none"
           }
         }
-      },
-      MuiInputAdornment: {
+      }
+    },
+    MuiInputAdornment: {
+      styleOverrides: {
         positionStart: {
           marginLeft: 8
         }
-      },
-      MuiButton: {
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
         root: {
-          "&$disabled": {
+          "&.Mui-disabled": {
             color: "#3d3d3d"
           }
         },
         outlined: {
-          "&$disabled": {
+          "&.Mui-disabled": {
             border: "2px solid #3d3d3d"
           },
           "borderWidth": "2px !important",
@@ -242,8 +255,10 @@ export const legacyTheme = createTheme(
           "padding": "1px 8px",
           "fontSize": "1rem"
         }
-      },
-      MuiInputBase: {
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
         input: {
           textAlign: "start",
           color: "#FDFDFD"
@@ -251,14 +266,18 @@ export const legacyTheme = createTheme(
         root: {
           fontWeight: 300
         }
-      },
-      MuiDivider: {
+      }
+    },
+    MuiDivider: {
+      styleOverrides: {
         root: {
           marginTop: 16,
           marginBottom: 16
         }
-      },
-      MuiDialog: {
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
         paper: {
           background: "#1C1F23",
           width: 570,
@@ -272,28 +291,38 @@ export const legacyTheme = createTheme(
           minHeight: 600,
           height: "auto"
         }
-      },
-      MuiFormControl: {
+      }
+    },
+    MuiFormControl: {
+      styleOverrides: {
         root: {
           width: "100%"
         }
-      },
-      MuiDialogContent: {
+      }
+    },
+    MuiDialogContent: {
+      styleOverrides: {
         root: {
           padding: 0
         }
-      },
-      MuiSelect: {
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
         select: {
           textAlign: "right"
         }
-      },
-      MuiDialogContentText: {
+      }
+    },
+    MuiDialogContentText: {
+      styleOverrides: {
         root: {
           marginBottom: 0
         }
-      },
-      MuiSwitch: {
+      }
+    },
+    MuiSwitch: {
+      styleOverrides: {
         root: {
           width: 75,
           height: 50
@@ -302,7 +331,7 @@ export const legacyTheme = createTheme(
           "color": "red",
           "top": 8,
           "left": 8,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             opacity: 1,
             backgroundColor: "#1C1F23",
             color: "#81FEB7"
@@ -313,7 +342,7 @@ export const legacyTheme = createTheme(
           "backgroundColor": "inherit",
           "border": "1px solid #FDFDFD",
           "opacity": 0.5,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             opacity: 1,
             backgroundColor: "#1C1F23",
             color: "#81FEB7"
@@ -322,26 +351,30 @@ export const legacyTheme = createTheme(
         thumb: {
           "width": 18,
           "height": 18,
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             color: "#81FEB7"
           }
         },
         colorSecondary: {
           "color": "#FDFDFD",
-          "$checked$checked + &": {
+          ".Mui-checked.Mui-checked + &": {
             color: "#81FEB7"
           },
           "& .Mui-checked": {
             color: "#81FEB7"
           }
         }
-      },
-      MuiFormHelperText: {
+      }
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
         root: {
           display: "none"
         }
-      },
-      MuiAccordionSummary: {
+      }
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
         root: {
           "& .Mui-expanded": {
             minHeight: 91
@@ -349,5 +382,5 @@ export const legacyTheme = createTheme(
         }
       }
     }
-  })
-)
+  }
+})
