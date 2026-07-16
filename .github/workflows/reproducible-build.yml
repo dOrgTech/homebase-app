@@ -1,0 +1,57 @@
+name: Reproducible build
+
+# Verifiable release pipeline (parallel to the Netlify deployment):
+# on every version tag, build the bundle in the pinned environment,
+# fingerprint it, and publish artifact + hash on the GitHub Release.
+# Anyone can check the fingerprint with:  distribution/verify.sh <tag> <hash>
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verifiable build (pinned environment)
+        run: bash distribution/build.sh HEAD
+
+      - name: Determinism check — rebuild from scratch and compare
+        run: |
+          HASH1="$(cat distribution/out/BUILDHASH)"
+          cp distribution/out/BUILDMANIFEST /tmp/manifest1
+          bash distribution/build.sh --no-cache HEAD
+          HASH2="$(cat distribution/out/BUILDHASH)"
+          echo "first:  $HASH1"
+          echo "second: $HASH2"
+          if [ "$HASH1" != "$HASH2" ]; then
+            echo "::error::Build is not reproducible on this runner"
+            diff /tmp/manifest1 distribution/out/BUILDMANIFEST || true
+            exit 1
+          fi
+
+      - name: Publish release with artifact + fingerprint
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          HASH="$(cat distribution/out/BUILDHASH)"
+          cp distribution/out/BUILDHASH distribution/out/BUILDHASH.txt
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "BUILDHASH: \`${HASH}\`
+
+Verify independently:
+\`\`\`
+git clone https://github.com/${GITHUB_REPOSITORY} && cd homebase-app
+distribution/verify.sh ${GITHUB_REF_NAME} ${HASH}
+\`\`\`" \
+            distribution/out/homebase-build.tar.gz \
+            distribution/out/BUILDHASH.txt \
+            distribution/out/BUILDMANIFEST
