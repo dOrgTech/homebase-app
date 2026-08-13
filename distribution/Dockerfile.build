@@ -1,0 +1,43 @@
+# Verifiable production build environment for Homebase.
+#
+# Pinned by DIGEST, not tag: a tag ("node:22.12.0") is a moving label the
+# registry can repoint; the digest is the sha256 of the image itself and
+# can never refer to different bytes. node 22.12.0 matches .nvmrc.
+FROM node@sha256:35531c52ce27b6575d69755c73e65d4468dba93a25644eed56dc12879cae9213
+
+WORKDIR /app
+
+# CI=false: CRA escalates the repo's pre-existing lint warnings to errors
+# under CI=true; lint policy is enforced elsewhere (lint-staged / lint:ci),
+# not by the verifiable build.
+ENV CI=false \
+    HUSKY=0
+
+# Dependencies first (better layer caching for local iteration)
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
+COPY . .
+
+# SOURCE_DATE_EPOCH: the commit timestamp of the source being built.
+# Build tools that would otherwise stamp "now" into output use this
+# instead, so wall-clock time stops being an input to the build.
+ARG SOURCE_DATE_EPOCH
+ENV SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
+
+# The canonical public env is the only .env a verifiable build may see.
+RUN cp distribution/env.build .env
+
+# Source maps embed builder-machine paths; the verifiable artifact omits
+# them (transparency comes from reproducibility, not from maps).
+ENV GENERATE_SOURCEMAP=false
+
+RUN yarn build
+
+# Deterministic artifact + hash, computed inside the pinned environment:
+#  - tar: sorted entries, fixed mtime, no owners  - gzip -n: no timestamp
+#  - BUILDHASH: sha256 over the sorted per-file sha256s of build/
+RUN cd /app && \
+    find build -type f -print0 | sort -z | xargs -0 sha256sum | tee /app/BUILDMANIFEST | sha256sum | cut -d' ' -f1 > /app/BUILDHASH && \
+    tar --sort=name --mtime="@${SOURCE_DATE_EPOCH}" --owner=0 --group=0 --numeric-owner -cf - build | gzip -n > /app/homebase-build.tar.gz && \
+    echo "BUILDHASH: $(cat /app/BUILDHASH)"
