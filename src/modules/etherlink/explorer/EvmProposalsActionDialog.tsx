@@ -9,7 +9,7 @@ import { EvmResponsiveDialog } from "../components/EvmResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { EvmDelegationPrompt } from "../components/EvmDelegationPrompt"
 import { EtherlinkContext } from "services/wagmi/context"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
 import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
@@ -49,9 +49,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const theme = useTheme()
   const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
-  const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
   const { daoSelected } = useContext(EtherlinkContext)
-  const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
 
@@ -82,6 +80,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   return (
     <>
       <EvmResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
+        <EvmDelegationPrompt />
         <TitleContainer container direction="row">
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
@@ -148,40 +147,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             </FormField>
           </Grid>
 
-          {/* Voting power helper */}
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: isMobileSmall ? "column" : "row",
-              alignItems: isMobileSmall ? "stretch" : "center",
-              gap: 8,
-              marginBottom: 24,
-              background: theme.palette.primary.main,
-              borderRadius: 4,
-              padding: 16
-            }}
-          >
-            <Typography color="textPrimary" style={{ flex: 1 }}>
-              Voting power:
-            </Typography>
-            <NextButton
-              disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}
-              onClick={() => {
-                if (!loggedInUser?.address) return
-                setIsDelegating(true)
-                daoDelegate(loggedInUser.address)
-                  .then(() => refreshTokenStats())
-                  .catch(() => {})
-                  .finally(() => setIsDelegating(false))
-              }}
-            >
-              {(userVotingWeight || 0) > 0
-                ? "Voting Power Ready"
-                : isDelegating
-                  ? "Delegating..."
-                  : "Self‑delegate (Claim Voting Power)"}
-            </NextButton>
-          </Box>
+          <EvmDelegationPrompt style={{ marginBottom: 24 }} />
 
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <BackButton onClick={prevStep.handler} />

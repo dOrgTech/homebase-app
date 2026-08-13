@@ -12,6 +12,7 @@ import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
 import { EvmActivityHistory } from "modules/etherlink/components/EvmActivityHistory"
+import { EvmDelegationPrompt } from "modules/etherlink/components/EvmDelegationPrompt"
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
 import { Item, ItemContent, ItemTitle, ItemValue, TransparentItem } from "components/ui/etherlink/Stats"
 import { DelegationBox, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
@@ -171,6 +172,7 @@ export const EvmUserPage = () => {
 
   return (
     <Box>
+      <EvmDelegationPrompt style={{ marginBottom: 24 }} />
       <UserProfileCard>
         <UserInfoSection>
           <ProfileAvatar address={userAddress || ""} size={50} />
