@@ -1,0 +1,4 @@
+# Shell scripts must stay LF everywhere — a CRLF checkout on Windows breaks
+# them at runtime (trailing \r in comparisons and URLs), and that exact bug
+# once silenced production monitoring for months.
+*.sh text eol=lf
