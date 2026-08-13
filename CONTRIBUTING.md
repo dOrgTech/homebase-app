@@ -9,7 +9,7 @@ There are many ways you can contribute to our project:
 - Report bugs or suggest features by opening an [issue](https://github.com/dOrgTech/homebase-app/issues).
 - Fix bugs or implement features by submitting a [pull request](https://github.com/dOrgTech/homebase-app/pulls).
 - Improve the documentation or the user interface by editing the files directly on GitHub or forking the repo.
-- Join our [Discord server](https://discord.gg/9cduRr5) and chat with us about the project.
+- Join our [Discord server](https://discord.gg/yqv8ABG2EN) and chat with us about the project.
 
 ## Development setup
 

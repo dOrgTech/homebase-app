@@ -4,6 +4,7 @@ import { getDAOs } from "services/services/dao/services"
 import { getLiteDAOs } from "../../lite/lite-services"
 import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
+import { trackAppError } from "services/supportNotification"
 
 export const useAllDAOs = (network: Network) => {
   const {
@@ -53,6 +54,7 @@ export const useAllDAOs = (network: Network) => {
           homebase_daos = await getDAOs(network)
         } catch (e) {
           console.error("getDAOs failed", e)
+          trackAppError()
           homebase_daos = []
         }
       }
@@ -62,6 +64,7 @@ export const useAllDAOs = (network: Network) => {
         lite_daos = await getLiteDAOs(network)
       } catch (e) {
         console.error("getLiteDAOs failed", e)
+        trackAppError()
         lite_daos = []
       }
 

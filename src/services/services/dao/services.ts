@@ -1,3 +1,4 @@
+import { trackAppError } from "services/supportNotification"
 import { client, client_v2 } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
 import {
@@ -52,6 +53,7 @@ export const getDAOs = async (network: string) => {
     daos = response?.daos || []
   } catch (err) {
     console.error("Failed to fetch Homebase DAOs (v1)", err)
+    trackAppError()
   }
 
   try {
@@ -59,6 +61,7 @@ export const getDAOs = async (network: string) => {
     daos_v2 = response_v2?.daos || []
   } catch (err) {
     console.error("Failed to fetch Homebase DAOs (v2)", err)
+    trackAppError()
   }
 
   return [...daos, ...daos_v2]
