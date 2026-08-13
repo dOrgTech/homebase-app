@@ -43,15 +43,18 @@ jobs:
         run: |
           HASH="$(cat distribution/out/BUILDHASH)"
           cp distribution/out/BUILDHASH distribution/out/BUILDHASH.txt
+          {
+            echo "BUILDHASH: \`${HASH}\`"
+            echo ""
+            echo "Verify independently:"
+            echo '```'
+            echo "git clone https://github.com/${GITHUB_REPOSITORY} && cd homebase-app"
+            echo "distribution/verify.sh ${GITHUB_REF_NAME} ${HASH}"
+            echo '```'
+          } > "${RUNNER_TEMP}/release-notes.md"
           gh release create "${GITHUB_REF_NAME}" \
             --title "${GITHUB_REF_NAME}" \
-            --notes "BUILDHASH: \`${HASH}\`
-
-Verify independently:
-\`\`\`
-git clone https://github.com/${GITHUB_REPOSITORY} && cd homebase-app
-distribution/verify.sh ${GITHUB_REF_NAME} ${HASH}
-\`\`\`" \
+            --notes-file "${RUNNER_TEMP}/release-notes.md" \
             distribution/out/homebase-build.tar.gz \
             distribution/out/BUILDHASH.txt \
             distribution/out/BUILDMANIFEST
