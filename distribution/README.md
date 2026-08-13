@@ -30,6 +30,10 @@ distribution/build.sh
 
 # Verify a release against its published hash (from the GitHub Release page)
 distribution/verify.sh v1.2.3 <expected-sha256>
+
+# Verify a release against the ON-CHAIN registry (trustless: commit + hash
+# are read from the release-registry contract, then rebuilt and compared)
+distribution/verify.sh --registry <mainnet|shadownet> <registry-address> <version-key>
 ```
 
 `BUILDHASH` is the sha256 over the sorted per-file sha256s of `build/`
@@ -42,6 +46,24 @@ Pushing a `v*` tag triggers `.github/workflows/reproducible-build.yml`,
 which builds, **rebuilds from scratch and fails unless both hashes match**,
 then publishes the artifact, `BUILDHASH.txt`, and the manifest on the
 GitHub Release.
+
+## On-chain release registry
+
+Releases are recorded in the Registry contract of a Homebase EVM DAO (the
+app's own audited governance stack — the release process dogfoods the
+product). Each approved release is a registry entry: key `vX.Y.Z`, value
+`{"commit":"<sha>","buildhash":"<sha256>","artifact":"<url>"}`. Entries only
+change through a governance proposal (propose → vote → timelock → execute),
+so "the official build" is a DAO decision, not a hosting-account setting.
+`verify.sh --registry` closes the loop: on-chain record → source commit →
+reproducible rebuild → hash comparison, with no trusted intermediary.
+
+Current registries:
+
+| Network | DAO | Registry | Status |
+|---|---|---|---|
+| Shadownet | `0xEeDCa7F405210cBCB4E63a67F18e974c821F4Ca1` ("Homebase Distribution (Rehearsal)") | `0x2A847c27663aB55aa36387c4Ce719789e3bc8cE9` | rehearsal, live |
+| Mainnet | — | — | planned |
 
 ## Boundaries (honest ones)
 
