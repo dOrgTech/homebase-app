@@ -21,7 +21,7 @@ export const RenderChoices = ({
   decimals: number
 }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   if (mode === "offchain") {
     const totalVotees = choices?.reduce((acc, curr) => acc + curr.walletAddresses.length, 0)

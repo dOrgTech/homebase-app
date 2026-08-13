@@ -1,6 +1,7 @@
 import React from "react"
-import { InputAdornment, styled, TextField, Theme, withStyles } from "@material-ui/core"
-import { SearchOutlined } from "@material-ui/icons"
+import { InputAdornment, styled, TextField, Theme } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import { SearchOutlined } from "@mui/icons-material"
 
 const StyledInput = withStyles((theme: Theme) => ({
   root: {
@@ -30,13 +31,13 @@ const StyledInput = withStyles((theme: Theme) => ({
         outline: "none"
       }
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottomColor: "transparent"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottomColor: "transparent"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottomColor: "transparent"
     }
   }

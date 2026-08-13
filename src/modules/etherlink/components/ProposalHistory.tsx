@@ -25,7 +25,7 @@ export const ProposalHistory = ({
   decimals?: number
 }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
   const { daoSelected } = useContext(EtherlinkContext)
 
   const safePct = Number.isFinite(votesQuorumPercentage) ? Math.max(0, Math.min(100, votesQuorumPercentage)) : 0

@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, TextField } from "@material-ui/core"
+import { Grid, styled, Typography, TextField } from "@mui/material"
 import {
   registryProposalFormInitialState,
   RegistryProposalFormValues,

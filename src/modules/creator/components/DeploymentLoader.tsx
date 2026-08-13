@@ -9,9 +9,9 @@ import {
   styled,
   Theme,
   Typography,
-  useTheme,
-  withStyles
-} from "@material-ui/core"
+  useTheme
+} from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import React, { useEffect, useState } from "react"
 import { SuspenseDots } from "./SuspenseDots"
 import ProgressBar from "react-customizable-progressbar"
@@ -73,8 +73,8 @@ export const DeploymentLoader: React.FC<Props> = ({ states, activeStep, error })
                 ? errorMessage
                 : states[focusedState].activeText
               : showCompletedText
-              ? states[focusedState].completedText
-              : ""}
+                ? states[focusedState].completedText
+                : ""}
             {showActiveText && !error && <SuspenseDots />}
           </WaitingText>
         </Grid>

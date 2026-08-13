@@ -222,8 +222,8 @@ const useEvmDaoCreateStore = () => {
           daoData.tokenDeploymentMechanism === "wrapped"
             ? "wrapped ERC20"
             : daoData.nonTransferable
-            ? "non-transferable"
-            : "transferable"
+              ? "non-transferable"
+              : "transferable"
 
         console.error("No wrapper address found!", {
           factoryType,

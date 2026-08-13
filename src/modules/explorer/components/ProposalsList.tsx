@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { CircularProgress, Collapse, Grid, Typography, styled } from "@material-ui/core"
+import { CircularProgress, Collapse, Grid, Typography, styled } from "@mui/material"
 import { ProposalItem } from "modules/explorer/pages/User"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
@@ -40,6 +40,7 @@ interface Props {
   proposalStyle?: any
   showFullList?: boolean
   filters: undefined | Filters
+  daoId?: string
 }
 
 interface ProposalObj {
@@ -53,7 +54,8 @@ export const ProposalsList: React.FC<Props> = ({
   liteProposals,
   proposalStyle,
   showFullList = true,
-  filters = undefined
+  filters = undefined,
+  daoId
 }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
@@ -196,7 +198,7 @@ export const ProposalsList: React.FC<Props> = ({
                     </CustomGrid>
                   ) : (
                     <div style={{ width: "inherit", marginBottom: 16 }} key={`poll-${i}`}>
-                      <ProposalTableRow poll={p.proposal} />
+                      <ProposalTableRow poll={p.proposal} daoId={daoId} />
                     </div>
                   )
                 )}

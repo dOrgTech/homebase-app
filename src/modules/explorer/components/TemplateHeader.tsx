@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { RectangleContainer } from "./styled/RectangleHeader"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -15,7 +15,7 @@ const Container = styled(Grid)(({ theme }) => ({
 const CustomRectangleContainer = styled(RectangleContainer)(({ theme }) => ({
   borderBottom: "none",
   paddingBottom: "0",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingBottom: 40
   }
 }))
@@ -25,7 +25,7 @@ export const TemplateHeader: React.FC<{
   showSendXtz?: boolean
 }> = ({ template, children }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 

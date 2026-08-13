@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Grid, styled, Typography, Theme, useTheme, useMediaQuery } from "@material-ui/core"
+import { Box, Grid, styled, Typography, Theme, useTheme, useMediaQuery } from "@mui/material"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { useLocation } from "react-router-dom"
@@ -32,18 +32,20 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-export const ColorDot = styled(Box)({
-  height: 6,
-  width: 6,
-  backgroundColor: ({ color }: { color: string }) => color,
-  borderRadius: "50%"
-})
+export const ColorDot = styled(Box, { shouldForwardProp: prop => prop !== "color" })(
+  ({ color }: { color: string }) => ({
+    height: 6,
+    width: 6,
+    backgroundColor: color,
+    borderRadius: "50%"
+  })
+)
 
 export const ChangeNetworkButton = () => {
   const { network } = useTezos()
   const { open } = useActionSheet(ActionSheet.Network)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const location = useLocation()
 

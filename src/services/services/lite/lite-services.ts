@@ -68,6 +68,7 @@ export const getLiteDAOs = async (network: string) => {
       },
       votingAddressesCount: dao.votingAddressesCount,
       allowPublicAccess: dao.allowPublicAccess,
+      daoContract: dao.daoContract,
       ledgers: dao.members.map(member => {
         return {
           holder: {

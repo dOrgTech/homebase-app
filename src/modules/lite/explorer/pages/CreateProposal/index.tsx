@@ -1,22 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState } from "react"
-import {
-  Grid,
-  styled,
-  Typography,
-  withStyles,
-  withTheme,
-  TextareaAutosize,
-  useTheme,
-  useMediaQuery,
-  Tooltip
-} from "@material-ui/core"
+import { Grid, styled, Typography, TextareaAutosize, useTheme, useMediaQuery, Tooltip } from "@mui/material"
+
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
 
 import { Choices } from "../../components/Choices"
 import { useHistory, useLocation } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
-import { TextField as FormikTextField, Switch } from "formik-material-ui"
+import { TextField as FormikTextField, Switch } from "formik-mui"
 import { Poll } from "models/Polls"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getSignature } from "services/lite/utils"
@@ -42,7 +35,7 @@ dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 30
   }
 }))
@@ -83,13 +76,13 @@ const CustomFormikTextField = withStyles({
       fontSize: 18,
       background: "#2f3438"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }
@@ -108,13 +101,13 @@ const CustomFormikTimeTextField = withStyles({
       fontSize: 18,
       background: "#2f3438"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     }
   }
@@ -147,7 +140,7 @@ const PageContainer = styled("div")({
 })
 
 const Header = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginBottom: 6
   }
 }))
@@ -160,7 +153,7 @@ const LabelText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
   color: "#bfc5ca",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
@@ -234,7 +227,7 @@ const TimeBox = styled(Grid)(({ theme }) => ({
   width: 72,
   minHeight: 59,
   display: "grid",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     "width": 172,
     "& input": {
       marginLeft: "30%"
@@ -252,7 +245,7 @@ const TimeContainerMobile = styled(Grid)(({ theme }) => ({
   alignItems: "baseline",
   marginTop: 0,
   gap: 10,
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 30,
     display: "grid"
   }
@@ -336,7 +329,7 @@ export const ProposalForm = ({
 }: any) => {
   const theme = useTheme()
   const community = useCommunity(daoId)
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const finalDate = calculateEndTime(
     getIn(values, "endTimeDays"),
     getIn(values, "endTimeHours"),

@@ -1,4 +1,4 @@
-import { Box, BoxProps, styled } from "@material-ui/core"
+import { Box, BoxProps, styled } from "@mui/material"
 import React from "react"
 import { getBlockie } from "services/contracts/utils"
 

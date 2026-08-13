@@ -22,7 +22,7 @@ export const EvmProposalVoteDetail: React.FC<{
   token: any
 }> = ({ poll, token }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
   const choices = poll.type === "offchain" ? poll.choices : EVM_PROPOSAL_CHOICES
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()

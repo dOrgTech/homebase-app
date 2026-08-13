@@ -1,28 +1,17 @@
 import React, { useState } from "react"
-import {
-  AppBar,
-  Toolbar,
-  styled,
-  Typography,
-  Box,
-  Grid,
-  useTheme,
-  Popover,
-  useMediaQuery,
-  Theme
-} from "@material-ui/core"
+import { AppBar, Toolbar, styled, Typography, Box, Grid, useTheme, Popover, useMediaQuery, Theme } from "@mui/material"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { toShortAddress } from "services/contracts/utils"
-import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
+import { ExitToAppOutlined, FileCopyOutlined } from "@mui/icons-material"
 
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 
-import { ArrowBackIos } from "@material-ui/icons"
+import { ArrowBackIos } from "@mui/icons-material"
 import { ConnectWalletButton } from "./ConnectWalletButton"
 import { ToolbarAccount } from "./ToolbarAccount"
 
@@ -167,8 +156,8 @@ export const Navbar: React.FC<{
   disableMobileMenu?: boolean
 }> = ({ mode, children, disableMobileMenu }) => {
   const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   return (
     <StyledAppBar>
       <StyledToolbar>

@@ -38,10 +38,10 @@ const StatsGrid = styled(Grid)(({ theme }) => ({
   "gridTemplateColumns": "repeat(4, 1fr)",
   "gap": "16px",
   "marginBottom": "24px",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     gridTemplateColumns: "repeat(2, 1fr)"
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gridTemplateColumns: "1fr"
   },
   "& > div": {

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from "react"
-import { Divider, Grid, Typography, styled, useTheme, useMediaQuery } from "@material-ui/core"
+import { Divider, Grid, Typography, styled, useTheme, useMediaQuery } from "@mui/material"
 import { ProposalTableRow } from "./ProposalTableRow"
 import { ProposalStatus } from "./ProposalTableRowStatusBadge"
 import { Poll } from "models/Polls"
@@ -33,7 +33,7 @@ const NoProposalsText = styled(Typography)({
 })
 
 const Title = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginBottom: 14,
     fontSize: 16,
     marginLeft: -2
@@ -53,7 +53,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
   const { pathname } = useLocation()
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const shouldShowBar = pathname.includes("/lite") ? true : false
 
   useEffect(() => {

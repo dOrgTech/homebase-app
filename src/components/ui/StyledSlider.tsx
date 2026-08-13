@@ -1,4 +1,6 @@
-import { Grid, Paper, Slider, styled, Typography, withStyles, withTheme } from "@material-ui/core"
+import { Grid, Paper, Slider, styled, Typography } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
 import { useRef } from "react"
 
 const StyledSlider = withStyles({

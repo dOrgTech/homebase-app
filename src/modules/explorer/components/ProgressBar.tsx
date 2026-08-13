@@ -1,6 +1,8 @@
-import { styled, LinearProgress, Theme } from "@material-ui/core"
+import { styled, LinearProgress } from "@mui/material"
 
-export const ProgressBar = styled(LinearProgress)(({ theme, favor }: { theme: Theme; favor: boolean }) => ({
+export const ProgressBar = styled(LinearProgress, { shouldForwardProp: prop => prop !== "favor" })<{
+  favor: boolean
+}>(({ theme, favor }) => ({
   "marginTop": 10,
   "height": 8,
   "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
@@ -12,7 +14,7 @@ export const ProgressBar = styled(LinearProgress)(({ theme, favor }: { theme: Th
   }
 }))
 
-export const MultiColorBar = styled(LinearProgress)(({ theme }: { theme: Theme }) => ({
+export const MultiColorBar = styled(LinearProgress)(({ theme }) => ({
   "marginTop": 10,
   "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
     "background": theme.palette.error.main,

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
 import { DeploymentContext } from "../state/context"
@@ -24,7 +24,7 @@ import {
 import { useTezos } from "services/beacon/hooks/useTezos"
 export const ContractSummary: React.FC = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const history = useHistory()
   const match = useRouteMatch()
 

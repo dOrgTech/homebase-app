@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Avatar, Grid, styled, Typography } from "@material-ui/core"
+import { Avatar, Grid, styled, Typography } from "@mui/material"
 import { SmallButton } from "modules/common/SmallButton"
 
 const AvatarCardContainer = styled(Grid)(({ theme }) => ({
@@ -16,7 +16,7 @@ const StyledAvatar = styled(Avatar)({
 const AvatarContainer = styled(Grid)(({ theme }) => ({
   marginTop: 70,
   marginBottom: 30,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 30
   }
 }))

@@ -1,5 +1,5 @@
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -9,8 +9,8 @@ export const useDropAllExpired = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<any | Error, Error, { dao: BaseDAO; expiredProposalIds: string[] }>(
-    async params => {
+  return useMutation<any | Error, Error, { dao: BaseDAO; expiredProposalIds: string[] }>({
+    mutationFn: async params => {
       const { key: dropNotification, closeSnackbar: closeFlushNotification } = openNotification({
         message: "Please sign the transaction to drop all expired proposals",
         persist: true,
@@ -49,10 +49,8 @@ export const useDropAllExpired = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

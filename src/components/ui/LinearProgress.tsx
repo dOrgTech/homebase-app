@@ -1,5 +1,5 @@
-import { Theme, LinearProgress as MuiLinearProgress } from "@material-ui/core"
-import { withStyles } from "@material-ui/core/styles"
+import { Theme, LinearProgress as MuiLinearProgress } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 
 const StyledLinearProgress = withStyles((theme: Theme) => ({
   root: (props: { variant: "success" | "error" }) => ({

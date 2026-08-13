@@ -21,7 +21,7 @@ import { CopyButton } from "modules/common/CopyButton"
 
 export const EvmDaoSummary = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { data } = useEvmDaoCreateStore()
 
   const isWrappedToken = data?.tokenDeploymentMechanism === "wrapped"

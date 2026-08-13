@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 import { useHistory, useLocation } from "react-router-dom"
@@ -20,7 +20,7 @@ export const Success: React.FC = () => {
   const [address, setAddress] = useState("")
   const history = useHistory()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   useEffect(() => {
     if (location && location.state && location.state.address) {

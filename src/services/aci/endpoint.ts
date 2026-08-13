@@ -1,11 +1,11 @@
 import { TezosToolkit } from "@taquito/taquito"
-import { validateAddress, encodePubKey, encodeKey, encodeKeyHash } from "@taquito/utils"
+import { validateAddress, encodeKey, encodeKeyHash } from "@taquito/utils"
 import { TokenSchema, Schema } from "@taquito/michelson-encoder"
 import { rpcNodes } from "services/beacon"
 import { assertNever } from "assert-never"
 import { trackAppError } from "services/supportNotification"
 import type { token, tokenValueType } from "."
-import type { MichelineMichelsonV1Expression } from "@airgap/beacon-sdk"
+import type { MichelsonV1Expression as MichelineMichelsonV1Expression } from "@taquito/rpc"
 
 function getFieldName(id: any): string {
   return `input-${id.toString()}`

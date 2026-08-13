@@ -1,5 +1,5 @@
-import { NetworkType } from "@airgap/beacon-types"
-import { capitalize } from "@material-ui/core"
+import { NetworkType } from "@ecadlabs/beacon-types"
+import { capitalize } from "@mui/material"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
 import { Tzip16Module } from "@taquito/tzip16"
@@ -8,7 +8,7 @@ import { EnvKey, getEnv } from "services/config"
 export type Network = "mainnet" | "shadownet" | "etherlink_shadownet" | "etherlink_mainnet"
 
 export const rpcNodes: Record<Network, string> = {
-  mainnet: getEnv(EnvKey.REACT_APP_RPC_NETWORK_MAINNET) || "https://mainnet.api.tez.ie",
+  mainnet: getEnv(EnvKey.REACT_APP_RPC_NETWORK_MAINNET) || "https://tcinfra.net/rpc/tezos/mainnet",
   shadownet: getEnv(EnvKey.REACT_APP_RPC_NETWORK_SHADOWNET) || "https://rpc.shadownet.teztnets.com",
   etherlink_shadownet: "https://node.shadownet.etherlink.com",
   etherlink_mainnet: "https://node.mainnet.etherlink.com"

@@ -3,7 +3,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 import { useCallback, useContext, useMemo, useState } from "react"
-import { useQueryClient } from "react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 
@@ -893,10 +893,10 @@ export const useEvmProposalOps = () => {
       // ignore optimistic override errors
     }
 
-    queryClient.invalidateQueries(["daoMembers"])
-    queryClient.invalidateQueries(["dao", daoSelected?.address])
-    queryClient.invalidateQueries(["proposals", daoSelected?.address])
-    queryClient.invalidateQueries(["proposal", daoSelected?.address])
+    queryClient.invalidateQueries({ queryKey: ["daoMembers"] })
+    queryClient.invalidateQueries({ queryKey: ["dao", daoSelected?.address] })
+    queryClient.invalidateQueries({ queryKey: ["proposals", daoSelected?.address] })
+    queryClient.invalidateQueries({ queryKey: ["proposal", daoSelected?.address] })
 
     if (daoSelected?.id && network) {
       const firebaseRootCollection = networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
@@ -909,10 +909,10 @@ export const useEvmProposalOps = () => {
     }
 
     setTimeout(() => {
-      queryClient.invalidateQueries(["daoMembers"])
-      queryClient.invalidateQueries(["dao", daoSelected?.address])
-      queryClient.invalidateQueries(["proposals", daoSelected?.address])
-      queryClient.invalidateQueries(["proposal", daoSelected?.address])
+      queryClient.invalidateQueries({ queryKey: ["daoMembers"] })
+      queryClient.invalidateQueries({ queryKey: ["dao", daoSelected?.address] })
+      queryClient.invalidateQueries({ queryKey: ["proposals", daoSelected?.address] })
+      queryClient.invalidateQueries({ queryKey: ["proposal", daoSelected?.address] })
 
       if (daoSelected?.id && network) {
         const firebaseRootCollection = networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Link } from "@material-ui/core"
+import { Grid, styled, Typography, Box, useMediaQuery, useTheme, Link } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import { useHistory } from "react-router"
 
 import { ReactComponent as ManagedIcon } from "assets/img/managed.svg"
@@ -65,7 +66,7 @@ export const DeploymentType = (): JSX.Element => {
   const style = styles()
   const notify = useNotification()
 
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const [selectedTemplate, setTemplate] = useState<DeploymentMethod>("self-deployed")
   const [error, setError] = useState<boolean>(false)

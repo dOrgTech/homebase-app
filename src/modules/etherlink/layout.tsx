@@ -35,7 +35,7 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
   const { currentStep: step, next, prev: back } = useEvmDaoCreateStore()
   const history = useHistory()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const totalSteps = Object.keys(urlToStepMap).length - 1
   const progressPercentage = useMemo(() => Math.floor((step / totalSteps) * 100), [step, totalSteps])
 

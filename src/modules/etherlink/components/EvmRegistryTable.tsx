@@ -98,7 +98,7 @@ const MobileRegistryTable: React.FC<Props> = ({ data }) => {
             </Typography>
           </Grid>
           <Grid item>
-            <IconButton aria-label="Copy registry value" onClick={e => handleCopy(rowData.value, e)}>
+            <IconButton aria-label="Copy registry value" onClick={e => handleCopy(rowData.value, e)} size="large">
               <FileCopyOutlined fontSize="small" color="secondary" />
             </IconButton>
           </Grid>
@@ -166,7 +166,7 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
             </TableCell>
             <TableCell align="right">
               <Tooltip title="Copy value">
-                <IconButton aria-label="Copy registry value" onClick={e => handleCopy(rowData.value, e)}>
+                <IconButton aria-label="Copy registry value" onClick={e => handleCopy(rowData.value, e)} size="large">
                   <FileCopyOutlined fontSize="small" color="secondary" />
                 </IconButton>
               </Tooltip>
@@ -180,7 +180,7 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
 
 export const EvmRegistryTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "@mui/material"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
 

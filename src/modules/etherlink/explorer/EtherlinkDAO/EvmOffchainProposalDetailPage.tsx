@@ -29,7 +29,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
   const [selectedOffchainVotes, setSelectedOffchainVotes] = useState<IEvmOffchainChoice[]>([])
 

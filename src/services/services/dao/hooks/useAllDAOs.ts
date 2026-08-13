@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { Network } from "services/beacon"
 import { getDAOs } from "services/services/dao/services"
 import { getLiteDAOs } from "../../lite/lite-services"
@@ -17,7 +17,7 @@ export const useAllDAOs = (network: Network) => {
 
   // Always derive Etherlink DAOs from live context state so they react to
   // network changes and Firestore updates without being captured by a
-  // react-query fetcher closure.
+  // TanStack Query fetcher closure.
   const evmDaos =
     etherinkDaos?.map((dao: any) => ({
       ...dao,
@@ -39,10 +39,10 @@ export const useAllDAOs = (network: Network) => {
       underlyingToken: dao.underlyingToken
     })) || []
 
-  // Tezos sources via react-query. Keep hook order stable across network switches.
-  const queryData = useQuery(
-    ["daos", network],
-    async () => {
+  // Tezos sources via TanStack Query. Keep hook order stable across network switches.
+  const queryData = useQuery({
+    queryKey: ["daos", network],
+    queryFn: async () => {
       const isEtherlinkNetwork = String(network).includes("etherlink")
 
       let homebase_daos = [] as any[]
@@ -68,13 +68,16 @@ export const useAllDAOs = (network: Network) => {
         lite_daos = []
       }
 
-      return [...homebase_daos, ...lite_daos]
+      // Filter out lite DAOs that already have a corresponding full (on-chain) DAO,
+      // since the full DAO page already displays their off-chain polls.
+      const fullDaoAddresses = new Set(homebase_daos.map((dao: any) => dao.address))
+      const dedupedLiteDaos = lite_daos.filter((dao: any) => !dao.daoContract || !fullDaoAddresses.has(dao.daoContract))
+
+      return [...homebase_daos, ...dedupedLiteDaos]
     },
-    {
-      // Always create the hook; let the fetcher short-circuit for Etherlink networks.
-      keepPreviousData: true
-    }
-  )
+    // Always create the hook; let the fetcher short-circuit for Etherlink networks.
+    placeholderData: keepPreviousData
+  })
 
   // Compose final list based on network.
   const isEtherlink = String(network).includes("etherlink")

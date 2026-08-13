@@ -1,4 +1,4 @@
-import { Grid, styled, Button, Typography } from "@material-ui/core"
+import { Grid, styled, Button, Typography } from "@mui/material"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useState } from "react"

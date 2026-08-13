@@ -1,5 +1,5 @@
 import { BaseDAO } from ".."
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { DAOHolding, getDAOBalances, getDAONFTBalances, NFTDAOHolding } from "services/bakingBad/tokenBalances"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -10,15 +10,13 @@ export const useDAOHoldings = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress)
   const { network } = useTezos()
 
-  const { data, ...rest } = useQuery<DAOHolding[], Error>(
-    ["balances", contractAddress],
-    async () => {
+  const { data, ...rest } = useQuery<DAOHolding[], Error>({
+    queryKey: ["balances", contractAddress],
+    queryFn: async () => {
       return await getDAOBalances((dao as BaseDAO).data.address, network)
     },
-    {
-      enabled: !!dao
-    }
-  )
+    enabled: !!dao
+  })
 
   const tokens = useMemo(() => {
     if (!data) {
@@ -39,15 +37,13 @@ export const useDAONFTHoldings = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress)
   const { network } = useTezos()
 
-  const { data, ...rest } = useQuery<DAOHolding[], Error>(
-    ["nftbalances", contractAddress],
-    async () => {
+  const { data, ...rest } = useQuery<DAOHolding[], Error>({
+    queryKey: ["nftbalances", contractAddress],
+    queryFn: async () => {
       return await getDAONFTBalances((dao as BaseDAO).data.address, network)
     },
-    {
-      enabled: !!dao
-    }
-  )
+    enabled: !!dao
+  })
 
   const nfts = useMemo(() => {
     if (!data) {

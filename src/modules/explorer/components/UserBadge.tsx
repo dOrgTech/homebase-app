@@ -1,4 +1,4 @@
-import { Grid, Typography, Link, useTheme, useMediaQuery, styled } from "@material-ui/core"
+import { Grid, Typography, Link, useTheme, useMediaQuery, styled } from "@mui/material"
 import React from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { networkNameMap } from "services/bakingBad"
@@ -17,8 +17,8 @@ export const UserBadge: React.FC<{
   textStyle?: any
 }> = ({ address, size, gap, short, textStyle }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const isMediumSmall = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
+  const isMediumSmall = useMediaQuery(theme.breakpoints.down("xl"))
   const { network } = useTezos()
 
   return (

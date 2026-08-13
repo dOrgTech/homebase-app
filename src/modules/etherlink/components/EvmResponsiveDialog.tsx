@@ -1,5 +1,5 @@
 import React from "react"
-import { useTheme, useMediaQuery, Dialog, styled, Grid, Typography } from "@material-ui/core"
+import { useTheme, useMediaQuery, Dialog, styled, Grid, Typography } from "@mui/material"
 import { BottomSheet } from "modules/explorer/components/BottomSheet"
 import CloseButton from "modules/common/CloseButton"
 import BackButton from "modules/common/BackButton"
@@ -16,7 +16,7 @@ const TitleText = styled(Typography)(({ theme }) => ({
   lineHeight: "1.2",
   textTransform: "capitalize",
   fontSize: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 20
   }
 }))
@@ -51,7 +51,7 @@ export const EvmResponsiveDialog: React.FC<{
 }> = props => {
   const { open, onClose, onGoBack, title, children, template = "sm" } = props
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return isSmall ? (
     <BottomSheet open={open} onDismiss={onClose}>

@@ -3,7 +3,7 @@ import assertNever from "assert-never"
 import { Field, FieldArray, FieldProps, Form, Formik, useFormikContext } from "formik"
 import type { token, tokenMap, tokenValueType } from "../../../../services/aci"
 import { showName, getFieldName, allocateNewTokenCounter } from "../../../../services/aci"
-import { styled, Typography } from "@material-ui/core"
+import { styled, Typography } from "@mui/material"
 import { ProposalFormInput } from "../ProposalFormInput"
 import { Button } from "components/ui/Button"
 

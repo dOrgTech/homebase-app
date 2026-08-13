@@ -1,6 +1,6 @@
 import React from "react"
-import { Grid, GridProps, Typography } from "@material-ui/core"
-import { styled, Theme } from "@material-ui/core/styles"
+import { Grid, GridProps, Typography } from "@mui/material"
+import { styled, Theme } from "@mui/material/styles"
 import hexToRgba from "hex-to-rgba"
 import { theme } from "theme"
 

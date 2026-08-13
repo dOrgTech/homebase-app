@@ -1,6 +1,6 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -10,8 +10,8 @@ export const useDropProposal = () => {
   const openNotification = useNotification()
   const { network, tezos, connect, account } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: BaseDAO; proposalId: string }>(
-    async params => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: BaseDAO; proposalId: string }>({
+    mutationFn: async params => {
       const { key: dropProposal, closeSnackbar: closeDropProposal } = openNotification({
         message: "Please sign the transaction to drop proposal",
         persist: true,
@@ -50,10 +50,8 @@ export const useDropProposal = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

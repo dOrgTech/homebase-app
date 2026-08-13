@@ -1,4 +1,4 @@
-import { Grid, styled } from "@material-ui/core"
+import { Grid, styled } from "@mui/material"
 
 const StatusButton = styled(Grid)(({ theme }) => ({
   "background": theme.palette.primary.main,

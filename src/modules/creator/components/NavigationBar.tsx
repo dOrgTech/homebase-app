@@ -1,6 +1,6 @@
-import { styled, Grid, Typography, Paper, useMediaQuery, useTheme } from "@material-ui/core"
+import { styled, Grid, Typography, Paper, useMediaQuery, useTheme } from "@mui/material"
 import React from "react"
-import { ArrowBackIos } from "@material-ui/icons"
+import { ArrowBackIos } from "@mui/icons-material"
 
 import { NavigationBarProps } from "modules/creator/state"
 import { MainButton } from "modules/common/MainButton"
@@ -41,7 +41,7 @@ const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xl"))
 
   return (
     <Footer container direction="row" alignItems="center">

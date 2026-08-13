@@ -1,5 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { RegistryProposeArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -13,8 +13,8 @@ export const useRegistryPropose = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>(
-    async ({ dao, args }) => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>({
+    mutationFn: async ({ dao, args }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
         persist: true,
@@ -60,10 +60,8 @@ export const useRegistryPropose = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import React, { useContext, useEffect, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
-import { styled } from "@material-ui/core"
+import { styled } from "@mui/material"
 
 const TimeUnitBox = styled(Box)({
   fontSize: "24px",

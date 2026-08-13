@@ -1,5 +1,5 @@
 import React from "react"
-import { AppBar, styled, Tab, Tabs, useMediaQuery, Theme, useTheme } from "@material-ui/core"
+import { AppBar, styled, Tab, Tabs, useMediaQuery, Theme, useTheme } from "@mui/material"
 
 const CustomTab = styled(Tab)(({ theme }) => ({
   "flex": 1,
@@ -41,7 +41,7 @@ export const AppTabBar: React.FC<{
   }
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <StyledAppBar

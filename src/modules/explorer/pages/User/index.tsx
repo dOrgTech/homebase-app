@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -113,7 +113,7 @@ export const User: React.FC = () => {
   const { data: proposals } = useProposals(daoId)
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const history = useHistory()
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)

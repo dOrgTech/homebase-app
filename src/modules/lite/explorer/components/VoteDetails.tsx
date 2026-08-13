@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useMemo, useState } from "react"
-import { Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { GridContainer } from "modules/common/GridContainer"
 import { VotesDialog } from "./VotesDialog"
 import { Poll } from "models/Polls"
@@ -50,7 +50,7 @@ const TitleContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   marginTop: 20,
   gap: 32,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "18px 25px"
   }
 }))
@@ -80,8 +80,8 @@ export const VoteDetails: React.FC<{
   isXTZ: boolean
 }> = ({ poll, choices, token, communityId, isXTZ }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const [open, setOpen] = React.useState(false)
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()

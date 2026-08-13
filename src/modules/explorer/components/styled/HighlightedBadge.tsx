@@ -1,4 +1,4 @@
-import { styled, Grid } from "@material-ui/core"
+import { styled, Grid } from "@mui/material"
 import hexToRgba from "hex-to-rgba"
 
 export const HighlightedBadge = styled(Grid)(({ theme }) => ({

@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useCallback, useEffect, useState } from "react"
@@ -31,13 +31,14 @@ export type ProposalFormDefaultValues = RecursivePartial<Values>
 
 // TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
-  "minHeight": 80,
+  "minHeight": 110,
+  "height": "100%",
+  "boxSizing": "border-box",
   "background": theme.palette.primary.main,
   "borderRadius": 8,
-  "padding": "35px 42px",
+  "padding": "28px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,
@@ -152,7 +153,7 @@ const ProposalActionsDialogForTezos: React.FC<{
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { clearParams } = useQueryParams()
 
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
@@ -236,10 +237,10 @@ const ProposalActionsDialogForTezos: React.FC<{
                       elem.id === "off-chain"
                         ? handleLiteProposal()
                         : !shouldDisable
-                        ? elem.isLambda
-                          ? handleOpenCustomProposalModal(elem.id)
-                          : handleOpenSupportedExecuteProposalModal(elem.id)
-                        : null
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
                     }
                   >
                     <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
@@ -322,10 +323,10 @@ const ProposalActionsDialogForTezos: React.FC<{
                       elem.id === "off-chain"
                         ? handleLiteProposal()
                         : !shouldDisable
-                        ? elem.isLambda
-                          ? handleOpenCustomProposalModal(elem.id)
-                          : handleOpenSupportedExecuteProposalModal(elem.id)
-                        : null
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
                     }
                   >
                     <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>

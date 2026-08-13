@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react"
-import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme } from "@mui/material"
 import { Navbar } from "modules/common/Toolbar"
 import ProgressBar from "react-customizable-progressbar"
 import { DeploymentStepRouter, STEPS, useDeploymentStepNumber } from "./steps"
@@ -24,7 +24,7 @@ export const TezosTokenDeployment: React.FC = () => {
   const { back, next } = creator.state
 
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   const history = useHistory()
   const step = useDeploymentStepNumber()

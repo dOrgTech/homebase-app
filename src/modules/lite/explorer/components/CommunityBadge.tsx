@@ -1,5 +1,5 @@
 import React from "react"
-import { Avatar, Grid, styled, Typography } from "@material-ui/core"
+import { Avatar, Grid, styled, Typography } from "@mui/material"
 import { useCommunity } from "../hooks/useCommunity"
 
 const StyledAvatar = styled(Avatar)({

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo } from "react"
-import { Button, Grid, Box, styled, Typography } from "@material-ui/core"
+import { Button, Grid, Box, styled, Typography } from "@mui/material"
 import { useHistory } from "react-router-dom"
 
 import Rocket from "assets/img/rocket.svg"

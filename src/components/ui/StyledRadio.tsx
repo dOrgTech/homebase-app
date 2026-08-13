@@ -1,4 +1,6 @@
-import { Radio, withStyles } from "@material-ui/core"
+import { Radio } from "@mui/material"
+
+import withStyles from "@mui/styles/withStyles"
 
 export const StyledRadio = withStyles({
   root: {

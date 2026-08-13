@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, useMediaQuery, useTheme } from "@mui/material"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 import { useHistory } from "react-router-dom"
@@ -20,7 +20,7 @@ export const Ownership: React.FC = () => {
   const theme = useTheme()
   const { account, etherlink } = useTezos()
   const history = useHistory()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <>

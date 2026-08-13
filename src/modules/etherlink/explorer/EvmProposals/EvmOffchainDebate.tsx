@@ -78,7 +78,6 @@ export const EvmOffchainDebate: React.FC = () => {
           </Grid>
         </Grid>
       </Grid>
-
       <Grid item xs={12}>
         <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
           <Typography color="textPrimary" gutterBottom>
@@ -107,6 +106,7 @@ export const EvmOffchainDebate: React.FC = () => {
                           <IconButton
                             onClick={() => removeChoice(index)}
                             style={{ padding: 4, color: theme.palette.error.main }}
+                            size="large"
                           >
                             <RemoveCircleOutline />
                           </IconButton>

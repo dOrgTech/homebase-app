@@ -1,5 +1,5 @@
 import React from "react"
-import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
+import { styled, Grid, Theme, Typography, GridProps } from "@mui/material"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import hexToRgba from "hex-to-rgba"
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import { ContentContainer } from "components/ui/Table"
 import { TitleText } from "components/ui/TitleText"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
@@ -19,7 +19,7 @@ const TabsBox = styled(Grid)(({ theme }) => ({
   padding: "40px 56px",
   minHeight: 300,
   width: "100%",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "30px 36px"
   }
 }))
@@ -83,7 +83,7 @@ export const ProposalsShell: React.FC<Props> = ({
   showOffchainTab = true
 }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const resolvedSubtitle = React.useMemo(() => {
     if (showOffchainTab) return subtitle

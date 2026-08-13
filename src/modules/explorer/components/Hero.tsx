@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, GridProps, styled } from "@material-ui/core"
+import { Grid, GridProps, styled } from "@mui/material"
 import { ContentContainer } from "components/ui/Table"
 
 const Container = styled(ContentContainer)({

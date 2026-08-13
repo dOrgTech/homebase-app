@@ -8,9 +8,10 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
-  makeStyles,
   Button
-} from "@material-ui/core"
+} from "@mui/material"
+
+import makeStyles from "@mui/styles/makeStyles"
 
 import { ProgressBar } from "modules/explorer/components/ProgressBar"
 import { useVotesStats } from "../hooks/useVotesStats"
@@ -65,14 +66,14 @@ const Row = styled(Grid)(({ theme }) => ({
     marginBottom: 30,
     borderBottom: `2px solid ${theme.palette.primary.light}`
   },
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "20px 34px"
   }
 }))
 
 const TableHeader = styled(Grid)(({ theme }) => ({
   padding: "23px 64px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "23px 24px"
   }
 }))
@@ -88,7 +89,7 @@ const NoTokens = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   display: "flex",
   alignItems: "end",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "20px 34px"
   }
 }))
@@ -113,7 +114,7 @@ const styles = makeStyles({
 
 const Header = styled(Grid)(({ theme }) => ({
   padding: "20px 64px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "20px 34px"
   }
 }))

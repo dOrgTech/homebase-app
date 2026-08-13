@@ -1,4 +1,4 @@
-import { styled, Grid, Theme } from "@material-ui/core"
+import { styled, Grid, Theme } from "@mui/material"
 
 export const ContentContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -8,7 +8,7 @@ export const ContentContainer = styled(Grid)(({ theme }) => ({
 export const TableHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
   padding: "16px 46px",
   minHeight: 34,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gap: 10
   }
 }))

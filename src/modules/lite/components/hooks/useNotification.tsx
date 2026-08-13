@@ -1,7 +1,7 @@
 import React, { Fragment } from "react"
-import { Button, styled } from "@material-ui/core"
+import { Button, styled } from "@mui/material"
 import { OptionsObject, useSnackbar } from "notistack"
-import { Close, OpenInNew } from "@material-ui/icons"
+import { Close, OpenInNew } from "@mui/icons-material"
 import { ExternalLink } from "modules/common/ExternalLink"
 
 const CloseIcon = styled(Close)({

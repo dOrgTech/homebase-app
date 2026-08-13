@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react"
-import Typography from "@material-ui/core/Typography"
+import Typography from "@mui/material/Typography"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
 import { ReactMarkdownOptions } from "react-markdown/lib/react-markdown"
 import { SpecialComponents } from "react-markdown/lib/ast-to-react"
-import { Link, styled } from "@material-ui/core"
+import { Link, styled } from "@mui/material"
 
 const getSrcPathForLocalImage = (src?: string): string => {
   return require(`../../assets/markdown/${src}`).default

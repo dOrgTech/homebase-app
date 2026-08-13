@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { StyledTextField } from "./StyledTextField"
-import { TextFieldProps } from "@material-ui/core"
+import { TextFieldProps } from "@mui/material"
 
 interface NumberInputProps extends Omit<TextFieldProps, "onChange" | "value" | "type"> {
   value: number

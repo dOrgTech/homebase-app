@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Paper, styled, Switch, Typography } from "@material-ui/core"
+import { Grid, Paper, styled, Switch, Typography } from "@mui/material"
 import { ProposalFormInput } from "./ProposalFormInput"
 import AddIcon from "@mui/icons-material/Add"
 const BatchBarContainer = styled(Grid)(({ theme }) => ({
@@ -7,7 +7,7 @@ const BatchBarContainer = styled(Grid)(({ theme }) => ({
   alignItems: "start",
   cursor: "pointer",
   overflowX: "auto",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "24px 24px"
   }
 }))

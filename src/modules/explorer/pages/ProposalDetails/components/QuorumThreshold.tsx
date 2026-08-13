@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, Tooltip, styled } from "@material-ui/core"
+import { Grid, Typography, Tooltip, styled } from "@mui/material"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import ProgressBar from "react-customizable-progressbar"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"

@@ -1,7 +1,9 @@
 import React from "react"
-import { Box, Grid, InputAdornment, makeStyles, Popper, styled, TextField, Theme, withStyles } from "@material-ui/core"
-import { SearchOutlined } from "@material-ui/icons"
-import { Autocomplete } from "@material-ui/lab"
+import { Box, Grid, InputAdornment, Popper, styled, TextField, Theme } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
+import withStyles from "@mui/styles/withStyles"
+import { SearchOutlined } from "@mui/icons-material"
+import { Autocomplete } from "@mui/material"
 import { Lambda } from "services/bakingBad/lambdas/types"
 
 type LambdaValues = {

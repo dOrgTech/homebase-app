@@ -1,5 +1,5 @@
-import { Grid, GridProps, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import ArrowForward from "@material-ui/icons/ArrowForward"
+import { Grid, GridProps, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
+import ArrowForward from "@mui/icons-material/ArrowForward"
 import { BigNumber } from "bignumber.js"
 import React from "react"
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
@@ -40,7 +40,7 @@ export const TransferBadge: React.FC<Props> = ({ address, amount, contract, toke
   const { data } = useTokenMetadata(contract, tokenId)
   const { network } = useTezos()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const openBlockExplorer = () => {
     window.open(`https://${networkNameMap[network]}.tzkt.io/` + address, "_blank")

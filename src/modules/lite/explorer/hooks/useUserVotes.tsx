@@ -2,7 +2,7 @@
 import React from "react"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { EnvKey, getEnv } from "services/config"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Choice } from "models/Choice"
 
@@ -10,9 +10,9 @@ export const useUserVotes = () => {
   const { account } = useTezos()
   const openNotification = useNotification()
 
-  const { data, ...rest } = useQuery(
-    ["userVotes"],
-    async () => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["userVotes"],
+    queryFn: async () => {
       const response = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${String(account)}/user_votes`)
 
       if (!response.ok) {
@@ -31,12 +31,10 @@ export const useUserVotes = () => {
       }
       return userVotedPolls
     },
-    {
-      refetchInterval: 30000,
-      enabled: !!account,
-      refetchOnMount: "always"
-    }
-  )
+    refetchInterval: 30000,
+    enabled: !!account,
+    refetchOnMount: "always"
+  })
 
   return {
     data,

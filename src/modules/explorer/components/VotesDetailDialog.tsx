@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Button, Grid, styled, Theme, Typography } from "@material-ui/core"
+import { Button, Grid, styled, Theme, Typography } from "@mui/material"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { useVotesStats } from "../hooks/useVotesStats"
 import { BigNumber } from "bignumber.js"

@@ -1,24 +1,15 @@
-import {
-  Grid,
-  styled,
-  Typography,
-  Box,
-  Tooltip,
-  Slider,
-  Radio,
-  makeStyles,
-  withStyles,
-  withTheme,
-  Paper
-} from "@material-ui/core"
-import { TextField } from "formik-material-ui"
+import { Grid, styled, Typography, Box, Tooltip, Slider, Radio, Paper } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
+import { TextField } from "formik-mui"
 import React, { useContext, useEffect, useState } from "react"
 import { Field, Form, Formik, FormikErrors } from "formik"
 import { useHistory } from "react-router"
 import { useRouteMatch } from "react-router-dom"
 
 import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state"
-import { InfoRounded } from "@material-ui/icons"
+import { InfoRounded } from "@mui/icons-material"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { FieldChange, handleChange } from "../utils"
 
@@ -85,14 +76,14 @@ const ChoiceText = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   marginLeft: 12,
   color: theme.palette.text.secondary,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
 
 const SpacingContainer = styled(Grid)(({ theme }) => ({
   marginTop: 25,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     gap: 16
   }
 }))

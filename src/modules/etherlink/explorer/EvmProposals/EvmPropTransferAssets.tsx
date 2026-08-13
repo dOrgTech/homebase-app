@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from "react"
 import { Grid, styled, MenuItem, IconButton, FormField, FormTextField, FormSelect, Typography } from "components/ui"
-import { RemoveCircleOutline } from "@material-ui/icons"
+import { RemoveCircleOutline } from "@mui/icons-material"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { EtherlinkContext } from "services/wagmi/context"
 import { dbg } from "utils/debug"

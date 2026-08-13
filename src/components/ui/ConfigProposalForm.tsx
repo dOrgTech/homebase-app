@@ -1,5 +1,5 @@
-import { Grid, Typography, styled, CircularProgress } from "@material-ui/core"
-import { CheckOutlined } from "@material-ui/icons"
+import { Grid, Typography, styled, CircularProgress } from "@mui/material"
+import { CheckOutlined } from "@mui/icons-material"
 
 const StyledRow = styled(Grid)({
   marginTop: 30

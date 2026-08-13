@@ -1,5 +1,4 @@
-import { Button, Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
-import { CopyAddress } from "modules/common/CopyAddress"
+import { Grid, Tooltip } from "@mui/material"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 
 import React, { useMemo, useState } from "react"
@@ -7,18 +6,14 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import { LambdaProposal } from "services/services/dao/mappers/proposal/types"
 import { Hero } from "../../components/Hero"
-import { HeroTitle } from "../../components/HeroTitle"
 import { useDAOID } from "../DAO/router"
 import { RegistryTable } from "./components/RegistryTable"
 import { UpdatesTable } from "./components/UpdatesTable"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
-import { InfoIcon } from "../../components/styled/InfoIcon"
-import { MainButton } from "../../../common/MainButton"
+import { SmallButton } from "../../../common/SmallButton"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 
 export const Registry: React.FC = () => {
-  const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const [updateRegistryOpen, setUpdateRegistryOpen] = useState(false)
@@ -81,33 +76,21 @@ export const Registry: React.FC = () => {
 
   return (
     <>
-      <Grid container direction="column" style={{ gap: 42 }}>
+      <Grid container direction="column" style={{ gap: 42, minHeight: "calc(100vh - 40px)" }}>
         <Hero>
-          <Grid item>
-            <HeroTitle>Registry</HeroTitle>
-            {dao && (
-              <CopyAddress
-                address={dao.data.address}
-                justifyContent={isMobileSmall ? "center" : "flex-start"}
-                typographyProps={{
-                  variant: "subtitle2"
-                }}
-              />
-            )}
-          </Grid>
-          <Grid item>
-            <MainButton
-              variant="contained"
-              color="secondary"
-              onClick={() => setUpdateRegistryOpen(true)}
-              disabled={shouldDisable}
-            >
-              New Item
-            </MainButton>
-            {shouldDisable && (
+          <Grid item xs container justifyContent="flex-end">
+            {shouldDisable ? (
               <Tooltip placement="bottom" title="Not on proposal creation period">
-                <InfoIcon color="secondary" />
+                <span>
+                  <SmallButton variant="contained" color="secondary" disabled>
+                    Edit/Add Item
+                  </SmallButton>
+                </span>
               </Tooltip>
+            ) : (
+              <SmallButton variant="contained" color="secondary" onClick={() => setUpdateRegistryOpen(true)}>
+                Edit/Add Item
+              </SmallButton>
             )}
           </Grid>
         </Hero>

@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { ethers } from "ethers"
 import HbTokenAbi from "assets/abis/hb_evm.json"
 import { getTokenHolders } from "modules/etherlink/utils"
@@ -9,9 +9,9 @@ interface DaoMember {
 }
 
 export const useDaoMembers = (network: string, token: string, decimals: number, provider: any) => {
-  return useQuery<DaoMember[], Error>(
-    ["daoMembers", network, token],
-    async () => {
+  return useQuery<DaoMember[], Error>({
+    queryKey: ["daoMembers", network, token],
+    queryFn: async () => {
       if (!provider || !token || !network) {
         throw new Error("Missing required parameters")
       }
@@ -51,12 +51,10 @@ export const useDaoMembers = (network: string, token: string, decimals: number, 
 
       return results
     },
-    {
-      enabled: !!provider && !!token && !!network,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 10 * 60 * 1000, // 10 minutes
-      retry: 2,
-      retryDelay: 1000
-    }
-  )
+    enabled: !!provider && !!token && !!network,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    retryDelay: 1000
+  })
 }

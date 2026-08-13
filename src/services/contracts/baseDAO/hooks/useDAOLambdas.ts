@@ -1,5 +1,5 @@
 import { BaseDAO } from ".."
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getDAOLambdas } from "services/bakingBad/lambdas"
@@ -9,15 +9,13 @@ export const useDAOLambdas = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress)
   const { network } = useTezos()
 
-  const { data } = useQuery<Lambda[], Error>(
-    ["lambdas", contractAddress],
-    async () => {
+  const { data } = useQuery<Lambda[], Error>({
+    queryKey: ["lambdas", contractAddress],
+    queryFn: async () => {
       return await getDAOLambdas((dao as BaseDAO).data.address, network)
     },
-    {
-      enabled: !!dao
-    }
-  )
+    enabled: !!dao
+  })
 
   return data
 }

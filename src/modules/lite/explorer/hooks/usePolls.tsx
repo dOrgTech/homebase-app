@@ -5,14 +5,14 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { isProposalActive } from "services/lite/utils"
 import { ProposalStatus } from "../components/ProposalTableRowStatusBadge"
 import { EnvKey, getEnv } from "services/config"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 
 export const usePolls = (id: any) => {
   const openNotification = useNotification()
 
-  const { data, ...rest } = useQuery(
-    ["proposals", id],
-    async () => {
+  const { data, ...rest } = useQuery({
+    queryKey: ["proposals", id],
+    queryFn: async () => {
       const response = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`)
 
       if (!response.ok) {
@@ -51,12 +51,10 @@ export const usePolls = (id: any) => {
 
       return communityPolls
     },
-    {
-      refetchInterval: 30000,
-      enabled: !!id,
-      refetchOnMount: "always"
-    }
-  )
+    refetchInterval: 30000,
+    enabled: !!id,
+    refetchOnMount: "always"
+  })
 
   return {
     data,

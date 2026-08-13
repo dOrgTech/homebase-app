@@ -1,4 +1,4 @@
-import { Grid, Paper, styled, Typography } from "@material-ui/core"
+import { Grid, Paper, styled, Typography } from "@mui/material"
 import React from "react"
 
 const CustomUrlButton = styled(Paper)({

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Avatar, Button, Grid, styled, Typography } from "@material-ui/core"
+import { Avatar, Button, Grid, styled, Typography } from "@mui/material"
 import { useHistory } from "react-router"
 import { Community } from "models/Community"
 import { useTezos } from "services/beacon/hooks/useTezos"

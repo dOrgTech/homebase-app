@@ -1,5 +1,5 @@
 import React from "react"
-import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { styled, Grid, Typography, useTheme, useMediaQuery } from "@mui/material"
 import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
@@ -16,7 +16,7 @@ const ArrowInfo = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 16,
   color: "#bfc5ca",
-  [theme.breakpoints.down("xs")]: {
+  [theme.breakpoints.down("md")]: {
     marginTop: 5
   }
 }))
@@ -32,7 +32,7 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   width: "inherit",
   color: "#BFC5CA",
   wordBreak: "break-word",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
@@ -46,8 +46,8 @@ const stripHtmlTags = (input: string) => {
 export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   if (poll.createdAt) poll.startTime = poll.createdAt
   console.log({ poll })
   return (

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react"
-import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@material-ui/core"
+import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@mui/material"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
@@ -26,7 +26,7 @@ export const DAOCreate: React.FC = () => {
   const step = useStepNumber()
   const history = useHistory()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
 
   useEffect(() => {
     // DAO address and type registration is now handled by PostHog identify

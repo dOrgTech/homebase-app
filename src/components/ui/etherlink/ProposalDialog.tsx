@@ -1,4 +1,4 @@
-import { Grid, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "@mui/material"
 
 export const OptionContainer = styled(Grid)(({ theme }) => ({
   "minHeight": 80,

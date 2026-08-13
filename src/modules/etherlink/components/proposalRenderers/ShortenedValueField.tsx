@@ -1,7 +1,7 @@
 import React, { useState } from "react"
-import { Grid, TextField, styled, IconButton } from "@material-ui/core"
+import { Grid, TextField, styled, IconButton } from "@mui/material"
 import { useNotification } from "modules/common/hooks/useNotification"
-import ContentCopyIcon from "@material-ui/icons/FileCopy"
+import ContentCopyIcon from "@mui/icons-material/FileCopy"
 
 const ValueContainer = styled(Grid)({
   position: "relative",
@@ -22,13 +22,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: 0,
     cursor: "pointer"
   },
-  "& .MuiInput-underline:before": {
+  "& .MuiInput-root:before": {
     borderBottom: "none"
   },
-  "& .MuiInput-underline:after": {
+  "& .MuiInput-root:after": {
     borderBottom: "none"
   },
-  "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+  "& .MuiInput-root:hover:not(.Mui-disabled):before": {
     borderBottom: "none"
   }
 }))

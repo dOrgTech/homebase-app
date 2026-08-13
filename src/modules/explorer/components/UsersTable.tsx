@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { styled, Grid, Typography, useTheme, useMediaQuery } from "@mui/material"
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "./CopyButton"

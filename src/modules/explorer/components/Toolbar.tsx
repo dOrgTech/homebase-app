@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Grid, useTheme, useMediaQuery } from "@material-ui/core"
+import { Box, Grid, useTheme, useMediaQuery } from "@mui/material"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
@@ -10,7 +10,7 @@ import { Header, StyledAppBar, StyledToolbar, LogoText, LogoItem, ToolbarContain
 export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <StyledAppBar>

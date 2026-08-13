@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { Grid, TextField, Typography, styled, withStyles } from "@material-ui/core"
+import { Grid, TextField, Typography, styled } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { SmallButton } from "modules/common/SmallButton"
 import { TransactionsFilters } from "../pages/Treasury"
@@ -25,7 +26,7 @@ const SectionTitle = styled(Typography)({
 const Container = styled(Grid)(({ theme }) => ({
   marginTop: 6,
   gap: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 30
   }
 }))
@@ -45,19 +46,16 @@ const CustomTextField = withStyles({
     "& .MuiInputBase-root": {
       textWeight: 300
     },
-    "& .MuiInput-underline": {
+    "& .MuiInput-root:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:after": {
       borderBottom: "none !important"
     },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:hover:not(.Mui-disabled):before": {
+    "& .MuiInput-root:hover:not(.Mui-disabled):before": {
       borderBottom: "none !important"
     }
   }

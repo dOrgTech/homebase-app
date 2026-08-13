@@ -1,4 +1,6 @@
-import { Paper, Select, withStyles } from "@material-ui/core"
+import { Paper, Select } from "@mui/material"
+
+import withStyles from "@mui/styles/withStyles"
 
 export const StyledPaper = withStyles(theme => ({
   root: {

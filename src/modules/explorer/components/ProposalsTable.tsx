@@ -1,5 +1,5 @@
 import React from "react"
-import { CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { ResponsiveTableContainer } from "./ResponsiveTable"
 import { TableHeader } from "./styled/TableHeader"
 import { ProposalTableRow } from "./ProposalTableRow"
@@ -23,7 +23,7 @@ const NoProposals = styled(Typography)(({ theme }) => ({
   paddingLeft: 20,
   boxSizing: "border-box",
 
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     textAlign: "center"
   }
 }))
@@ -41,7 +41,7 @@ const LoaderContainer = styled(Grid)({
 
 export const ProposalsTable: React.FC<Props> = ({ status, proposals, isLoading }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
     <ResponsiveTableContainer>

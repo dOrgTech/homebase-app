@@ -1,0 +1,11 @@
+# Build output
+build/
+dist/
+coverage/
+
+# Vendor data with hand-aligned formatting (contract ABIs)
+src/assets/abis/
+
+# Generated / lockfiles
+yarn.lock
+package-lock.json

@@ -43,29 +43,31 @@ export {
   CardContent,
   CardMedia,
   styled,
-  withStyles,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "@mui/material"
+
+// withStyles moved to @mui/styles (legacy JSS) in v5
+export { default as withStyles } from "@mui/styles/withStyles"
 
 // v4 icons re-exports
-export { default as Timer } from "@material-ui/icons/Timer"
-export { default as Add } from "@material-ui/icons/Add"
-export { default as RemoveCircleOutline } from "@material-ui/icons/RemoveCircleOutline"
-export { default as ThumbUpAlt } from "@material-ui/icons/ThumbUpAlt"
-export { default as ThumbDownAlt } from "@material-ui/icons/ThumbDownAlt"
-export { default as KeyboardArrowDownIcon } from "@material-ui/icons/KeyboardArrowDown"
-export { default as Settings } from "@material-ui/icons/Settings"
-export { default as InfoOutlined } from "@material-ui/icons/InfoOutlined"
-export { default as InfoRounded } from "@material-ui/icons/InfoRounded"
-export { default as FileCopyOutlined } from "@material-ui/icons/FileCopyOutlined"
-export { default as AddCircleIcon } from "@material-ui/icons/AddCircle"
-export { default as RemoveCircleIcon } from "@material-ui/icons/RemoveCircle"
-export { default as CloseIcon } from "@material-ui/icons/Close"
-export { default as EditIcon } from "@material-ui/icons/Edit"
-export { default as DeleteIcon } from "@material-ui/icons/Delete"
-export { default as ExpandMoreIcon } from "@material-ui/icons/ExpandMore"
-export { default as ExpandLessIcon } from "@material-ui/icons/ExpandLess"
+export { default as Timer } from "@mui/icons-material/Timer"
+export { default as Add } from "@mui/icons-material/Add"
+export { default as RemoveCircleOutline } from "@mui/icons-material/RemoveCircleOutline"
+export { default as ThumbUpAlt } from "@mui/icons-material/ThumbUpAlt"
+export { default as ThumbDownAlt } from "@mui/icons-material/ThumbDownAlt"
+export { default as KeyboardArrowDownIcon } from "@mui/icons-material/KeyboardArrowDown"
+export { default as Settings } from "@mui/icons-material/Settings"
+export { default as InfoOutlined } from "@mui/icons-material/InfoOutlined"
+export { default as InfoRounded } from "@mui/icons-material/InfoRounded"
+export { default as FileCopyOutlined } from "@mui/icons-material/FileCopyOutlined"
+export { default as AddCircleIcon } from "@mui/icons-material/AddCircle"
+export { default as RemoveCircleIcon } from "@mui/icons-material/RemoveCircle"
+export { default as CloseIcon } from "@mui/icons-material/Close"
+export { default as EditIcon } from "@mui/icons-material/Edit"
+export { default as DeleteIcon } from "@mui/icons-material/Delete"
+export { default as ExpandMoreIcon } from "@mui/icons-material/ExpandMore"
+export { default as ExpandLessIcon } from "@mui/icons-material/ExpandLess"
 
 // Local UI wrappers
 export * from "./Button"

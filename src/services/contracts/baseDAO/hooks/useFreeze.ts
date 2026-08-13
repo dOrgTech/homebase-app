@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js"
 import AnalyticsService from "services/services/analytics"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { networkNameMap } from "../../../bakingBad"
@@ -17,8 +17,8 @@ export const useFreeze = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<any | Error, Error, Params>(
-    async params => {
+  return useMutation<any | Error, Error, Params>({
+    mutationFn: async params => {
       const { key: freezeNotification, closeSnackbar: closeFreezeNotification } = openNotification({
         message: `${params.freeze ? "Deposit" : "Withdrawal"} is being processed...`,
         persist: true,
@@ -63,10 +63,8 @@ export const useFreeze = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

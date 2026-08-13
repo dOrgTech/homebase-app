@@ -1,7 +1,7 @@
 import React from "react"
 import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
-import { styled } from "@material-ui/core"
+import { styled } from "@mui/material"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import LinkIcon from "assets/img/link.svg"
 import DOMPurify from "dompurify"
@@ -65,7 +65,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined; d
   displayStatusOverride
 }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const daoProposalSelected = poll
 
   return (

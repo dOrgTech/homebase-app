@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Grid, Link, styled, Theme, Toolbar, Typography } from "@material-ui/core"
+import { AppBar, Box, Button, Grid, Link, styled, Theme, Toolbar, Typography } from "@mui/material"
 import HomeButton from "assets/logos/homebase_logo.svg"
 import hexToRgba from "hex-to-rgba"
 import { MainButton } from "../common/MainButton"

@@ -1,5 +1,5 @@
 import { MainButton } from "modules/common/MainButton"
-import { styled } from "@material-ui/core"
+import { styled } from "@mui/material"
 
 export const NextButton = styled(MainButton)(({ theme }) => ({
   textAlign: "center",

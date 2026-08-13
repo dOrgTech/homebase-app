@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Link, styled, Theme, Typography } from "@material-ui/core"
+import { Grid, Link, styled, Theme, Typography } from "@mui/material"
 import { useTezos } from "services/beacon/hooks/useTezos"
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({

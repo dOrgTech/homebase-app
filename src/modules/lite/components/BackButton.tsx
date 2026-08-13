@@ -1,6 +1,6 @@
 import React from "react"
-import { Grid, Typography } from "@material-ui/core"
-import { ArrowBackIosOutlined } from "@material-ui/icons"
+import { Grid, Typography } from "@mui/material"
+import { ArrowBackIosOutlined } from "@mui/icons-material"
 import { useHistory } from "react-router"
 
 export const BackButton: React.FC<{ onClick?: () => void; disabled?: boolean }> = ({ onClick, disabled }) => {

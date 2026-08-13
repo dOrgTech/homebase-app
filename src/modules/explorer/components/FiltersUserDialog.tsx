@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { ResponsiveDialog } from "./ResponsiveDialog"
-import { Grid, styled } from "@material-ui/core"
+import { Grid, styled } from "@mui/material"
 import { Typography } from "@mui/material"
 import { Dropdown } from "./Dropdown"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"

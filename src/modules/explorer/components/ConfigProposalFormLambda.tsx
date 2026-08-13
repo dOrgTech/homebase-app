@@ -1,4 +1,4 @@
-import { Grid, CircularProgress, Typography } from "@material-ui/core"
+import { Grid, CircularProgress, Typography } from "@mui/material"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { FormProvider, useForm } from "react-hook-form"

@@ -1,6 +1,6 @@
 import React from "react"
-import { Box, styled } from "@material-ui/core"
-import { ArrowBack } from "@material-ui/icons"
+import { Box, styled } from "@mui/material"
+import { ArrowBack } from "@mui/icons-material"
 
 const BackIcon = styled(ArrowBack)({
   cursor: "pointer",

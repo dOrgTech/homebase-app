@@ -1,29 +1,18 @@
 // TODO: @ashutoshpw
 // Merge into one
 import React, { useState } from "react"
-import {
-  AppBar,
-  Toolbar,
-  styled,
-  Typography,
-  Box,
-  Grid,
-  useTheme,
-  Popover,
-  useMediaQuery,
-  Theme
-} from "@material-ui/core"
+import { AppBar, Toolbar, styled, Typography, Box, Grid, useTheme, Popover, useMediaQuery, Theme } from "@mui/material"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { toShortAddress } from "services/contracts/utils"
-import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
+import { ExitToAppOutlined, FileCopyOutlined } from "@mui/icons-material"
 
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
-import { ArrowBackIos } from "@material-ui/icons"
+import { ArrowBackIos } from "@mui/icons-material"
 import { ConnectWalletButton } from "./ConnectWalletButton"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
@@ -131,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = "default", mode, child
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const [popperOpen, setPopperOpen] = useState(false)
   const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
 

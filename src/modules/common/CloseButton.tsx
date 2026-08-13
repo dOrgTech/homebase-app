@@ -1,6 +1,6 @@
 import React from "react"
-import { Box, styled } from "@material-ui/core"
-import { Close } from "@material-ui/icons"
+import { Box, styled } from "@mui/material"
+import { Close } from "@mui/icons-material"
 
 const CloseIcon = styled(Close)({
   cursor: "pointer",

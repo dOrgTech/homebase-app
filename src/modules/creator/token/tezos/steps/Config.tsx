@@ -1,4 +1,4 @@
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
@@ -45,7 +45,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
   const match = useRouteMatch()
   const history = useHistory()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   useEffect(() => {
     if (values) {

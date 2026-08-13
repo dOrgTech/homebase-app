@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import { TransferWithBN } from "services/contracts/baseDAO/hooks/useTransfers"
 import { ReactComponent as DepositIcon } from "assets/logos/deposit_icon.svg"
 import { ReactComponent as WithdrawalIcon } from "assets/logos/withdrawal_icon.svg"
@@ -45,7 +45,7 @@ const BlockExplorer = styled(Typography)({
 export const TransactionItem: React.FC<{ item: TransferWithBN }> = ({ item, children }) => {
   const { network } = useTezos()
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
 
   const openBlockExplorer = () => {
     window.open(`https://${networkNameMap[network]}.tzkt.io/` + item.hash, "_blank")

@@ -1,4 +1,4 @@
-import { styled, Typography } from "@material-ui/core"
+import { styled, Typography } from "@mui/material"
 
 export const HeroTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,

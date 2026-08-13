@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Radio, TextField, Typography, styled } from "@material-ui/core"
+import { Grid, Radio, TextField, Typography, styled } from "@mui/material"
 import { DelegationsType, matchTextToStatus } from "./DelegationBanner"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { SmallButton } from "modules/common/SmallButton"

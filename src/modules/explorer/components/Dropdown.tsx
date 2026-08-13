@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { Select, SelectProps, MenuItem, makeStyles, Theme } from "@material-ui/core"
-interface DropdownProps extends SelectProps {
+import { Select, SelectProps, MenuItem, Theme } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
+type DropdownProps = SelectProps<string> & {
   options: { name: string; value: string | undefined }[]
   value?: string | undefined
   onSelected?: (item: string | undefined) => void
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: "none"
   },
   selectSelect: {
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("lg")]: {
       fontSize: 16
     },
     paddingLeft: 10,

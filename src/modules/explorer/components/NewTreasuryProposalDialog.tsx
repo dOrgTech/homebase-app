@@ -9,13 +9,13 @@ import {
   InputAdornment,
   useTheme,
   useMediaQuery
-} from "@material-ui/core"
+} from "@mui/material"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import * as Yup from "yup"
 import BigNumber from "bignumber.js"
-import { Autocomplete } from "@material-ui/lab"
+import { Autocomplete } from "@mui/material"
 
 import { Controller, useFieldArray, useFormContext } from "react-hook-form"
 import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance"
@@ -50,7 +50,7 @@ const AutoCompletePaper = styled(Paper)({
 })
 
 const AmountContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingRight: 0
   }
 }))
@@ -145,7 +145,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
   const [isBatch, setIsBatch] = useState(values.transferForm.isBatch)
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [activeTransfer, setActiveTransfer] = React.useState(1)
   const daoId = useDAOID()
   const { data: daoData, ledger } = useDAO(daoId)

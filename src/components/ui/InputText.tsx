@@ -1,5 +1,5 @@
-import { withStyles } from "@material-ui/core"
-import { TextField } from "@material-ui/core"
+import withStyles from "@mui/styles/withStyles"
+import { TextField } from "@mui/material"
 
 const InputText = withStyles(theme => ({
   root: {
@@ -26,13 +26,13 @@ const InputText = withStyles(theme => ({
         opacity: 1
       }
     },
-    "& .MuiInput-underline:before": {
+    "& .MuiInput-root:before": {
       borderBottom: "none"
     },
-    "& .MuiInput-underline:hover:before": {
+    "& .MuiInput-root:hover:before": {
       borderBottom: "none"
     },
-    "& .MuiInput-underline:after": {
+    "& .MuiInput-root:after": {
       borderBottom: "none"
     }
   }

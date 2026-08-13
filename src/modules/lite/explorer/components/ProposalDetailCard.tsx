@@ -1,9 +1,10 @@
 import React from "react"
-import { Grid, styled, Typography, Link, useTheme, useMediaQuery, Popover, withStyles } from "@material-ui/core"
+import { Grid, styled, Typography, Link, useTheme, useMediaQuery, Popover } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import { GridContainer } from "modules/common/GridContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { CreatorBadge } from "./CreatorBadge"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { FileCopyOutlined } from "@mui/icons-material"
 import { Poll } from "models/Polls"
 import dayjs from "dayjs"
 import LinkIcon from "assets/img/link.svg"
@@ -25,7 +26,7 @@ const Subtitle = styled(Typography)(({ theme }) => ({
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     height: 10
   }
 }))
@@ -39,7 +40,7 @@ const TextContainer = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   lineHeight: "160%" /* 28.8px */,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -53,7 +54,7 @@ const EndTextContainer = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light,
   gap: 10,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -63,7 +64,7 @@ const EndText = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   fontWeight: 300,
   lineHeight: "160%" /* 28.8px */,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -75,7 +76,7 @@ const Divider = styled(Typography)(({ theme }) => ({
   lineHeight: "160%" /* 28.8px */,
   marginLeft: 8,
   marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     marginTop: 20
   }
 }))
@@ -85,7 +86,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 16,
   marginLeft: 8,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontWeight: 100,
     fontSize: 10
   }
@@ -129,7 +130,7 @@ const DescriptionText = styled(Typography)({
 
 export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: string }> = ({ poll, daoId }) => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const openNotification = useNotification()
 

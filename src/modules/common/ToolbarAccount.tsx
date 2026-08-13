@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import { styled, Typography, Box, Grid, Popover, useTheme, useMediaQuery } from "@material-ui/core"
-import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
+import { styled, Typography, Box, Grid, Popover, useTheme, useMediaQuery } from "@mui/material"
+import { ExitToAppOutlined, FileCopyOutlined } from "@mui/icons-material"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"

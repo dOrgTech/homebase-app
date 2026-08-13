@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react"
-import { Grid, styled, CircularProgress, Typography } from "@material-ui/core"
+import { Grid, styled, CircularProgress, Typography } from "@mui/material"
 import { ProposalList } from "../../components/ProposalList"
 import { DaoCardDetail } from "../../components/DaoCardDetail"
 import { usePolls } from "../../hooks/usePolls"
@@ -10,7 +10,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 const CommunityDetailsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   height: "fit-content",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 0
   }
 }))

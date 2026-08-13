@@ -10,7 +10,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "@mui/material"
 import React from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import BigNumber from "bignumber.js"
@@ -22,18 +22,18 @@ import { CopyAddress } from "modules/common/CopyAddress"
 const RowValue = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     fontSize: 16
   }
 }))
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
   width: "inherit",
-  [theme.breakpoints.down("sm")]: {}
+  [theme.breakpoints.down("lg")]: {}
 }))
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingBottom: 0,
     paddingLeft: "16px !important",
     textAlign: "end"
@@ -41,7 +41,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 }))
 
 const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     paddingTop: 0,
     paddingRight: "16px !important",
     textAlign: "end",
@@ -53,7 +53,7 @@ export const DaoInfoTables: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const currentDelegate = useDelegate(dao && dao?.data.address ? dao?.data.address : "")
 
   return (

@@ -2,7 +2,7 @@ import { OriginateParams } from "../types"
 import { DAOTemplate } from "../../../../modules/creator/state/types"
 import { useState } from "react"
 import { ContractAbstraction, ContractProvider, TezosToolkit, Wallet } from "@taquito/taquito"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -78,8 +78,8 @@ export const useOriginate = (template: DAOTemplate) => {
   const provider = etherlink.provider
   const signer = etherlink.signer
 
-  const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
-    async ({ metadataParams, params, deploymentMethod }) => {
+  const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>({
+    mutationFn: async ({ metadataParams, params, deploymentMethod }) => {
       const updatedStates = INITIAL_STATES
 
       let contract
@@ -298,12 +298,10 @@ export const useOriginate = (template: DAOTemplate) => {
 
       return contract
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 
   return { mutation: result, states, activeState }
 }

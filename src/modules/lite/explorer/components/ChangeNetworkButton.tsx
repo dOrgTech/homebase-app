@@ -1,4 +1,4 @@
-import { Box, capitalize, Grid, styled, Typography, Theme } from "@material-ui/core"
+import { Box, capitalize, Grid, styled, Typography, Theme } from "@mui/material"
 import React from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
@@ -21,12 +21,14 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-export const ColorDot = styled(Box)({
-  height: 6,
-  width: 6,
-  backgroundColor: ({ color }: { color: string }) => color,
-  borderRadius: "50%"
-})
+export const ColorDot = styled(Box, { shouldForwardProp: prop => prop !== "color" })(
+  ({ color }: { color: string }) => ({
+    height: 6,
+    width: 6,
+    backgroundColor: color,
+    borderRadius: "50%"
+  })
+)
 
 const NetworkText = styled(Typography)({
   fontSize: "14px"

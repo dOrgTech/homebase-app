@@ -1,6 +1,6 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { RegistryProposeArgs } from "../lambdaDAO/types"
 import AnalyticsService from "services/services/analytics"
@@ -13,8 +13,8 @@ export const useTreasuryPropose = () => {
   const openNotification = useNotification()
   const { network, tezos, connect, account } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>(
-    async ({ dao, args }) => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>({
+    mutationFn: async ({ dao, args }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Treasury proposal is being created...",
         persist: true,
@@ -61,10 +61,8 @@ export const useTreasuryPropose = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

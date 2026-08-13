@@ -1,5 +1,5 @@
-import { styled } from "@material-ui/core"
-import { InfoOutlined } from "@material-ui/icons"
+import { styled } from "@mui/material"
+import { InfoOutlined } from "@mui/icons-material"
 
 export const InfoIcon = styled(InfoOutlined)({
   cursor: "default",

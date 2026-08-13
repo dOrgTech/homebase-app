@@ -12,7 +12,7 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { useHistory } from "react-router-dom"
 import { EvmRegistryTable } from "modules/etherlink/components/EvmRegistryTable"
 import { SearchInput } from "modules/explorer/pages/DAOList/components/Searchbar"
-import { styled } from "@material-ui/core"
+import { styled } from "@mui/material"
 import { useRegistry } from "services/wagmi/etherlink/hooks/useRegistry"
 
 const ShellHeroContainer = styled(ContentContainer)({
@@ -25,7 +25,7 @@ const ShellHeroContainer = styled(ContentContainer)({
 
 export const EvmRegistryPage: React.FC = () => {
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("md"))
   const daoId = useEtherlinkDAOID()
   const { daoSelected, provider, network } = useContext(EtherlinkContext)
   const shouldDisable = useIsProposalButtonDisabled(daoId)

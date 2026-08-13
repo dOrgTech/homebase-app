@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "@mui/material"
 import { ethers } from "ethers"
 import { ShortenedValueField } from "./ShortenedValueField"
 import { ContainerVoteDetail, Header, AssetLabel } from "components/ui/etherlink/styled"

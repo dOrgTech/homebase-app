@@ -8,8 +8,8 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { useHistory } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
-import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab"
-import { makeStyles } from "@material-ui/core/styles"
+import { ToggleButtonGroup, ToggleButton } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import { Card, CardContent, CardMedia } from "components/ui"
 import { dbg } from "utils/debug"
 
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     tableLayout: "fixed"
   },
   hideOnMobile: {
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("lg")]: {
       display: "none"
     }
   },
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   addressCell: {
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("xl")]: {
       maxWidth: 120
     },
     overflow: "hidden",

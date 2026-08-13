@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Grid, Link, Paper, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, CircularProgress, Grid, Link, Paper, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -59,7 +59,7 @@ export const DAOList: React.FC = () => {
   } = useAllDAOs(network)
 
   const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("md"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const [searchText, setSearchText] = useQueryParam("q")
@@ -265,7 +265,6 @@ export const DAOList: React.FC = () => {
                           })
                         } catch (_) {}
                       }}
-                      color="default"
                       variant="text"
                     >
                       Dismiss

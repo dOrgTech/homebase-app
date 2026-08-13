@@ -6,7 +6,7 @@ import { Choices } from "../../../components/Choices"
 const ProposalContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   padding: "0px 15px",
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down("xl")]: {
     marginTop: 30
   }
 }))

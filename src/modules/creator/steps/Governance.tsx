@@ -1,12 +1,14 @@
-import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core"
-import { TextField } from "formik-material-ui"
+import { Grid, Paper, styled, Typography, Slider, Box, Tooltip } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
+import withTheme from "@mui/styles/withTheme"
+import { TextField } from "formik-mui"
 import React, { useContext, useEffect, useState } from "react"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { useHistory } from "react-router"
 import { useRouteMatch } from "react-router-dom"
 
 import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state"
-import { InfoRounded } from "@material-ui/icons"
+import { InfoRounded } from "@mui/icons-material"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EstimatedBlocks } from "modules/explorer/components/EstimatedTime"
 import dayjs from "dayjs"
@@ -24,7 +26,7 @@ const TimeBox = styled(Grid)(({ theme }) => ({
   minHeight: 59,
   marginBottom: 16,
   display: "grid",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     width: 160
   }
 }))
@@ -173,7 +175,7 @@ const InfoBox = styled(Paper)(({ theme }) => ({
   backgroundColor: "#2F3438",
   borderRadius: 8,
   padding: "32px 48px",
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     padding: "28px 38px"
   }
 }))

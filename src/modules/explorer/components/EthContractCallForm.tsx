@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ProposalFormInput } from "./ProposalFormInput"
-import { Grid, TextField } from "@material-ui/core"
+import { Grid, TextField } from "@mui/material"
 import { SendButton } from "./ProposalFormSendButton"
 
 interface EthContractCallFormProps {

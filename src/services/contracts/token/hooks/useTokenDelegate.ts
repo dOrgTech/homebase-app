@@ -1,5 +1,5 @@
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useMutation, useQueryClient } from "react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { networkNameMap } from "../../../bakingBad"
 import { setDelegate } from ".."
@@ -10,8 +10,8 @@ export const useTokenDelegate = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<any | Error, Error, { tokenAddress: string; delegateAddress: string | null }>(
-    async params => {
+  return useMutation<any | Error, Error, { tokenAddress: string; delegateAddress: string | null }>({
+    mutationFn: async params => {
       const { tokenAddress, delegateAddress } = params
       // const { key: flushNotification, closeSnackbar: closeFlushNotification } = openNotification({
       //   message: "Please sign the transaction to flush",
@@ -57,10 +57,8 @@ export const useTokenDelegate = () => {
         return new Error((e as Error).message)
       }
     },
-    {
-      onSuccess: () => {
-        queryClient.resetQueries()
-      }
+    onSuccess: () => {
+      queryClient.resetQueries()
     }
-  )
+  })
 }

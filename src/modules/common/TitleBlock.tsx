@@ -1,7 +1,7 @@
-import { Grid, Link, Paper, styled, Tooltip, Typography } from "@material-ui/core"
+import { Grid, Link, Paper, styled, Tooltip, Typography } from "@mui/material"
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
-import { InfoRounded } from "@material-ui/icons"
+import { InfoRounded } from "@mui/icons-material"
 
 const DescriptionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.dark
@@ -42,7 +42,7 @@ const CustomTextContainer = styled(Paper)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   marginRight: 24,
-  [theme.breakpoints.down("sm")]: {
+  [theme.breakpoints.down("lg")]: {
     alignItems: "baseline"
   }
 }))

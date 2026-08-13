@@ -1,4 +1,4 @@
-import { styled, Button } from "@material-ui/core"
+import { styled, Button } from "@mui/material"
 
 export const MainButton = styled(Button)(({ theme }) => ({
   "fontSize": "18px",

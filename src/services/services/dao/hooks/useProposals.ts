@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { BaseDAO, CycleInfo } from "services/contracts/baseDAO"
 import { getProposals } from "services/services/dao/services"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
@@ -10,9 +10,9 @@ export const useProposals = (contractAddress: string, status?: ProposalStatus) =
   const [proposalData, setProposalData] = useState<any[]>([])
   const { data: daoData, isLoading: isLoadingDAO, error, cycleInfo } = useDAO(contractAddress)
 
-  const queryResults = useQuery(
-    ["proposals", contractAddress, status],
-    async () => {
+  const queryResults = useQuery({
+    queryKey: ["proposals", contractAddress, status],
+    queryFn: async () => {
       const dao = daoData as BaseDAO
       const proposals = await getProposals(dao)
 
@@ -24,11 +24,9 @@ export const useProposals = (contractAddress: string, status?: ProposalStatus) =
         proposalData => proposalData.getStatus((cycleInfo as CycleInfo).currentLevel).status === status
       )
     },
-    {
-      refetchInterval: 30000,
-      enabled: !!daoData && !!cycleInfo
-    }
-  )
+    refetchInterval: 30000,
+    enabled: !!daoData && !!cycleInfo
+  })
 
   useEffect(() => {
     if (queryResults.data) {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { AccordionDetails, AccordionSummary, Grid, Typography } from "@material-ui/core"
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
-import { styled } from "@material-ui/core/styles"
+import { AccordionDetails, AccordionSummary, Grid, Typography } from "@mui/material"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import { styled } from "@mui/material/styles"
 import { ContentContainer } from "../explorer/components/ContentContainer"
-import Accordion from "@material-ui/core/Accordion"
+import Accordion from "@mui/material/Accordion"
 import Markdown from "modules/common/Markdown"
 import { useLocation } from "react-router-dom"
 
