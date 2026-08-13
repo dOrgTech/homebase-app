@@ -1,0 +1,94 @@
+name: DAO branch promotion
+
+# Chain-decides, bot-obeys, world-verifies.
+#
+# A DAO governs a branch of this repository through its on-chain Registry:
+# when governance executes a proposal setting the registry key below to
+# {"commit": "<sha>"}, this workflow fast-forwards the governed branch to
+# that exact commit. The workflow refuses anything that is not a
+# fast-forward of already-reviewed history (the sha must be reachable from
+# master), so the DAO can promote states but never inject or rewrite code.
+# Whether the branch matches the chain is independently checkable by anyone.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  RPC_URL: https://node.shadownet.etherlink.com
+  REGISTRY_ADDRESS: "0x2A847c27663aB55aa36387c4Ce719789e3bc8cE9"
+  REGISTRY_KEY: branch/rehearsal
+  GOVERNED_BRANCH: rehearsal
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read the attested commit from the on-chain registry
+        id: registry
+        run: |
+          VALUE="$(python3 - <<'PYEOF'
+          import json, os, sys, urllib.request
+          rpc = os.environ["RPC_URL"]
+          addr = os.environ["REGISTRY_ADDRESS"]
+          key = os.environ["REGISTRY_KEY"]
+          kb = key.encode()
+          padded = kb.hex().ljust(((len(kb) + 31) // 32) * 64, "0")
+          data = "0x2e9c247b" + f"{32:064x}" + f"{len(kb):064x}" + padded
+          req = {"jsonrpc": "2.0", "method": "eth_call",
+                 "params": [{"to": addr, "data": data}, "latest"], "id": 1}
+          resp = json.loads(urllib.request.urlopen(urllib.request.Request(
+              rpc, json.dumps(req).encode(),
+              {"Content-Type": "application/json"}), timeout=30).read())
+          if "error" in resp:
+              sys.exit(f"eth_call failed: {resp['error']}")
+          raw = resp["result"][2:]
+          length = int(raw[64:128], 16) if raw else 0
+          print(bytes.fromhex(raw[128:128 + length * 2]).decode() if length else "")
+          PYEOF
+          )"
+          if [ -z "$VALUE" ]; then
+            echo "registry has no value for ${REGISTRY_KEY}; nothing to promote"
+            echo "sha=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "on-chain record: $VALUE"
+          SHA="$(echo "$VALUE" | python3 -c 'import json,sys; print(json.load(sys.stdin)["commit"])')"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Fast-forward the governed branch to the attested commit
+        if: steps.registry.outputs.sha != ''
+        run: |
+          SHA="${{ steps.registry.outputs.sha }}"
+
+          if ! git cat-file -e "${SHA}^{commit}" 2>/dev/null; then
+            echo "::error::attested commit ${SHA} does not exist in this repository"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$SHA" origin/master; then
+            echo "::error::attested commit ${SHA} is not part of reviewed master history; refusing"
+            exit 1
+          fi
+
+          if git rev-parse --verify -q "origin/${GOVERNED_BRANCH}" >/dev/null; then
+            CURRENT="$(git rev-parse "origin/${GOVERNED_BRANCH}")"
+            if [ "$CURRENT" = "$SHA" ]; then
+              echo "branch ${GOVERNED_BRANCH} already at attested commit ${SHA}; nothing to do"
+              exit 0
+            fi
+            if ! git merge-base --is-ancestor "$CURRENT" "$SHA"; then
+              echo "::error::promotion from ${CURRENT} to ${SHA} is not a fast-forward; refusing"
+              exit 1
+            fi
+          fi
+
+          git push origin "${SHA}:refs/heads/${GOVERNED_BRANCH}"
+          echo "promoted ${GOVERNED_BRANCH} -> ${SHA} per on-chain governance"
