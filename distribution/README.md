@@ -34,7 +34,19 @@ distribution/verify.sh v1.2.3 <expected-sha256>
 # Verify a release against the ON-CHAIN registry (trustless: commit + hash
 # are read from the release-registry contract, then rebuilt and compared)
 distribution/verify.sh --registry <mainnet|shadownet> <registry-address> <version-key>
+
+# RUN a verified release locally (zero dependencies, Node 18+): reads the
+# DAO-approved record from the registry, fetches the artifact from any
+# mirror, verifies every file against the on-chain fingerprint, and serves
+# the app on localhost. Refuses to serve on any mismatch.
+node distribution/run.js --network shadownet --registry <registry-address> --key v6.0.0
 ```
+
+`run.js` is deliberately a single dependency-free file: it is the trust
+anchor of local distribution, so the entire trusted surface should be
+readable in one sitting. With it, the hosting layer (Netlify, the domain,
+even GitHub) is demoted to interchangeable mirrors: what you run is
+provably what governance approved, regardless of who served the bytes.
 
 `BUILDHASH` is the sha256 over the sorted per-file sha256s of `build/`
 (`BUILDMANIFEST` holds the per-file list, so any mismatch can be localized
