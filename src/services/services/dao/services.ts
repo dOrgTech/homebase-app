@@ -1,14 +1,7 @@
 import { trackAppError } from "services/supportNotification"
-import { client, client_v2 } from "../graphql"
+import { client } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
-import {
-  GET_DAOS_QUERY,
-  GET_DAOS_QUERY_V2,
-  GET_DAO_QUERY,
-  GET_PROPOSALS_QUERY,
-  GET_PROPOSAL_QUERY,
-  GET_XTZ_TRANSFERS
-} from "./queries"
+import { GET_DAOS_QUERY, GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "./queries"
 import { LambdaProposal, Proposal } from "./mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
@@ -46,7 +39,6 @@ export const getDAOs = async (network: string) => {
   }
 
   let daos: DAOListItem[] = []
-  let daos_v2: DAOListItem[] = []
 
   try {
     const response = await client.request<GetAllDAOsDTO>(GET_DAOS_QUERY, { network })
@@ -56,15 +48,7 @@ export const getDAOs = async (network: string) => {
     trackAppError()
   }
 
-  try {
-    const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, { network })
-    daos_v2 = response_v2?.daos || []
-  } catch (err) {
-    console.error("Failed to fetch Homebase DAOs (v2)", err)
-    trackAppError()
-  }
-
-  return [...daos, ...daos_v2]
+  return daos
 }
 
 export const getProposals = async (dao: BaseDAO) => {
