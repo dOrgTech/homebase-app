@@ -5,7 +5,7 @@ import { DAOOverview } from "modules/explorer/pages/DAO/index"
 import { User } from "modules/explorer/pages/User"
 import React, { useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
-import { Redirect, Route, RouteProps, Switch, useParams, useRouteMatch } from "react-router-dom"
+import { Redirect, Route, RouteProps, Switch, useLocation, useParams, useRouteMatch } from "react-router-dom"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -91,7 +91,7 @@ const DAORoute: React.FC<RouteProps> = ({ children, ...props }) => {
 
 const DAOContext = React.createContext("")
 
-const DAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
+export const DAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
   return <DAOContext.Provider value={daoId}>{children}</DAOContext.Provider>
 }
 
@@ -101,6 +101,7 @@ export const useDAOID = () => {
 
 export const DAORouter = (): JSX.Element => {
   const match = useRouteMatch()
+  const { search } = useLocation()
   const { id: daoId } = useParams<{ id: string }>()
 
   return (
@@ -129,7 +130,8 @@ export const DAORouter = (): JSX.Element => {
           <DAORoute path={`${match.url}/overview`}>
             <DAOOverview />
           </DAORoute>
-          <Redirect from={`${match.url}`} to={`${match.url}/overview`} />
+          {/* Keep the query string: the email-alert links land on /explorer/dao/:id?alerts=... */}
+          <Redirect from={`${match.url}`} to={{ pathname: `${match.url}/overview`, search }} />
         </Switch>
       </PageLayout>
     </DAOProvider>

@@ -17,6 +17,7 @@ import ReactPaginate from "react-paginate"
 import "./styles.css"
 import { LoadingLine } from "components/ui/LoadingLine"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
+import { useAlertsOutcomeToast } from "modules/explorer/hooks/useAlertsOutcomeToast"
 import { getBlockExplorerUrl } from "modules/etherlink/utils"
 import AnalyticsService from "services/services/analytics"
 import { useRef } from "react"
@@ -39,6 +40,7 @@ export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
   const history = useHistory()
   const location = useLocation()
+  useAlertsOutcomeToast()
 
   // Helper: clear multiple query params in a single history update to avoid push loops
   const clearQueryParams = useCallback(

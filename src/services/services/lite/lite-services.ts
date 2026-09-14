@@ -204,6 +204,44 @@ export const updateCount = async (id: string) => {
   return resp
 }
 
+export const subscribeToDAOAlerts = async (email: string, daoAddress: string, network: Network, daoName?: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/subscriptions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email,
+      daoAddress,
+      network,
+      daoName
+    })
+  })
+  return resp
+}
+
+export const linkPollToOnchainProposal = async (
+  pollId: string,
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${pollId}/link-proposal`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes,
+      network
+    })
+  })
+  return resp
+}
+
 export const fetchOffchainProposals = async (daoId: string) => {
   return await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/${daoId}?include=polls`, {
     method: "GET",

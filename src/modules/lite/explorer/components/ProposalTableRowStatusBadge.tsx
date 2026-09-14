@@ -2,7 +2,6 @@ import React from "react"
 import { Grid, GridProps, Typography } from "@mui/material"
 import { styled, Theme } from "@mui/material/styles"
 import hexToRgba from "hex-to-rgba"
-import { theme } from "theme"
 
 export enum ProposalStatus {
   ACTIVE = "active",
@@ -41,7 +40,7 @@ const Text = styled(Typography)({
 })
 
 export const TableStatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({ status }) => (
-  <Badge status={status} theme={theme}>
+  <Badge status={status}>
     <Grid container alignItems="center" justifyContent="center">
       <Grid item>
         <Text> {status} </Text>
