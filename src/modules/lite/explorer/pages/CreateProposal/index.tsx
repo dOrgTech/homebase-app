@@ -1,7 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState } from "react"
-import { Grid, styled, Typography, TextareaAutosize, useTheme, useMediaQuery, Tooltip } from "@mui/material"
+import {
+  Grid,
+  styled,
+  Typography,
+  TextareaAutosize,
+  useTheme,
+  useMediaQuery,
+  Tooltip,
+  Collapse,
+  Switch as ToggleSwitch
+} from "@mui/material"
+import BigNumber from "bignumber.js"
+import { validateAddress, validateContractAddress, ValidationResult } from "@taquito/utils"
 
 import withStyles from "@mui/styles/withStyles"
 import withTheme from "@mui/styles/withTheme"
@@ -29,6 +41,7 @@ import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFor
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
 import { useCommunity } from "../../hooks/useCommunity"
+import { TreasuryBalanceHint } from "../../components/TreasuryBalanceHint"
 import { getEthSignature } from "services/utils/utils"
 
 dayjs.extend(duration)
@@ -256,6 +269,39 @@ const hasDuplicates = (options: string[]) => {
   return new Set(trimOptions).size !== trimOptions.length
 }
 
+// XTZ has 6 decimals on chain, so anything finer cannot be transferred.
+const XTZ_AMOUNT_REGEX = /^\d+(\.\d{1,6})?$/
+
+const isValidTezosAddress = (address: string) =>
+  validateContractAddress(address) === ValidationResult.VALID || validateAddress(address) === ValidationResult.VALID
+
+/**
+ * The funding request is optional: both fields empty means "no request".
+ * If either is filled, both must be valid.
+ */
+const validateFundingRequest = (values: Poll, errors: FormikErrors<Poll>) => {
+  const recipient = (values.fundingRecipient || "").trim()
+  const amount = (values.fundingAmount || "").trim()
+
+  if (!recipient && !amount) {
+    return
+  }
+
+  if (!recipient) {
+    errors.fundingRecipient = "Required when an amount is set"
+  } else if (!isValidTezosAddress(recipient)) {
+    errors.fundingRecipient = "Not a valid Tezos address"
+  }
+
+  if (!amount) {
+    errors.fundingAmount = "Required when a recipient is set"
+  } else if (!XTZ_AMOUNT_REGEX.test(amount)) {
+    errors.fundingAmount = "Enter a positive amount with up to 6 decimals"
+  } else if (new BigNumber(amount).lte(0)) {
+    errors.fundingAmount = "Must be greater than zero"
+  }
+}
+
 const validateForm = (values: Poll) => {
   const errors: FormikErrors<Poll> = {}
 
@@ -314,6 +360,8 @@ const validateForm = (values: Poll) => {
     errors.endTimeDays = "Most be greater than zero"
   }
 
+  validateFundingRequest(values, errors)
+
   return errors
 }
 
@@ -350,6 +398,10 @@ export const ProposalForm = ({
 
   const shouldShowBar = pathname.includes("/lite") ? true : false
   const [isMarkup, setIsMarkup] = useState(false)
+  // Reopen the section on re-render if the fields already hold something.
+  const [showFundingRequest, setShowFundingRequest] = useState(
+    Boolean(getIn(values, "fundingRecipient") || getIn(values, "fundingAmount"))
+  )
   const grammar = Prism.languages.markup
   const codeEditorPlaceholder = `
   <html>
@@ -576,6 +628,57 @@ export const ProposalForm = ({
               {errors?.externalLink && touched.externalLink ? <ErrorText>{errors.externalLink}</ErrorText> : null}
             </Grid>
 
+            <Grid item xs={12}>
+              <SwitchContainer item container direction="row" xs={12} alignItems="center">
+                <ToggleSwitch
+                  checked={showFundingRequest}
+                  onChange={() => {
+                    const next = !showFundingRequest
+                    setShowFundingRequest(next)
+                    if (!next) {
+                      setFieldValue("fundingRecipient", "")
+                      setFieldValue("fundingAmount", "")
+                    }
+                  }}
+                />
+                <Typography color="textPrimary"> Funding request</Typography>
+              </SwitchContainer>
+              <Grid item>
+                <LabelText color="textPrimary">
+                  Optionally attach a treasury payout to this poll. If it passes, it can be promoted to an on-chain
+                  transfer proposal.
+                </LabelText>
+              </Grid>
+              <Collapse in={showFundingRequest}>
+                <Grid container direction="column" style={{ gap: 20, marginTop: 12 }}>
+                  <Grid item xs={12}>
+                    <Typography color="textPrimary">Recipient address</Typography>
+                    <Field
+                      name="fundingRecipient"
+                      type="text"
+                      placeholder="tz1... or KT1..."
+                      component={CustomFormikTextField}
+                    />
+                    {errors?.fundingRecipient && touched.fundingRecipient ? (
+                      <ErrorText>{errors.fundingRecipient}</ErrorText>
+                    ) : null}
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography color="textPrimary">Amount (XTZ)</Typography>
+                    <Field name="fundingAmount" type="text" placeholder="0.000000" component={CustomFormikTextField} />
+                    {errors?.fundingAmount && touched.fundingAmount ? (
+                      <ErrorText>{errors.fundingAmount}</ErrorText>
+                    ) : null}
+                    <TreasuryBalanceHint
+                      daoContract={community?.daoContract}
+                      network={community?.network}
+                      amount={getIn(values, "fundingAmount")}
+                    />
+                  </Grid>
+                </Grid>
+              </Collapse>
+            </Grid>
+
             {isMobileSmall ? (
               <TimeContainerMobile direction="row">
                 <Grid item container direction="row" xs={12}>
@@ -720,7 +823,29 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
     endTimeDays: null,
     endTimeHours: null,
     endTimeMinutes: null,
-    isXTZ: false
+    isXTZ: false,
+    fundingRecipient: "",
+    fundingAmount: ""
+  }
+
+  /**
+   * Turns the two flat form fields into the `fundingRequest` object the lite
+   * backend expects, and drops the form-only fields so they never reach the
+   * signed payload. Both fields empty means no funding request at all.
+   */
+  const buildPollPayload = (values: Poll): Poll => {
+    const { fundingRecipient, fundingAmount, ...rest } = values
+    const recipient = (fundingRecipient || "").trim()
+    const amount = (fundingAmount || "").trim()
+
+    if (!recipient || !amount) {
+      return rest as Poll
+    }
+
+    return {
+      ...rest,
+      fundingRequest: { recipient, amount }
+    } as Poll
   }
 
   const saveProposal = useCallback(
@@ -729,7 +854,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
       if (wallet) {
         try {
           setIsLoading(true)
-          const data = values
+          const data = buildPollPayload(values)
           data.daoID = id
           data.startTime = String(dayjs().valueOf())
           data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
@@ -783,7 +908,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
         }
       } else if (etherlink.isConnected) {
         try {
-          const data = values
+          const data = buildPollPayload(values)
           data.daoID = id
           data.startTime = String(dayjs().valueOf())
           data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)

@@ -60,6 +60,9 @@ interface Props {
   handleClose: () => void
   defaultValues?: ProposalFormDefaultValues
   defaultTab: number
+  // Fired only when the form is actually submitted, so callers can tell a
+  // submit apart from a plain dismiss.
+  onSubmitted?: () => void
 }
 
 const enabledForms: Record<
@@ -92,7 +95,13 @@ const Content = styled(Grid)({
   paddingBottom: 24
 })
 
-export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defaultValues, defaultTab }) => {
+export const ProposalFormContainer: React.FC<Props> = ({
+  open,
+  handleClose,
+  defaultValues,
+  defaultTab,
+  onSubmitted
+}) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const { data: daoHoldings } = useDAOHoldings(daoId)
@@ -159,8 +168,9 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
 
       methods.reset()
       handleClose()
+      onSubmitted?.()
     },
-    [dao, handleClose, methods, registryMutate]
+    [dao, handleClose, methods, registryMutate, onSubmitted]
   )
 
   return (

@@ -6,7 +6,7 @@ import { isProposalActive } from "services/lite/utils"
 import { ProposalStatus } from "../components/ProposalTableRowStatusBadge"
 import { EnvKey, getEnv } from "services/config"
 
-export const useSinglePoll = (pollId: string | undefined, id?: any, community?: any) => {
+export const useSinglePoll = (pollId: string | undefined, id?: any, community?: any, refresh?: number) => {
   const [poll, setPoll] = useState<Poll>()
   const openNotification = useNotification()
 
@@ -49,6 +49,6 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
     }
     fetchPoll()
     return
-  }, [id, community])
+  }, [id, community, refresh])
   return poll
 }

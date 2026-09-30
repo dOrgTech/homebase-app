@@ -23,6 +23,7 @@ import { useIsMember } from "../../hooks/useIsMember"
 import { useHistoryLength } from "modules/explorer/context/HistoryLength"
 import { getEthSignature } from "services/utils/utils"
 import { SmallButton } from "modules/common/SmallButton"
+import { PollFundingRequest } from "../../components/PollFundingRequest"
 
 const DescriptionText = styled(Typography)({
   fontSize: 24,
@@ -74,7 +75,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
-  const poll = useSinglePoll(proposalId, id, community)
+  const poll = useSinglePoll(proposalId, id, community, refresh)
   const { state, pathname } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
   const { data: dao } = useDAO(state?.daoId)
   const { data: voteWeight } = useTokenVoteWeight(
@@ -225,6 +226,11 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         <Grid item>
           <ProposalDetailCard poll={poll} daoId={id} />
         </Grid>
+        {poll?.fundingRequest ? (
+          <Grid item xs={12} style={{ marginTop: 24 }}>
+            <PollFundingRequest poll={poll} community={community} onLinked={() => setRefresh(Math.random())} />
+          </Grid>
+        ) : null}
         <Grid container item xs={12}>
           {choices && choices.length > 0 ? (
             <>

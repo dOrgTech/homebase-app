@@ -8,6 +8,9 @@ import { useDAOID } from "./router"
 import { ContentContainer } from "../../components/ContentContainer"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
+import { DAOEmailAlerts } from "../../components/DAOEmailAlerts"
+import { PendingVotesBanner } from "../../components/PendingVotesBanner"
+import { useAlertsOutcomeToast } from "modules/explorer/hooks/useAlertsOutcomeToast"
 
 import { SmallButton } from "../../../common/SmallButton"
 import { DaoSettingModal } from "./components/Settings"
@@ -95,6 +98,8 @@ export const DAOOverview: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [openChangeDialog, setChangeOpenDialog] = useState(false)
 
+  useAlertsOutcomeToast()
+
   const handleCloseModal = () => {
     setOpenDialog(false)
   }
@@ -125,6 +130,7 @@ export const DAOOverview: React.FC = () => {
 
   return (
     <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 32 }}>
+      <PendingVotesBanner />
       <HeroContainer item>
         <Grid container direction="column" style={{ gap: isExtraSmall ? 40 : 20 }}>
           <Grid item>
@@ -226,6 +232,10 @@ export const DAOOverview: React.FC = () => {
         </Grid>
       </HeroContainer>
       <DAOStatsRow />
+
+      {data?.data.address && !data?.data.network?.startsWith("etherlink") ? (
+        <DAOEmailAlerts daoAddress={data.data.address} daoName={data.data.name} />
+      ) : null}
 
       <Grid item style={{ width: "inherit" }}>
         <UsersTable data={usersTableData} symbol={symbol || ""} />
