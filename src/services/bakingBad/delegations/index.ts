@@ -44,16 +44,32 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
     EnvKey.REACT_APP_LITE_API_URL
   )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`
   const response = await fetch(url)
+
+  let fullTezBalance = new BigNumber(0)
+  const fullTezBalanceResp = await fetch(
+    `https://tcinfra.net/rpc/tezos/${networkNameMap[network]}/chains/main/blocks/${level}/context/contracts/${account}/full_balance`
+  )
+
+  if (fullTezBalanceResp.ok) {
+    const balanceStr = await fullTezBalanceResp.json() // e.g., "123456789"
+    fullTezBalance = fullTezBalance.plus(new BigNumber(balanceStr ?? 0))
+    console.log(fullTezBalance)
+  } else {
+    const fullTezBalanceRespData = await fullTezBalanceResp.json()
+    throw new Error(fullTezBalanceRespData.message)
+  }
+
   if (!response.ok) {
     const data = await response.json()
     throw new Error(data.message)
   }
 
   const result: { votingWeight: string; votingXTZWeight: string } = await response.json()
+
   if (result) {
     return {
       votingWeight: new BigNumber(result.votingWeight),
-      votingXTZWeight: new BigNumber(result.votingXTZWeight)
+      votingXTZWeight: fullTezBalance
     }
   }
 
