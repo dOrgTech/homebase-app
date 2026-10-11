@@ -160,6 +160,19 @@ const formatConfig = {
   trimMantissa: true
 }
 
+const proposalKindLabel = (proposal: Proposal | undefined): string => {
+  if (!proposal || !(proposal instanceof LambdaProposal)) {
+    return "Treasury Proposal"
+  }
+  const { lambdaType, lambdaHandler } = proposal.metadata
+  if (lambdaType === "add_handler") return "Add Function Proposal"
+  if (lambdaType === "remove_handler") return "Remove Function Proposal"
+  if (lambdaType === "execute_handler") {
+    return lambdaHandler?.handler_name === "aci_executor" ? "Contract Call Proposal" : "Execute Function Proposal"
+  }
+  return "Proposal"
+}
+
 export const ProposalDetails: React.FC = () => {
   const { proposalId } = useParams<{
     proposalId: string
@@ -333,7 +346,7 @@ export const ProposalDetails: React.FC = () => {
               </Grid>
               <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item container direction="row" alignItems="center" xs={12} md={8}>
-                  <DescriptionText variant="body1">Treasury Proposal • Created by</DescriptionText>
+                  <DescriptionText variant="body1">{proposalKindLabel(proposal)} • Created by</DescriptionText>
                   <Grid style={{ marginLeft: 8 }}>
                     {proposal && cycleInfo && (
                       <UserBadge
