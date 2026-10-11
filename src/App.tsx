@@ -195,9 +195,12 @@ const App: React.FC = () => {
                       </StyledEngineProvider>
                     </Route>
                     <Route path="/explorer">
-                      <TZKTSubscriptionsProvider>
-                        <DAOExplorerRouter />
-                      </TZKTSubscriptionsProvider>
+                      {/* Keep the footer below the first screen even on short pages */}
+                      <Box minHeight="100vh">
+                        <TZKTSubscriptionsProvider>
+                          <DAOExplorerRouter />
+                        </TZKTSubscriptionsProvider>
+                      </Box>
 
                       {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
                         <>
