@@ -27,6 +27,7 @@ import ProposalExecuteForm from "./ProposalExecuteForm"
 import { Expr, MichelsonData } from "@taquito/michel-codec"
 import { getContract } from "services/contracts/baseDAO"
 import { TezosToolkit } from "@taquito/taquito"
+import { BigNumber } from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 import AppConfig from "config"
@@ -474,11 +475,16 @@ const ContractInteractionForm = ({
                   })
 
                   console.log("Lambda Param", param)
+                  // the form takes tez, the lambda pushes mutez
+                  const amountMutez = new BigNumber(values.amount || 0)
+                    .multipliedBy(1_000_000)
+                    .integerValue(BigNumber.ROUND_DOWN)
+                    .toNumber()
                   const lambda = generateExecuteContractMichelson("1.0.0", {
                     address: values.destination_contract_address,
                     entrypoint,
                     type,
-                    amount: values.amount,
+                    amount: amountMutez,
                     param
                   })
 
