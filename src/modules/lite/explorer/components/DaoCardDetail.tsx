@@ -7,6 +7,7 @@ import { DashboardContext } from "../context/ActionSheets/explorer"
 import { updateCount } from "services/services/lite/lite-services"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
 import ReactHtmlParser from "react-html-parser"
+import { sanitizeHtml, safeHref } from "services/utils/sanitizeHtml"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -105,7 +106,12 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
           <MembersText variant={"body1"} color="textPrimary">
             {count} members
           </MembersText>
-          <TermsText href={community?.linkToTerms} target="_blank" color="secondary">
+          <TermsText
+            href={safeHref(community?.linkToTerms)}
+            target="_blank"
+            rel="noopener noreferrer"
+            color="secondary"
+          >
             COMMUNITY TERMS
           </TermsText>
         </Grid>
@@ -113,7 +119,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
 
       <Grid container direction="row" justifyContent="center">
         <CommunityDescription variant="body2" color="textPrimary">
-          {ReactHtmlParser(community?.description ? community?.description : "")}
+          {ReactHtmlParser(sanitizeHtml(community?.description))}
         </CommunityDescription>
       </Grid>
 

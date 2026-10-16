@@ -4,40 +4,9 @@ import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { styled } from "@mui/material"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import LinkIcon from "assets/img/link.svg"
-import DOMPurify from "dompurify"
+import { sanitizeHtml } from "services/utils/sanitizeHtml"
 
 import ReactHtmlParser from "react-html-parser"
-
-// Sanitize HTML content to prevent XSS attacks
-const sanitizeHtml = (html: string): string => {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
-      "b",
-      "i",
-      "em",
-      "strong",
-      "a",
-      "p",
-      "br",
-      "ul",
-      "ol",
-      "li",
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "blockquote",
-      "code",
-      "pre",
-      "span",
-      "div"
-    ],
-    ALLOWED_ATTR: ["href", "target", "rel", "class"],
-    ALLOW_DATA_ATTR: false
-  })
-}
 
 // Validate URL to prevent javascript: and other dangerous protocols
 const isValidUrl = (url: string): boolean => {

@@ -11,6 +11,7 @@ import LinkIcon from "assets/img/link.svg"
 
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
+import { sanitizeHtml, safeHref } from "services/utils/sanitizeHtml"
 
 const Title = styled(Typography)({
   fontSize: 32,
@@ -223,7 +224,7 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
               className="proposal-details"
               style={{ whiteSpace: "pre-line" }}
             >
-              {ReactHtmlParser(poll?.description ? poll?.description : "")}
+              {ReactHtmlParser(sanitizeHtml(poll?.description))}
             </Typography>
           </Grid>
 
