@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { normalizeOnchainType } from "modules/etherlink/utils"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
 import dayjs from "dayjs"
 import BigNumber from "bignumber.js"
@@ -281,8 +282,13 @@ export const useDaoState = ({ network }: { network: string }) => {
           recomputeDataAfter(executionAvailableAt.diff(timeNow, "seconds"))
         }
 
+        const declaredType = String((p as any)?.type || "")
+        const actionCount = Array.isArray((p as any)?.targets) ? (p as any).targets.length : 0
         return {
           ...p,
+          type: normalizeOnchainType(declaredType, actionCount),
+          declaredType,
+          actionCount,
           createdAt: dayjs.unix(p.createdAt?.seconds as unknown as number),
           callDataPlain,
           isTimerActive,
@@ -479,8 +485,13 @@ export const useDaoState = ({ network }: { network: string }) => {
       recomputeDataAfter(executionAvailableAt.diff(timeNow, "seconds"))
     }
 
+    const declaredType = String((p as any)?.type || "")
+    const actionCount = Array.isArray((p as any)?.targets) ? (p as any).targets.length : 0
     const mapped = {
       ...p,
+      type: normalizeOnchainType(declaredType, actionCount),
+      declaredType,
+      actionCount,
       createdAt: dayjs.unix(p.createdAt?.seconds as unknown as number),
       callDataPlain,
       isTimerActive,

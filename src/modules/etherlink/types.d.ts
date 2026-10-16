@@ -133,6 +133,10 @@ export interface IEvmFirebaseProposal {
 export interface IEvmProposal extends IEvmFirebaseProposal {
   createdAt: dayjs.Dayjs
   callDataPlain: string[]
+  // The type written into the description by the proposer; `type` is the
+  // normalised one the UI trusts.
+  declaredType?: string
+  actionCount?: number
   executionAvailableAt: dayjs.Dayjs
   isVotingActive: boolean
   isTimerActive: boolean

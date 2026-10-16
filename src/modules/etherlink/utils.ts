@@ -238,6 +238,20 @@ function _decodedCallData(possibleInterfaces: any[], callData: string) {
   }
   return response
 }
+/**
+ * The type an on-chain proposal is displayed as. The proposer writes the
+ * declared type into the description, so it is advisory only: a proposal
+ * with several actions is always a batch, and one that carries actions can
+ * never be an off-chain debate.
+ */
+export function normalizeOnchainType(declaredType: string | undefined, actionCount: number): string {
+  const declared = String(declaredType || "").trim()
+  const lower = declared.toLowerCase()
+  if (actionCount > 1 && lower !== "batch") return "batch"
+  if (actionCount >= 1 && (lower === "offchain" || lower === "")) return "custom"
+  return declared
+}
+
 // TODO: Imeplement within wagmi/context.tsx
 export function decodeCallData(proposalType: IProposalType, callDataPlain: string[]) {
   let proposalData: { parameter: string; value: string }[] = []

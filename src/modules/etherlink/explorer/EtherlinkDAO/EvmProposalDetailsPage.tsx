@@ -8,6 +8,7 @@ import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalT
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
 import { ProposalActionSection } from "./components/ProposalActionSection"
 import { ProposalDataSection } from "./components/ProposalDataSection"
+import { ProposalActionsList } from "./components/ProposalActionsList"
 import { useProposalLifecycle } from "./hooks/useProposalLifecycle"
 
 export const EvmProposalDetailsPage = () => {
@@ -46,6 +47,14 @@ export const EvmProposalDetailsPage = () => {
         targets={daoProposalSelected?.targets}
         callDataPlain={daoProposalSelected?.callDataPlain}
         values={daoProposalSelected?.values}
+      />
+
+      <ProposalActionsList
+        targets={daoProposalSelected?.targets}
+        values={daoProposalSelected?.values}
+        callDataPlain={daoProposalSelected?.callDataPlain}
+        declaredType={daoProposalSelected?.declaredType ?? daoProposalSelected?.type}
+        nativeDecimals={18}
       />
 
       <EvmProposalVoterList />
