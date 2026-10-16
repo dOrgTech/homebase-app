@@ -5,6 +5,7 @@ import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
 import { Poll } from "models/Polls"
 import ReactHtmlParser from "react-html-parser"
+import { sanitizeHtml, stripHtml } from "services/utils/sanitizeHtml"
 import dayjs from "dayjs"
 export interface ProposalTableRowData {
   daoId?: string
@@ -37,12 +38,6 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const stripHtmlTags = (input: string) => {
-  const div = document.createElement("div")
-  div.innerHTML = input
-  return div.textContent || div.innerText || ""
-}
-
 export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
@@ -67,9 +62,9 @@ export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = 
 
         <Grid container direction="row">
           <DescriptionText>
-            {poll.description.length > 200
-              ? stripHtmlTags(poll.description).slice(0, 200) + "..."
-              : ReactHtmlParser(poll.description)}
+            {(poll.description || "").length > 200
+              ? stripHtml(poll.description).slice(0, 200) + "..."
+              : ReactHtmlParser(sanitizeHtml(poll.description))}
           </DescriptionText>
         </Grid>
 
