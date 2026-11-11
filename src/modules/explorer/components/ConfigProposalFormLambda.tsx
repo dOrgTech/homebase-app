@@ -417,9 +417,14 @@ export const ProposalFormLambda: React.FC<{
     return ProposalAction[action] + " Function Proposal"
   }
 
+  // Without the aci_executor handler the Contract Call dialog only shows a short explanation and a
+  // Submit button; the "md" template stretches to the full viewport, so use the compact one there.
+  const isAciEnabled = !!daoLambdas?.find(lambda => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
+  const dialogTemplate = action === ProposalAction.aci && daoLambdas !== undefined && !isAciEnabled ? "sm" : "md"
+
   return (
     <FormProvider {...lambdaForm}>
-      <ResponsiveDialog open={open} onClose={closeModal} title={getTitle(action)} template="md">
+      <ResponsiveDialog open={open} onClose={closeModal} title={getTitle(action)} template={dialogTemplate}>
         {state === LambdaProposalState.write_action ? (
           <>
             <Grid container direction="row">

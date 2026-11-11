@@ -24,6 +24,7 @@ const TitleText = styled(Typography)(({ theme }) => ({
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
     width: "-webkit-fill-available",
+    maxWidth: "960px !important",
     maxHeight: "calc(100vh - 96px)",
     display: "flex",
     flexDirection: "column"

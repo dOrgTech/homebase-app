@@ -1,13 +1,14 @@
 import { Grid, Typography, styled } from "@mui/material"
 
 export const OptionContainer = styled(Grid)(({ theme }) => ({
-  "minHeight": 80,
+  "minHeight": 110,
   "background": theme.palette.primary.main,
   "borderRadius": 8,
   "padding": "35px 42px",
-  "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
+  // fill the grid cell so cards in a row share the height of the tallest description
+  "height": "100%",
+  "boxSizing": "border-box",
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,

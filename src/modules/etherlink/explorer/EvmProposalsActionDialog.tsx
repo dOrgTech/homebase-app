@@ -84,7 +84,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         <TitleContainer container direction="row">
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
-        <Grid container spacing={2}>
+        <Grid container columnSpacing={2} rowSpacing={4}>
           {availableOptions.map((option: any, index) => (
             <Grid
               item
