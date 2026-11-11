@@ -27,12 +27,12 @@ import ProposalExecuteForm from "./ProposalExecuteForm"
 import { Expr, MichelsonData } from "@taquito/michel-codec"
 import { getContract } from "services/contracts/baseDAO"
 import { TezosToolkit } from "@taquito/taquito"
+import { BigNumber } from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 import AppConfig from "config"
 import { Link } from "react-router-dom"
 import { Button } from "components/ui/Button"
-import { ResponsiveDialog } from "./ResponsiveDialog"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 // Base ACI Lambda
@@ -250,13 +250,22 @@ const ContractInteractionForm = ({
   }
 
   if (!isAciDeployerDeployed && !isLoading) {
+    // the DAO has no aci_executor handler yet: explain and point to the add-function proposal (one dialog, closable)
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: "20px" }}>
-        <Typography>We need to deploy the ACI Deployer Contract</Typography>
-        <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`} color="secondary">
-          <Typography style={{ color: "white", textDecoration: "underline" }}>Deploy ACI Deployer Contract</Typography>
-        </Link>
-      </div>
+      <Grid container direction="column" style={{ gap: 16, marginTop: 20 }}>
+        <Typography color="textPrimary">
+          In order to use open-ended Contract Calls, the DAO contract must be amended.
+        </Typography>
+        <Typography color="textPrimary">
+          If you have the minimum amount of tokens for the proposal fee, click Submit to create a proposal for adding
+          the Contract Call capability. Once that proposal is executed, this form becomes available.
+        </Typography>
+        <Grid item>
+          <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`}>
+            <Button>Submit</Button>
+          </Link>
+        </Grid>
+      </Grid>
     )
   }
 
@@ -474,11 +483,16 @@ const ContractInteractionForm = ({
                   })
 
                   console.log("Lambda Param", param)
+                  // the form takes tez, the lambda pushes mutez
+                  const amountMutez = new BigNumber(values.amount || 0)
+                    .multipliedBy(1_000_000)
+                    .integerValue(BigNumber.ROUND_DOWN)
+                    .toNumber()
                   const lambda = generateExecuteContractMichelson("1.0.0", {
                     address: values.destination_contract_address,
                     entrypoint,
                     type,
-                    amount: values.amount,
+                    amount: amountMutez,
                     param
                   })
 
@@ -534,7 +548,6 @@ export const ArbitraryContractInteractionForm: React.FC<{
   showHeader: (state: boolean) => void
 }> = ({ daoLambdas, showHeader }) => {
   const daoId = useDAOID()
-  const [aciProposalOpen, setAciProposalOpen] = useState(false)
   const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
   const initialValue: ACIValues = {
@@ -578,8 +591,6 @@ export const ArbitraryContractInteractionForm: React.FC<{
     console.log({ daoLambdas })
   }, [daoLambdas])
 
-  const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
-
   return (
     <Formik
       validateOnChange={true}
@@ -614,23 +625,6 @@ export const ArbitraryContractInteractionForm: React.FC<{
               showHeader={showHeader}
               daoLambdas={daoLambdas}
             />
-            {daoLambdas !== undefined && (
-              <ResponsiveDialog
-                open={!isAciDeployerDeployed}
-                onClose={() => setAciProposalOpen(false)}
-                title={"Proposal to Enable Arbitrary Contract Interaction"}
-                template="sm"
-              >
-                <Typography>In order to use open-ended Contract Calls, the DAO contract must be amended.</Typography>
-                <Typography>
-                  If you have the minimum amount of tokens for the proposal fee, click Submit to create a proposal for
-                  adding the ACI capability.
-                </Typography>
-                <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`}>
-                  <Button>Submit</Button>
-                </Link>
-              </ResponsiveDialog>
-            )}
           </Form>
         )
       }}

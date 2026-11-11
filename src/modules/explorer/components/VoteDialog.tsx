@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from "react"
 import { Grid, Typography, TextField, Button, useTheme, styled } from "@mui/material"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useVote } from "services/contracts/baseDAO/hooks/useVote"
 import BigNumber from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -13,6 +13,8 @@ import { ProposalFormInput } from "./ProposalFormInput"
 import { getUserTokenBalance } from "services/bakingBad/tokenBalances"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance"
+import { useProposals } from "services/services/dao/hooks/useProposals"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 const CustomLabelsContainer = styled(Grid)({
   marginBottom: 12
@@ -30,6 +32,14 @@ const CustomMaxLabel = styled(Typography)({
   cursor: "pointer",
   marginLeft: 12
 })
+
+const HintText = styled(Typography)(({ theme }) => ({
+  "fontSize": 14,
+  "marginTop": 12,
+  "color": theme.palette.text.primary,
+  "opacity": 0.75,
+  "& a": { color: "inherit", textDecoration: "underline" }
+}))
 
 const ErrorText = styled(Typography)({
   fontSize: 13,
@@ -82,6 +92,17 @@ export const VoteDialog: React.FC<{
   }, [amount, dao, mutate, onClose, proposalId, support, validate])
 
   const { account } = useTezos()
+  // votes stay staked after a proposal is executed or dropped until the holder releases them
+  const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
+  const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
+  const releasableStake = useMemo(
+    () =>
+      (executedProposals ?? []).concat(droppedProposals ?? []).reduce((acc, finishedProposal) => {
+        const vote = finishedProposal.voters.find(voter => voter.address.toLowerCase() === account?.toLowerCase())
+        return vote && vote.staked ? acc.plus(vote.value) : acc
+      }, new BigNumber(0)),
+    [executedProposals, droppedProposals, account]
+  )
 
   useMemo(() => {
     const found = ledger?.find(l => l.holder.address.toLowerCase() === account.toLowerCase())
@@ -157,6 +178,12 @@ export const VoteDialog: React.FC<{
                 />
               </ProposalFormInput>
               {error ? <ErrorText>Amount cannot be greater than max available</ErrorText> : null}
+              {releasableStake.gt(0) ? (
+                <HintText>
+                  {releasableStake.toFormat()} {dao?.data.token.symbol} are still staked on finished proposals. Release
+                  them with Unstake on the <Link to={`/explorer/dao/${daoId}/user`}>User page</Link> to vote with them.
+                </HintText>
+              ) : null}
             </Grid>
           </Grid>
 

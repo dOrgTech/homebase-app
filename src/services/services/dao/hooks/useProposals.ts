@@ -3,40 +3,37 @@ import { BaseDAO, CycleInfo } from "services/contracts/baseDAO"
 import { getProposals } from "services/services/dao/services"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAO } from "./useDAO"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 
+/**
+ * Proposals of a DAO, optionally narrowed to one status.
+ * The list is fetched once per DAO and the status filter is applied at render time with the current cycle info,
+ * so it follows the chain instead of freezing at whatever level was known when the query first ran.
+ */
 export const useProposals = (contractAddress: string, status?: ProposalStatus) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [proposalData, setProposalData] = useState<any[]>([])
-  const { data: daoData, isLoading: isLoadingDAO, error, cycleInfo } = useDAO(contractAddress)
+  const { data: daoData, error, cycleInfo } = useDAO(contractAddress)
 
   const queryResults = useQuery({
-    queryKey: ["proposals", contractAddress, status],
-    queryFn: async () => {
-      const dao = daoData as BaseDAO
-      const proposals = await getProposals(dao)
-
-      if (!status) {
-        return proposals
-      }
-
-      return proposals.filter(
-        proposalData => proposalData.getStatus((cycleInfo as CycleInfo).currentLevel).status === status
-      )
-    },
+    queryKey: ["proposals", contractAddress],
+    queryFn: async () => getProposals(daoData as BaseDAO),
     refetchInterval: 30000,
-    enabled: !!daoData && !!cycleInfo
+    enabled: !!daoData
   })
 
-  useEffect(() => {
-    if (queryResults.data) {
-      setProposalData(queryResults.data)
+  const data = useMemo(() => {
+    const proposals = queryResults.data ?? []
+    if (!status) {
+      return proposals
     }
-  }, [queryResults.data])
+    if (!cycleInfo) {
+      return []
+    }
+    return proposals.filter(proposal => proposal.getStatus((cycleInfo as CycleInfo).currentLevel).status === status)
+  }, [queryResults.data, status, cycleInfo])
 
   return {
-    data: proposalData,
-    isLoading: isLoading || queryResults.isLoading,
+    data,
+    isLoading: queryResults.isLoading,
     error: error || queryResults.error
   }
 }
