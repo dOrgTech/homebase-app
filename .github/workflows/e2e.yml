@@ -9,7 +9,8 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    # Pinned: Playwright's browser install does not support Ubuntu 26.04, which ubuntu-latest now resolves to.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
