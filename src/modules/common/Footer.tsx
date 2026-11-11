@@ -2,7 +2,6 @@ import React from "react"
 import { Grid, Typography, styled, useMediaQuery, useTheme } from "@mui/material"
 import HomeButton from "assets/logos/footer_logo.svg"
 import Documentation from "assets/logos/footer_documentation.svg"
-import Help from "assets/logos/footer_help.svg"
 import Tezos from "assets/logos/footer_tezos.svg"
 import Explorer from "assets/logos/footer_explorer.svg"
 import Github from "assets/logos/footer_github.svg"
@@ -10,16 +9,15 @@ import Discord from "assets/logos/footer_discord.svg"
 import Youtube from "assets/logos/footer_youtube.svg"
 import dOrg from "assets/logos/footer_dorg.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { useLocation } from "react-router-dom"
 
 const Footer = styled(Grid)(({ theme }) => ({
   width: "100%",
-  height: "126px",
   backgroundColor: "#24282d",
   paddingTop: 40,
   paddingBottom: 40,
   marginTop: 32,
   [theme.breakpoints.down("lg")]: {
-    height: "auto",
     paddingTop: 30,
     paddingBottom: 30
   }
@@ -27,8 +25,7 @@ const Footer = styled(Grid)(({ theme }) => ({
 
 const LogoItem = styled("img")({
   opacity: 0.65,
-  cursor: "pointer",
-  marginLeft: 8
+  cursor: "pointer"
 })
 
 const HomebaseLogoItem = styled("img")({
@@ -46,6 +43,13 @@ const DesignedByText = styled(Typography)({
   fontSize: 13.5,
   opacity: 0.65,
   fontWeight: 300
+})
+
+const CreditLink = styled("a")({
+  color: "inherit",
+  textDecoration: "underline",
+  textUnderlineOffset: 2,
+  cursor: "pointer"
 })
 
 const BottomContainer = styled(Grid)(({ theme }) => ({
@@ -75,9 +79,12 @@ export const ExplorerFooter: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("lg"))
   const { network, account } = useTezos()
   const discordLink = account ? "https://discord.gg/ZRVk6zu3xR" : "https://discord.gg/yqv8ABG2EN"
+  const { pathname } = useLocation()
+  // DAO pages show a fixed 55px bottom bar below 960px (NavigationMenu); leave room so the footer is not covered.
+  const hasBottomBar = useMediaQuery(theme.breakpoints.down(960)) && /^\/explorer\/dao\//.test(pathname)
 
-  const goToFAQ = () => {
-    window.open("https://faq.tezos-homebase.io/homebase-faq/", "_blank")
+  const goToDocs = () => {
+    window.open("https://docs.tezos-homebase.io/", "_blank")
   }
 
   const goToExplorer = () => {
@@ -107,75 +114,37 @@ export const ExplorerFooter: React.FC = () => {
   }
 
   return (
-    <Footer>
+    <Footer style={hasBottomBar ? { paddingBottom: 30 + 55 } : undefined}>
       <Container container direction="column" style={isMobileSmall ? { gap: 22 } : { gap: 32 }}>
-        <Grid item>
+        <Grid
+          item
+          container
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          style={isMobileSmall ? { gap: 16 } : {}}
+        >
           <HomebaseLogoItem src={HomeButton} />
-        </Grid>
-        <Grid item container direction="row">
-          {!isMobileSmall ? <Grid item sm={5} md={5}></Grid> : null}
-
           <Grid
             item
-            sm={9}
-            xs={12}
-            md={7}
             container
             direction="row"
             alignItems="center"
-            style={isMobileSmall ? { gap: 8 } : {}}
-            justifyContent={isMobileSmall ? "space-between" : "flex-end"}
+            style={{ gap: isMobileSmall ? 20 : 40, width: "auto" }}
           >
-            <Grid
-              container
-              direction="row"
-              style={{ gap: 8 }}
-              item
-              sm={4}
-              xs={5}
-              md={3}
-              justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
-              onClick={goToFAQ}
-            >
+            <Grid container direction="row" alignItems="center" style={{ gap: 8, width: "auto" }} onClick={goToDocs}>
               <LogoItem src={Documentation} />
               <ItemText color="textPrimary">Documentation</ItemText>
             </Grid>
-            <Grid
-              container
-              direction="row"
-              item
-              sm={4}
-              xs={5}
-              md={3}
-              style={isMobileSmall ? { gap: 8 } : { marginLeft: -35, gap: 8 }}
-              justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
-            >
-              <LogoItem src={Help} />
-              <ItemText color="textPrimary">Help</ItemText>
-            </Grid>
-            <Grid
-              container
-              direction="row"
-              style={{ gap: 8 }}
-              item
-              sm={4}
-              xs={5}
-              md={3}
-              justifyContent={isMobileSmall ? "flex-start" : "center"}
-              onClick={goToTezos}
-            >
+            <Grid container direction="row" alignItems="center" style={{ gap: 8, width: "auto" }} onClick={goToTezos}>
               <LogoItem src={Tezos} />
               <ItemText color="textPrimary">Tezos</ItemText>
             </Grid>
             <Grid
               container
               direction="row"
-              style={{ gap: 8 }}
-              item
-              sm={4}
-              xs={5}
-              md={3}
-              justifyContent={isMobileSmall ? "flex-start" : "center"}
+              alignItems="center"
+              style={{ gap: 8, width: "auto" }}
               onClick={goToExplorer}
             >
               <LogoItem src={Explorer} />
@@ -183,28 +152,29 @@ export const ExplorerFooter: React.FC = () => {
             </Grid>
           </Grid>
         </Grid>
-        <BottomContainer item container direction="row">
-          <Grid item sm={12} md={6} xs={12} style={{ gap: 24 }} container direction="row">
+        <BottomContainer item container direction="row" alignItems="center" justifyContent="space-between">
+          <Grid item container direction="row" alignItems="center" style={{ gap: 24, width: "auto" }}>
             <LogoItem src={Github} onClick={goToGithub} />
             <LogoItem src={Discord} onClick={goToDiscord} />
             <LogoItem src={Youtube} onClick={goToYoutube} />
           </Grid>
           <Grid
             item
-            md={6}
-            sm={12}
-            xs={12}
             container
-            direction="row"
-            alignItems="center"
-            justifyContent="flex-end"
-            style={{ gap: 8 }}
+            direction="column"
+            alignItems={isMobileSmall ? "flex-start" : "flex-end"}
+            style={{ gap: 6, width: "auto" }}
           >
-            {isMobileSmall ? <DesignedByText color="textPrimary">Supported by Tezos Commons, </DesignedByText> : null}
             <DesignedByText color="textPrimary">
-              {!isMobileSmall ? "Supported by Tezos Commons, " : null}Designed & Developed by
+              Supported by{" "}
+              <CreditLink href="https://tezoscommons.org" target="_blank" rel="noopener noreferrer">
+                Tezos Commons
+              </CreditLink>
             </DesignedByText>
-            <LogoItem src={dOrg} onClick={goTodOrg} />
+            <Grid container direction="row" alignItems="center" style={{ gap: 8, width: "auto" }}>
+              <DesignedByText color="textPrimary">Designed & Developed by</DesignedByText>
+              <LogoItem src={dOrg} onClick={goTodOrg} />
+            </Grid>
           </Grid>
         </BottomContainer>
       </Container>
