@@ -1,45 +1,67 @@
 name: e2e tests
 on:
-  push:
-    branches: [main, master]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      base_url:
+        description: Site to test
+        default: https://tezos-homebase.io
+
+permissions:
+  contents: read
+  statuses: read
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 30
     # Pinned: Playwright's browser install does not support Ubuntu 26.04, which ubuntu-latest now resolves to.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version-file: .nvmrc
+          cache: yarn
       - name: Install dependencies
-        run: npm install -g yarn && yarn
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
-      - name: Cache playwright binaries
-        uses: actions/cache@v3
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-      - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --non-interactive
+      - name: Install Chromium
+        run: yarn playwright install --with-deps chromium
+
+      # Netlify reports the deploy preview as a commit status on the PR head; test that exact build.
+      - name: Wait for the deploy preview
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          for i in $(seq 1 60); do
+            status=$(gh api "repos/${{ github.repository }}/commits/$SHA/statuses" \
+              --jq 'first(.[] | select(.context == "netlify/tezos-homebase/deploy-preview")) | "\(.state) \(.target_url)"' || true)
+            echo "deploy preview: ${status:-not reported yet}"
+            case "$status" in
+              success\ *) echo "E2E_BASE_URL=${status#success }" >> "$GITHUB_ENV"; exit 0 ;;
+              failure\ *|error\ *) echo "::error::The deploy preview failed to build"; exit 1 ;;
+            esac
+            sleep 20
+          done
+          echo "::error::The deploy preview was not ready after 20 minutes"
+          exit 1
+      - name: Use the requested site
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: echo "E2E_BASE_URL=$BASE_URL" >> "$GITHUB_ENV"
 
       - name: Run Playwright tests
-        continue-on-error: true
-        run: yarn playwright test --project=chromium
+        run: yarn playwright test
         env:
-          REACT_APP_TESTING_BASE: https://deploy-preview-${{ github.event.pull_request.number }}--tezos-homebase.netlify.app
+          APP_CHECK_DEBUG_TOKEN: ${{ secrets.APP_CHECK_DEBUG_TOKEN }}
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: ${{ failure() }}
         with:
           name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
