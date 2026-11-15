@@ -18,26 +18,30 @@ export const useAllDAOs = (network: Network) => {
   // Always derive Etherlink DAOs from live context state so they react to
   // network changes and Firestore updates without being captured by a
   // TanStack Query fetcher closure.
+  // Economy DAOs (those with an `economy` contract) come from a separate factory that Homebase
+  // cannot create; they are left out of the list but still open from a direct link.
   const evmDaos =
-    etherinkDaos?.map((dao: any) => ({
-      ...dao,
-      dao_type: {
-        badge: "v4",
-        name: "etherlink_onchain"
-      },
-      token: {
-        id: NaN,
-        name: dao.name,
-        contract: dao.token,
-        symbol: dao.symbol,
-        standard: "ERC20"
-      },
-      holders_count: dao.holders,
-      ledgers: [],
-      network: "Etherlink",
-      nonTransferrable: dao.nonTransferrable,
-      underlyingToken: dao.underlyingToken
-    })) || []
+    etherinkDaos
+      ?.filter((dao: any) => !dao.economy)
+      .map((dao: any) => ({
+        ...dao,
+        dao_type: {
+          badge: "v4",
+          name: "etherlink_onchain"
+        },
+        token: {
+          id: NaN,
+          name: dao.name,
+          contract: dao.token,
+          symbol: dao.symbol,
+          standard: "ERC20"
+        },
+        holders_count: dao.holders,
+        ledgers: [],
+        network: "Etherlink",
+        nonTransferrable: dao.nonTransferrable,
+        underlyingToken: dao.underlyingToken
+      })) || []
 
   // Tezos sources via TanStack Query. Keep hook order stable across network switches.
   const queryData = useQuery({
